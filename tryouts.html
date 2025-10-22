@@ -410,7 +410,7 @@
   </div>
 
   <script>
-    // Client-side validation + Formspree submit
+    // Client-side validation + Formspree submit (fixed realtime behavior)
     (function(){
       const form = document.getElementById('tryoutForm');
       const success = document.getElementById('successMsg');
@@ -424,7 +424,7 @@
       const fBirth = document.getElementById('birthdate');
       const fAgeGrad = document.getElementById('ageGradYear');
 
-      // Errors
+      // Error elements
       const eName = document.getElementById('errName');
       const eAddress = document.getElementById('errAddress');
       const ePhone = document.getElementById('errPhone');
@@ -444,48 +444,73 @@
         errEl.textContent = '';
       }
 
-      function validateAll(){
-        let ok = true;
+      // Validate just one field
+      function validateField(input){
+        const id = input.id;
+        const val = (input.value || '').trim();
 
-        // Name
-        if(!fName.value.trim()){ setError(fName, eName, 'Player name is required.'); ok = false; } else { clearError(fName, eName); }
+        if(id === 'playerName'){
+          if(!val){ setError(input, eName, 'Player name is required.'); return false; }
+          clearError(input, eName); return true;
+        }
 
-        // Address
-        if(!fAddress.value.trim()){ setError(fAddress, eAddress, 'Address is required.'); ok = false; } else { clearError(fAddress, eAddress); }
+        if(id === 'playerAddress'){
+          if(!val){ setError(input, eAddress, 'Address is required.'); return false; }
+          clearError(input, eAddress); return true;
+        }
 
-        // Phone
-        const ph = fPhone.value.trim();
-        if(!ph){ setError(fPhone, ePhone, 'Phone is required.'); ok = false; }
-        else if(!phoneRegex.test(ph)){ setError(fPhone, ePhone, 'Enter a valid phone number.'); ok = false; }
-        else { clearError(fPhone, ePhone); }
+        if(id === 'guardianPhone'){
+          if(!val){ setError(input, ePhone, 'Phone is required.'); return false; }
+          if(!phoneRegex.test(val)){ setError(input, ePhone, 'Enter a valid phone number.'); return false; }
+          clearError(input, ePhone); return true;
+        }
 
-        // Email
-        const em = fEmail.value.trim();
-        if(!em){ setError(fEmail, eEmail, 'Email is required.'); ok = false; }
-        else if(!emailRegex.test(em)){ setError(fEmail, eEmail, 'Enter a valid email address.'); ok = false; }
-        else { clearError(fEmail, eEmail); }
+        if(id === 'guardianEmail'){
+          if(!val){ setError(input, eEmail, 'Email is required.'); return false; }
+          if(!emailRegex.test(val)){ setError(input, eEmail, 'Enter a valid email address.'); return false; }
+          clearError(input, eEmail); return true;
+        }
 
-        // Birthdate
-        if(!fBirth.value){ setError(fBirth, eBirth, 'Birthdate is required.'); ok = false; }
-        else { clearError(fBirth, eBirth); }
+        if(id === 'birthdate'){
+          if(!val){ setError(input, eBirth, 'Birthdate is required.'); return false; }
+          clearError(input, eBirth); return true;
+        }
 
-        // Age & Grad Year
-        if(!fAgeGrad.value.trim()){ setError(fAgeGrad, eAgeGrad, 'Age & Grad Year is required.'); ok = false; }
-        else { clearError(fAgeGrad, eAgeGrad); }
+        if(id === 'ageGradYear'){
+          if(!val){ setError(input, eAgeGrad, 'Age & Grad Year is required.'); return false; }
+          clearError(input, eAgeGrad); return true;
+        }
 
-        // focus first invalid
-        const firstInvalid = [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].find(el => el.getAttribute('aria-invalid') === 'true');
-        if(firstInvalid) firstInvalid.focus();
-
-        return ok;
+        return true;
       }
 
-      // Realtime validation
+      // Validate all fields (used on submit only)
+      function validateAll(){
+        const results = [
+          validateField(fName),
+          validateField(fAddress),
+          validateField(fPhone),
+          validateField(fEmail),
+          validateField(fBirth),
+          validateField(fAgeGrad)
+        ];
+
+        if(results.every(Boolean)) return true;
+
+        // Focus only during submit on the first invalid field
+        const firstInvalid = [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad]
+          .find(el => el.getAttribute('aria-invalid') === 'true');
+        if(firstInvalid) firstInvalid.focus();
+        return false;
+      }
+
+      // Realtime (per-field) validation — no focusing, no cross-field checks
       [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].forEach(el=>{
-        el.addEventListener('input', ()=> validateAll());
-        el.addEventListener('blur', ()=> validateAll());
+        el.addEventListener('input', ()=> validateField(el)); // runs while typing, for that field only
+        el.addEventListener('blur',  ()=> validateField(el)); // runs when leaving the field
       });
 
+      // Submit handler
       form.addEventListener('submit', async (e)=>{
         e.preventDefault();
         success.style.display = 'none';
