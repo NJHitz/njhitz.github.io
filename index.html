@@ -121,6 +121,32 @@
     .stripe{background:linear-gradient(90deg,var(--hitz-purple),var(--hitz-gold));height:4px}
     .footer{padding:18px 0 36px;text-align:center;color:#cfcfdb;font-size:.9rem}
     .gold{color:var(--hitz-gold)}
+
+    /* Modal (Formspree) */
+    .modal{position:fixed;inset:0;display:none;z-index:10000}
+    .modal.open{display:block}
+    .modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78)}
+    .modal__dialog{
+      position:relative; z-index:1; width:min(560px,92vw); margin:8vh auto;
+      background:#121214; border:1px solid rgba(255,255,255,.08); border-radius:16px;
+      padding:22px 20px 18px; box-shadow:0 20px 50px rgba(0,0,0,.6)
+    }
+    .modal__close{
+      position:absolute; top:10px; right:10px; width:36px; height:36px; border-radius:999px;
+      border:2px solid var(--hitz-gold); background:rgba(20,20,24,.7); color:#fff; cursor:pointer; font-weight:900
+    }
+    .modal__subtitle{color:#cfcfdb;margin:-2px 0 14px}
+    .modal label{display:block;margin:10px 0 6px;font-weight:700;color:var(--hitz-gold)}
+    .modal input, .modal textarea{
+      width:100%; padding:10px 12px; border-radius:8px; border:1px solid #333; background:#1a1a1f; color:#fff;
+    }
+    .modal input:focus, .modal textarea:focus{outline:none;border-color:var(--hitz-gold)}
+    .modal__actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+    .modal .btn{border:2px solid var(--hitz-gold)}
+    .hp{position:absolute !important; left:-9999px !important; opacity:0 !important; pointer-events:none}
+    .form-success{color:#71ffb0; font-weight:700; margin-top:10px}
+    .form-error{color:#ff9c9c; font-weight:700; margin-top:10px}
+    @media (max-width:600px){ .modal__dialog{margin:6vh auto;padding:18px 16px} }
   </style>  
 </head>
 <body>
@@ -291,7 +317,7 @@
         <span class="eyebrow">Join NJ HITZ</span>
         <h2>Ready to Compete?</h2>
         <div class="cta-row">
-          <a class="btn solid" href="mailto:njhitz@mtolivebsa.com">Email Us</a>
+          <button class="btn solid" type="button" id="openEmailModal">Email Us</button>
           <a class="btn solid" href="tryouts.html" target="_self" rel="noopener">Tryout Interest Form</a>
         </div>
       </div>
@@ -303,6 +329,42 @@
       <span>© <span class="gold">NJ HITZ</span> Softball • New Jersey</span>
     </div>
   </section>
+
+  <!-- EMAIL MODAL -->
+  <div class="modal" id="emailModal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__dialog" role="document">
+      <button class="modal__close" type="button" aria-label="Close" data-close>✕</button>
+      <h3 id="emailModalTitle">Contact NJ HITZ</h3>
+      <p class="modal__subtitle">Send us a message and we’ll get back to you.</p>
+
+      <form id="emailForm" action="https://formspree.io/f/mdkwrgov" method="POST" novalidate>
+        <!-- helpful metadata -->
+        <input type="hidden" name="_subject" value="NJ HITZ Website — Contact Form" />
+        <input type="hidden" name="_format" value="plain" />
+        <!-- honeypot (spam protection) -->
+        <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        <label for="cfName">Your Name</label>
+        <input id="cfName" name="name" type="text" required placeholder="Jane Doe" />
+
+        <label for="cfEmail">Your Email</label>
+        <input id="cfEmail" name="email" type="email" required placeholder="jane@example.com" />
+
+        <label for="cfMessage">Message</label>
+        <textarea id="cfMessage" name="message" rows="4" required placeholder="How can we help?"></textarea>
+
+        <div class="modal__actions">
+          <button class="btn solid" type="submit" id="sendBtn">Send</button>
+          <button class="btn" type="button" data-close>Cancel</button>
+        </div>
+
+        <p class="form-success" id="emailSuccess" hidden>✅ Thanks! Your message has been sent.</p>
+        <p class="form-error" id="emailError" hidden>⚠️ Sorry—there was a problem. Please try again.</p>
+      </form>
+    </div>
+  </div>
+
 
   <!-- Simple hero slider -->
   <script>
@@ -388,5 +450,67 @@
       }, {passive:true});
     })();
   </script>
+
+  <script>
+    (function(){
+      const openBtn = document.getElementById('openEmailModal');
+      const modal = document.getElementById('emailModal');
+      const dialog = modal.querySelector('.modal__dialog');
+      const closeEls = modal.querySelectorAll('[data-close], .modal__backdrop');
+      const form = document.getElementById('emailForm');
+      const successEl = document.getElementById('emailSuccess');
+      const errorEl = document.getElementById('emailError');
+      const sendBtn = document.getElementById('sendBtn');
+      let lastFocus = null;
+
+      function openModal(){
+        lastFocus = document.activeElement;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+        // focus first field
+        setTimeout(()=> document.getElementById('cfName').focus(), 50);
+      }
+      function closeModal(){
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+        if(lastFocus) lastFocus.focus();
+      }
+      // open
+      if (openBtn) openBtn.addEventListener('click', openModal);
+      // close buttons & backdrop
+      closeEls.forEach(el => el.addEventListener('click', closeModal));
+      // ESC to close
+      window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+      // click outside dialog closes
+      modal.addEventListener('click', (e)=>{ if(!dialog.contains(e.target)) closeModal(); });
+
+      // Submit via Formspree
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        successEl.hidden = true; errorEl.hidden = true;
+        sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
+
+        try{
+          const data = new FormData(form);
+          const resp = await fetch(form.action, { method:'POST', body:data, headers:{'Accept':'application/json'} });
+          if(resp.ok){
+            form.reset();
+            successEl.hidden = false;
+            // optionally close after a short delay
+            setTimeout(closeModal, 1400);
+          }else{
+            errorEl.hidden = false;
+          }
+        }catch(err){
+          errorEl.hidden = false;
+        }finally{
+          sendBtn.disabled = false; sendBtn.textContent = 'Send';
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>
