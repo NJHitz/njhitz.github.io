@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NJ HITZ Tryout Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --hitz-purple: #4c2a85;
+      --hitz-gold: #b38b35;
+      --hitz-black: #0e0e0f;
+      --hitz-white: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--hitz-black);
+      color: var(--hitz-white);
+    }
+
+    /* ---------- HEADER ---------- */
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1rem;
+      padding: 40px 20px 20px;
+      background: linear-gradient(180deg, var(--hitz-purple) 0%, #24154f 100%);
+      position: relative;
+    }
+
+    header img {
+      max-height: 100px;
+      filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.6));
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin: 10px 0 0;
+      color: var(--hitz-gold);
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 1px;
+      width: 100%;
+    }
+
+    .home-button {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: var(--hitz-gold);
+      color: var(--hitz-black);
+      font-weight: 700;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 2px solid var(--hitz-gold);
+    }
+
+    .home-button:hover {
+      background: var(--hitz-purple);
+      color: var(--hitz-white);
+    }
+
+    @media (max-width: 600px) {
+      .home-button {
+        position: static;
+        display: inline-block;
+        margin-top: 10px;
+      }
+    }
+
+    /* ---------- FORM ---------- */
+    .form-wrapper {
+      background: #121214;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 40px 30px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--hitz-gold);
+      text-transform: uppercase;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      letter-spacing: 0.08em;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--hitz-gold);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #1c1c1e;
+      color: var(--hitz-white);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--hitz-gold);
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button,
+    .btn-link {
+      background: var(--hitz-purple);
+      color: var(--hitz-white);
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 2px solid var(--hitz-gold);
+      padding: 12px 26px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    button:hover,
+    .btn-link:hover {
+      background: var(--hitz-gold);
+      color: var(--hitz-black);
+      transform: translateY(-1px);
+    }
+
+    .btn-cancel {
+      background: transparent;
+      color: var(--hitz-gold);
+      border-color: var(--hitz-gold);
+    }
+
+    .btn-cancel:hover {
+      background: #2c2c2c;
+      color: var(--hitz-white);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 10px;
+      font-size: 0.9rem;
+      color: #aaa;
+      border-top: 2px solid var(--hitz-gold);
+      margin-top: 40px;
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      color: var(--hitz-gold);
+      font-weight: 700;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="https://njhitz.github.io/" class="home-button">Home</a>
+    <img src="https://njhitz.github.io/images/hitzpurple.png" alt="NJ HITZ Logo" />
+    <h1>Team Tryout Registration</h1>
+  </header>
+
+  <div class="form-wrapper">
+    <h2>Player Information</h2>
+
+    <form action="https://formspree.io/f/mdkwrgov" method="POST">
+      <label for="playerName">Player's Name</label>
+      <input type="text" id="playerName" name="Player Name" required />
+
+      <label for="playerAddress">Player's Address</label>
+      <textarea id="playerAddress" name="Player Address" rows="2" required></textarea>
+
+      <label for="guardianPhone">Parent or Guardian's Phone</label>
+      <input type="tel" id="guardianPhone" name="Phone" required />
+
+      <label for="guardianEmail">Parent or Guardian's Email</label>
+      <input type="email" id="guardianEmail" name="Email" required />
+
+      <label for="birthdate">Player's Birthdate</label>
+      <input type="text" id="birthdate" name="Birthdate" required />
+
+      <label for="ageGradYear">Player's Age & Grad Year</label>
+      <input type="text" id="ageGradYear" name="Age & Grad Year" required />
+
+      <label for="highSchool">High School</label>
+      <input type="text" id="highSchool" name="High School" />
+
+      <label>Positions You Play</label>
+      <input type="text" name="Position 1" placeholder="Position 1" />
+      <input type="text" name="Position 2" placeholder="Position 2" />
+      <input type="text" name="Position 3" placeholder="Position 3" />
+
+      <div class="button-row">
+        <button type="submit">Submit Registration</button>
+        <button type="button" class="btn-cancel" onclick="document.querySelector('form').reset()">Reset Form</button>
+      </div>
+      <p class="success-message">Thank you! Your tryout registration has been submitted. We'll be in touch!</p>
+    </form>
+  </div>
+
+  <footer>
+    © <span style="color: var(--hitz-gold); font-weight: 700;">NJ HITZ</span> Softball • New Jersey
+  </footer>
+
+  <script>
+    // Formspree submission handler
+    const form = document.querySelector("form");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const action = form.getAttribute("action");
+      const response = await fetch(action, {
+        method: "POST",
+        body: data,
+        headers: { Accept: "application/json" },
+      });
+      if (response.ok) {
+        document.querySelector(".success-message").style.display = "block";
+        form.reset();
+      } else {
+        alert("There was an error submitting the form. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>
