@@ -10,121 +10,142 @@
   <style>
     :root {
       --hitz-purple: #4c2a85;
-      --hitz-gold: #b38b35;
-      --hitz-black: #0e0e0f;
-      --hitz-white: #ffffff;
+      --hitz-gold:   #b38b35;
+      --hitz-black:  #0e0e0f;
+      --hitz-white:  #ffffff;
     }
 
+    /* Base / Mobile-first */
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Inter", system-ui, sans-serif;
       background: var(--hitz-black);
       color: var(--hitz-white);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* ---------- HEADER ---------- */
     header {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 1rem;
-      padding: 40px 20px 20px;
+      gap: .75rem;
+      padding: 20px 14px;
       background: linear-gradient(180deg, var(--hitz-purple) 0%, #24154f 100%);
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-
-    header img {
-      max-height: 100px;
-      filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.6));
-    }
-
-    header h1 {
-      font-size: 2rem;
-      margin: 10px 0 0;
-      color: var(--hitz-gold);
-      text-transform: uppercase;
-      font-weight: 900;
-      letter-spacing: 1px;
-      width: 100%;
-    }
-
     .home-button {
-      position: absolute;
-      top: 15px;
-      right: 20px;
+      justify-self: start;
       background: var(--hitz-gold);
       color: var(--hitz-black);
       font-weight: 700;
-      border: none;
-      padding: 10px 20px;
+      padding: 8px 14px;
       border-radius: 999px;
       text-transform: uppercase;
-      font-size: 0.9rem;
-      cursor: pointer;
+      font-size: .9rem;
       text-decoration: none;
-      transition: all 0.2s ease;
       border: 2px solid var(--hitz-gold);
+      transition: all .2s ease;
     }
-
-    .home-button:hover {
-      background: var(--hitz-purple);
-      color: var(--hitz-white);
+    .home-button:hover { background: var(--hitz-purple); color: var(--hitz-white); }
+    header img {
+      justify-self: center;
+      max-height: 64px;
+      width: auto;
+      filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .6));
     }
-
-    @media (max-width: 600px) {
-      .home-button {
-        position: static;
-        display: inline-block;
-        margin-top: 10px;
-      }
+    header h1 {
+      justify-self: end;
+      margin: 0;
+      font-size: 1.15rem;
+      color: var(--hitz-gold);
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-align: right;
+    }
+    @media (min-width: 640px) {
+      header { padding: 28px 20px; }
+      header img { max-height: 90px; }
+      header h1 { font-size: 1.6rem; }
     }
 
     /* ---------- FORM ---------- */
     .form-wrapper {
       background: #121214;
-      max-width: 640px;
-      margin: 40px auto;
-      padding: 40px 30px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      width: min(680px, 94vw);
+      margin: 22px auto 40px;
+      padding: 22px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      box-shadow: 0 4px 20px rgba(0,0,0,.35);
+    }
+    @media (min-width: 640px) {
+      .form-wrapper { padding: 36px 28px; margin-top: 32px; }
     }
 
     h2 {
       text-align: center;
       color: var(--hitz-gold);
       text-transform: uppercase;
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-      letter-spacing: 0.08em;
+      font-size: 1.2rem;
+      margin: 0 0 18px;
+      letter-spacing: .08em;
+    }
+    @media (min-width: 640px) { h2 { font-size: 1.35rem; } }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .form-grid.two-col {
+        grid-template-columns: 1fr 1fr; /* pairs sit side-by-side on larger screens */
+      }
     }
 
     label {
       display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
+      margin: 0 0 6px;
+      font-weight: 700;
       color: var(--hitz-gold);
+      font-size: .95rem;
     }
-
-    input,
-    textarea {
+    input, textarea {
       width: 100%;
-      padding: 10px 12px;
-      margin-bottom: 20px;
-      border-radius: 6px;
+      padding: 12px 12px;
+      border-radius: 8px;
       border: 1px solid #333;
       background: #1c1c1e;
       color: var(--hitz-white);
       font-size: 1rem;
       outline: none;
-      transition: border-color 0.2s ease;
+      transition: border-color .2s ease, box-shadow .2s ease;
     }
-
-    input:focus,
-    textarea:focus {
+    input:focus, textarea:focus {
       border-color: var(--hitz-gold);
+      box-shadow: 0 0 0 2px rgba(179, 139, 53, .15);
+    }
+    input::placeholder, textarea::placeholder { color: #9c9ca5; }
+
+    /* group fields neatly with error under each */
+    .form-field { display: block; }
+    .field-error {
+      display: block;
+      color: #ff9c9c;
+      font-size: .9rem;
+      margin-top: 6px;
+      min-height: 1.1em; /* reserve space to avoid layout jump */
+    }
+    input[aria-invalid="true"], textarea[aria-invalid="true"] {
+      border-color: #ff6b6b !important;
+      box-shadow: 0 0 0 2px rgba(255, 107, 107, .15);
     }
 
     /* ---------- BUTTONS ---------- */
@@ -133,53 +154,32 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
-
-    button,
-    .btn-link {
+    button, .btn-link {
       background: var(--hitz-purple);
       color: var(--hitz-white);
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       border: 2px solid var(--hitz-gold);
-      padding: 12px 26px;
+      padding: 12px 22px;
       border-radius: 999px;
       cursor: pointer;
       font-size: 1rem;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: all .2s ease;
     }
-
-    button:hover,
-    .btn-link:hover {
+    button:hover, .btn-link:hover {
       background: var(--hitz-gold);
       color: var(--hitz-black);
       transform: translateY(-1px);
     }
-
     .btn-cancel {
       background: transparent;
       color: var(--hitz-gold);
       border-color: var(--hitz-gold);
     }
-
-    .btn-cancel:hover {
-      background: #2c2c2c;
-      color: var(--hitz-white);
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px 10px;
-      font-size: 0.9rem;
-      color: #aaa;
-      /*
-      border-top: 2px solid var(--hitz-gold);
-      margin-top: 40px;
-      */
-    }
-
+    .btn-cancel:hover { background: #2c2c2c; color: var(--hitz-white); }
     .success-message {
       display: none;
       text-align: center;
@@ -189,9 +189,9 @@
     }
 
     /* Footer */
-    .stripe{background:linear-gradient(90deg,var(--hitz-purple),var(--hitz-gold));height:4px}
-    .footer{padding:18px 0 36px;text-align:center;color:#cfcfdb;font-size:.9rem}
-    .gold{color:var(--hitz-gold)}
+    .stripe { background: linear-gradient(90deg, var(--hitz-purple), var(--hitz-gold)); height: 4px; }
+    .footer { padding: 18px 0 36px; text-align: center; color: #cfcfdb; font-size: .9rem; }
+    .gold { color: var(--hitz-gold); }
 
     /* Social Links */
     .footer .social {
@@ -201,29 +201,18 @@
       gap: 14px;
     }
     .footer .social a {
-      width: 36px;
-      height: 36px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      width: 36px; height: 36px;
+      display: inline-flex; align-items: center; justify-content: center;
       border-radius: 999px;
       background: var(--hitz-purple);
       border: 2px solid var(--hitz-gold);
       color: var(--hitz-gold);
-      transition: all 0.25s ease;
+      transition: all .25s ease;
       text-decoration: none;
       font-size: 1.2rem;
     }
-    .footer .social a:hover {
-      background: var(--hitz-gold);
-      color: var(--hitz-black);
-      transform: translateY(-2px);
-    }
-    .footer .social svg {
-      width: 18px;
-      height: 18px;
-      fill: currentColor;
-    }
+    .footer .social a:hover { background: var(--hitz-gold); color: var(--hitz-black); transform: translateY(-2px); }
+    .footer .social svg { width: 18px; height: 18px; fill: currentColor; }
   </style>
 </head>
 <body>
@@ -233,41 +222,137 @@
     <h1>Team Tryout Registration</h1>
   </header>
 
-  <div class="form-wrapper">
-    <h2>Player Information</h2>
+  <div class="form-wrapper" role="region" aria-labelledby="formTitle">
+    <h2 id="formTitle">Player Information</h2>
 
-    <form action="https://formspree.io/f/mdkwrgov" method="POST">
-      <label for="playerName">Player's Name</label>
-      <input type="text" id="playerName" name="Player Name" required />
+    <!-- Use Formspree endpoint -->
+    <form id="tryoutForm" action="https://formspree.io/f/mdkwrgov" method="POST" novalidate>
+      <!-- Row 1 -->
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="playerName">Player's Name</label>
+          <input
+            type="text"
+            id="playerName"
+            name="Player Name"
+            placeholder="Jane Doe"
+            autocomplete="name"
+            required
+          />
+          <span class="field-error" id="errName"></span>
+        </div>
 
-      <label for="playerAddress">Player's Address</label>
-      <textarea id="playerAddress" name="Player Address" rows="2" required></textarea>
+        <div class="form-field">
+          <label for="playerAddress">Player's Address</label>
+          <textarea
+            id="playerAddress"
+            name="Player Address"
+            rows="2"
+            placeholder="Street, City, State"
+            autocomplete="street-address"
+            required
+          ></textarea>
+          <span class="field-error" id="errAddress"></span>
+        </div>
+      </div>
 
-      <label for="guardianPhone">Parent or Guardian's Phone</label>
-      <input type="tel" id="guardianPhone" name="Phone" required />
+      <!-- Row 2: two columns on larger screens -->
+      <div class="form-grid two-col">
+        <div class="form-field">
+          <label for="guardianPhone">Parent or Guardian's Phone</label>
+          <input
+            type="tel"
+            id="guardianPhone"
+            name="Phone"
+            placeholder="973-123-4567"
+            inputmode="tel"
+            pattern="^(\+?\d{1,2}\s?)?(\(?\d{3}\)?[\s\.-]?)?\d{3}[\s\.-]?\d{4}$"
+            title="Enter a valid 10-digit phone number"
+            autocomplete="tel"
+            required
+          />
+          <span class="field-error" id="errPhone"></span>
+        </div>
 
-      <label for="guardianEmail">Parent or Guardian's Email</label>
-      <input type="email" id="guardianEmail" name="Email" required />
+        <div class="form-field">
+          <label for="guardianEmail">Parent or Guardian's Email</label>
+          <input
+            type="email"
+            id="guardianEmail"
+            name="Email"
+            placeholder="name@example.com"
+            inputmode="email"
+            autocomplete="email"
+            required
+          />
+          <span class="field-error" id="errEmail"></span>
+        </div>
+      </div>
 
-      <label for="birthdate">Player's Birthdate</label>
-      <input type="text" id="birthdate" name="Birthdate" required />
+      <!-- Row 3: two columns on larger screens -->
+      <div class="form-grid two-col">
+        <div class="form-field">
+          <label for="birthdate">Player's Birthdate</label>
+          <input
+            type="date"
+            id="birthdate"
+            name="Birthdate"
+            required
+          />
+          <span class="field-error" id="errBirthdate"></span>
+        </div>
 
-      <label for="ageGradYear">Player's Age & Grad Year</label>
-      <input type="text" id="ageGradYear" name="Age & Grad Year" required />
+        <div class="form-field">
+          <label for="ageGradYear">Player's Age & Grad Year</label>
+          <input
+            type="text"
+            id="ageGradYear"
+            name="Age & Grad Year"
+            placeholder="14U • Class of 2029"
+            required
+          />
+          <span class="field-error" id="errAgeGrad"></span>
+        </div>
+      </div>
 
-      <label for="highSchool">High School</label>
-      <input type="text" id="highSchool" name="High School" />
+      <!-- Row 4 -->
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="highSchool">High School (optional)</label>
+          <input
+            type="text"
+            id="highSchool"
+            name="High School"
+            placeholder="School Name"
+            autocomplete="organization"
+          />
+          <span class="field-error" id="errHS"></span>
+        </div>
+      </div>
 
-      <label>Positions You Play</label>
-      <input type="text" name="Position 1" placeholder="Position 1" />
-      <input type="text" name="Position 2" placeholder="Position 2" />
-      <input type="text" name="Position 3" placeholder="Position 3" />
+      <!-- Row 5 -->
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Positions You Play</label>
+          <input type="text" name="Position 1" placeholder="Position 1 (e.g., P, SS, C)" />
+          <span class="field-error" id="errPos1"></span>
+        </div>
+        <div class="form-field">
+          <label class="sr-only" style="position: absolute; left: -9999px">Additional Positions</label>
+          <input type="text" name="Position 2" placeholder="Position 2 (optional)" />
+          <span class="field-error" id="errPos2"></span>
+        </div>
+        <div class="form-field">
+          <input type="text" name="Position 3" placeholder="Position 3 (optional)" />
+          <span class="field-error" id="errPos3"></span>
+        </div>
+      </div>
 
       <div class="button-row">
-        <button type="submit">Submit Registration</button>
-        <button type="button" class="btn-cancel" onclick="document.querySelector('form').reset()">Reset Form</button>
+        <button id="submitBtn" type="submit">Submit Registration</button>
+        <button type="button" class="btn-cancel" onclick="document.getElementById('tryoutForm').reset()">Reset Form</button>
       </div>
-      <p class="success-message">Thank you! Your tryout registration has been submitted. We'll be in touch!</p>
+      <p class="success-message" id="successMsg">Thank you! Your tryout registration has been submitted. We'll be in touch!</p>
     </form>
   </div>
 
@@ -275,7 +360,7 @@
   <div class="footer container">
     <div>
       <img src="https://njhitz.github.io/images/hitzhoodie.png" alt="NJ HITZ mark"
-          style="height:26px;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))">
+           style="height:26px;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))">
       <span>© <span class="gold">NJ HITZ</span> Softball • New Jersey</span>
     </div>
 
@@ -290,24 +375,110 @@
   </div>
 
   <script>
-    // Formspree submission handler
-    const form = document.querySelector("form");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = new FormData(form);
-      const action = form.getAttribute("action");
-      const response = await fetch(action, {
-        method: "POST",
-        body: data,
-        headers: { Accept: "application/json" },
-      });
-      if (response.ok) {
-        document.querySelector(".success-message").style.display = "block";
-        form.reset();
-      } else {
-        alert("There was an error submitting the form. Please try again.");
+    // Client-side validation + Formspree submit
+    (function(){
+      const form = document.getElementById('tryoutForm');
+      const success = document.getElementById('successMsg');
+      const btn = document.getElementById('submitBtn');
+
+      // Fields
+      const fName = document.getElementById('playerName');
+      const fAddress = document.getElementById('playerAddress');
+      const fPhone = document.getElementById('guardianPhone');
+      const fEmail = document.getElementById('guardianEmail');
+      const fBirth = document.getElementById('birthdate');
+      const fAgeGrad = document.getElementById('ageGradYear');
+
+      // Errors
+      const eName = document.getElementById('errName');
+      const eAddress = document.getElementById('errAddress');
+      const ePhone = document.getElementById('errPhone');
+      const eEmail = document.getElementById('errEmail');
+      const eBirth = document.getElementById('errBirthdate');
+      const eAgeGrad = document.getElementById('errAgeGrad');
+
+      const phoneRegex = /^(\+?\d{1,2}\s?)?(\(?\d{3}\)?[\s\.-]?)?\d{3}[\s\.-]?\d{4}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function setError(input, errEl, msg){
+        input.setAttribute('aria-invalid','true');
+        errEl.textContent = msg;
       }
-    });
+      function clearError(input, errEl){
+        input.removeAttribute('aria-invalid');
+        errEl.textContent = '';
+      }
+
+      function validateAll(){
+        let ok = true;
+
+        // Name
+        if(!fName.value.trim()){ setError(fName, eName, 'Player name is required.'); ok = false; } else { clearError(fName, eName); }
+
+        // Address
+        if(!fAddress.value.trim()){ setError(fAddress, eAddress, 'Address is required.'); ok = false; } else { clearError(fAddress, eAddress); }
+
+        // Phone
+        const ph = fPhone.value.trim();
+        if(!ph){ setError(fPhone, ePhone, 'Phone is required.'); ok = false; }
+        else if(!phoneRegex.test(ph)){ setError(fPhone, ePhone, 'Enter a valid phone number.'); ok = false; }
+        else { clearError(fPhone, ePhone); }
+
+        // Email
+        const em = fEmail.value.trim();
+        if(!em){ setError(fEmail, eEmail, 'Email is required.'); ok = false; }
+        else if(!emailRegex.test(em)){ setError(fEmail, eEmail, 'Enter a valid email address.'); ok = false; }
+        else { clearError(fEmail, eEmail); }
+
+        // Birthdate
+        if(!fBirth.value){ setError(fBirth, eBirth, 'Birthdate is required.'); ok = false; }
+        else { clearError(fBirth, eBirth); }
+
+        // Age & Grad Year
+        if(!fAgeGrad.value.trim()){ setError(fAgeGrad, eAgeGrad, 'Age & Grad Year is required.'); ok = false; }
+        else { clearError(fAgeGrad, eAgeGrad); }
+
+        // focus first invalid
+        const firstInvalid = [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].find(el => el.getAttribute('aria-invalid') === 'true');
+        if(firstInvalid) firstInvalid.focus();
+
+        return ok;
+      }
+
+      // Realtime validation
+      [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].forEach(el=>{
+        el.addEventListener('input', ()=> validateAll());
+        el.addEventListener('blur', ()=> validateAll());
+      });
+
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        success.style.display = 'none';
+
+        if(!validateAll()) return;
+
+        btn.disabled = true; btn.textContent = 'Submitting…';
+        try{
+          const data = new FormData(form);
+          const resp = await fetch(form.action, {
+            method: 'POST',
+            body: data,
+            headers: { 'Accept': 'application/json' }
+          });
+          if(resp.ok){
+            form.reset();
+            [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].forEach(el=>el.removeAttribute('aria-invalid'));
+            success.style.display = 'block';
+          } else {
+            alert('There was an error submitting the form. Please try again.');
+          }
+        } catch (err) {
+          alert('Network error. Please try again.');
+        } finally {
+          btn.disabled = false; btn.textContent = 'Submit Registration';
+        }
+      });
+    })();
   </script>
 </body>
 </html>
