@@ -20,6 +20,7 @@
     body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--hitz-white);background:#0f0f11}
     a{color:inherit}
     .container{width:min(1100px,92vw);margin:0 auto}
+
     /* HERO */
     .hero{position:relative;height:clamp(360px,55vw,560px);overflow:hidden;border-bottom:4px solid var(--hitz-gold);background:#0f0f11}
     .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.5),rgba(0,0,0,.65) 30%,rgba(0,0,0,.75))}
@@ -27,9 +28,7 @@
     .slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 900ms ease}
     .slides img.active{opacity:1}
     .hero-content{position:relative;z-index:2;height:100%;display:grid;place-items:center;text-align:center;padding:16px}
-    /*.brand{display:inline-flex;align-items:center;gap:14px;padding:8px 14px;background:rgba(16,16,18,.6);border:1px solid rgba(255,255,255,.08);border-radius:999px;backdrop-filter:blur(2px)}*/
     .brand img{height: 150px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
-    /*.brand span{font-weight:800;letter-spacing:.06em;color:var(--hitz-gold);text-transform:uppercase;font-size:.9rem}*/
     .hero h1{margin:14px 0 8px;font-size:clamp(28px,4.2vw,56px);line-height:1.02;font-weight:900}
     .hero p{margin:18px auto;max-width:800px;color:#eaeaf0;font-size:clamp(16px,1.6vw,18px)}
     .cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
@@ -37,12 +36,14 @@
     .btn:hover{background:var(--hitz-gold);color:var(--hitz-black);transform:translateY(-1px)}
     .btn.solid{background:var(--hitz-purple);border-color:var(--hitz-purple)}
     .btn.solid:hover{background:#3e2170;color:var(--hitz-white)}
+
     /* Sections */
     .section{padding:clamp(42px,6vw,80px) 0;background:#121214;border-top:1px solid rgba(255,255,255,.06)}
     .section.alt{background:radial-gradient(1200px 800px at 70% -10%,rgba(179,139,53,.15),transparent 60%),#0f0f11}
     .section h2{font-size:clamp(24px,3vw,38px);margin:0 0 14px;letter-spacing:.02em}
     .eyebrow{color:var(--hitz-gold);text-transform:uppercase;font-weight:900;letter-spacing:.11em;font-size:.8rem;margin-bottom:8px;display:inline-block}
     .lead{color:#d7d7de;max-width:860px}
+
     /* Cards */
     .card-grid{margin-top:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
     .card{background:linear-gradient(180deg,#18181b,#141418);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;min-height:220px;display:grid;grid-template-rows:160px auto}
@@ -50,6 +51,7 @@
     .card .body{padding:14px}
     .card .body h3{margin:0 0 6px;font-size:1.05rem}
     .card .body p{margin:0;color:#cfcfdb;font-size:.95rem}
+
     /* Coach bios */
     .coach-grid{margin-top:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
     .coach{background:#16161a;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center}
@@ -57,11 +59,64 @@
     .coach .avatar img{width:100%;height:100%;object-fit:cover}
     .coach h4{margin:0;font-size:1.05rem}
     .coach small{color:#c9c9d6}
-    /* Gallery */
+
+    /* Gallery grid */
     .gallery{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
     .gallery a{position:relative;display:block;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07)}
     .gallery img{width:100%;height:200px;object-fit:cover;transition:transform .25s ease}
     .gallery a:hover img{transform:scale(1.04)}
+
+    /* Lightbox / Modal */
+    .lightbox{
+      position:fixed; inset:0; display:none;
+      background:rgba(0,0,0,.85);
+      z-index:9999;
+      align-items:center; justify-content:center;
+      padding: clamp(10px, 4vw, 24px);
+    }
+    .lightbox.open{ display:flex; }
+    .lightbox-content{
+      position:relative; max-width: min(96vw, 1200px); max-height: 90vh;
+      display:flex; align-items:center; gap:10px;
+    }
+    .lightbox-img{
+      max-width: 86vw; max-height: 80vh;
+      border-radius: 10px; border: 2px solid rgba(255,255,255,.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,.6);
+      background:#000;
+    }
+    .lightbox-close, .lightbox-prev, .lightbox-next{
+      position:absolute; top:50%; transform:translateY(-50%);
+      background: rgba(20,20,24,.7);
+      color: var(--hitz-white);
+      border: 2px solid var(--hitz-gold);
+      width: 42px; height: 42px; border-radius: 999px;
+      display:grid; place-items:center; cursor:pointer;
+      user-select:none; -webkit-user-select:none;
+      font-weight:900; font-size: 18px;
+    }
+    .lightbox-close{
+      top: -14px; right: -14px; transform:none;
+      width: 38px; height: 38px; font-size: 16px;
+      background: linear-gradient(180deg,#1a1a1d,#121214);
+    }
+    .lightbox-prev{ left: -56px; }
+    .lightbox-next{ right: -56px; }
+    .lightbox-prev:active, .lightbox-next:active, .lightbox-close:active { transform: translateY(-50%) scale(.98); }
+    .lightbox-close:active{ transform: scale(.98); }
+
+    .lightbox-caption{
+      text-align:center; color:#e6e6ea; margin-top:10px; max-width: min(92vw, 1000px);
+      font-size:.95rem;
+    }
+
+    @media (max-width: 768px){
+      .lightbox-content{ max-width:100%; }
+      .lightbox-prev{ left: 8px; }
+      .lightbox-next{ right: 8px; }
+      .lightbox-close{ right: 8px; top: 8px; }
+    }
+
     /* Footer */
     .stripe{background:linear-gradient(90deg,var(--hitz-purple),var(--hitz-gold));height:4px}
     .footer{padding:18px 0 36px;text-align:center;color:#cfcfdb;font-size:.9rem}
@@ -82,10 +137,9 @@
         <div>
           <div class="brand">
             <img src="https://njhitz.github.io/images/hitzpurple.png" alt="NJ HITZ logo">
-            <!--- <span>New Jersey HITZ Softball</span> --->
           </div>
           <h1>Fastpitch Culture. Competitive Edge.</h1>
-          <p>NJ HITZ is a New Jersey club softball program focused on player development, college‑ready fundamentals, and a positive, high‑energy culture on and off the field.</p>
+          <p>NJ HITZ is a New Jersey club softball program focused on player development, college-ready fundamentals, and a positive, high-energy culture on and off the field.</p>
           <div class="cta-row">
             <a class="btn solid" href="#program">Explore Programs</a>
             <a class="btn" href="#mission">Our Mission</a>
@@ -106,14 +160,14 @@
             <img src="https://njhitz.github.io/images/7F0A3436.jpg" alt="Pitcher in stride">
             <div class="body">
               <h3 class="gold">Elite Pitching & Defense</h3>
-              <p>Infield/outfield systems, pitcher‑catcher battery work, and situational reps driven by data and deliberate practice.</p>
+              <p>Infield/outfield systems, pitcher-catcher battery work, and situational reps driven by data and deliberate practice.</p>
             </div>
           </article>
           <article class="card">
             <img src="https://njhitz.github.io/images/IMG_6762_Original.JPG" alt="Hitter rounding the bases">
             <div class="body">
               <h3 class="gold">Offense & Speed</h3>
-              <p>Contact approach, power development, and baserunning pressure — small‑ball to gap‑to‑gap power.</p>
+              <p>Contact approach, power development, and baserunning pressure — small-ball to gap-to-gap power.</p>
             </div>
           </article>
           <article class="card">
@@ -146,7 +200,7 @@
           <div class="coach">
             <div class="avatar"><img src="https://njhitz.github.io/images/coaches/e7a5f8_ce0583e32c784fe087137faf14ae8901~mv2.avif" alt="Coach headshot placeholder"></div>
             <div>
-              <h4>Micahel Borozan <span class="gold">— 18U</span></h4>
+              <h4>Micahel Borozan<span class="gold">— 18U</span></h4>
               <small>Bio • Core Focus • Skillset</small>
             </div>
           </div>
@@ -185,27 +239,25 @@
               <small>Bio • Core Focus • Skillset</small>
             </div>
           </div>
-          
           <div class="coach">
             <div class="avatar"><img src="https://njhitz.github.io/images/coaches/morgan-demm.jpg" alt="Coach headshot placeholder"></div>
             <div>
               <h4>Morgan Demm <span class="gold">— 14U</span></h4>
-              <small>Former collegiate player • Core Focus • Skillset</small>
+              <small>Bio • Core Focus • Skillset</small>
             </div>
           </div>
           <div class="coach">
             <div class="avatar"><img src="https://njhitz.github.io/images/coaches/J-Babai.jpg" alt="Coach headshot placeholder"></div>
             <div>
               <h4>John Babai <span class="gold">— 14U</span></h4>
-              <small>Bio • Player development • Recruiting guidance</small>
+              <small>Bio • Core Focus • Skillset</small>
             </div>
           </div>
-
           <div class="coach">
             <div class="avatar"><img src="https://njhitz.github.io/images/7F0A3436.jpg" alt="Coach headshot placeholder"></div>
             <div>
               <h4>Coach Name <span class="gold">— 12U</span></h4>
-              <small>Hitting & baserunning • Player development • Recruiting guidance</small>
+              <small>Bio • Core Focus • Skillset</small>
             </div>
           </div>
         </div>
@@ -217,14 +269,15 @@
       <div class="container">
         <span class="eyebrow">Photos</span>
         <h2>Action from the Diamond</h2>
-        <p class="lead">Tap an image to view the full‑size photo in a new tab. Replace or extend the set with any hosted images.</p>
-        <div class="gallery">
-          <a href="https://njhitz.github.io/images/7F0A3530.jpg" target="_blank" rel="noopener"><img src="https://njhitz.github.io/images/7F0A3530.jpg" alt="Swing and contact"></a>
-          <a href="https://njhitz.github.io/images/7F0A3439.jpg" target="_blank" rel="noopener"><img src="https://njhitz.github.io/images/7F0A3439.jpg" alt="Diving stop"></a>
-          <a href="https://njhitz.github.io/images/7F0A3679.jpg" target="_blank" rel="noopener"><img src="https://njhitz.github.io/images/7F0A3679.jpg" alt="Pitcher stride"></a>
-          <a href="https://njhitz.github.io/images/IMG_7012_Original.JPG" target="_blank" rel="noopener"><img src="https://njhitz.github.io/images/IMG_7012_Original.JPG" alt="Outfield between innings"></a>
-          <a href="https://njhitz.github.io/images/IMG_7017_Original.JPG" target="_blank" rel="noopener"><img src="https://njhitz.github.io/images/IMG_7017_Original.JPG" alt="Pitch in motion"></a>
-          <a href="https://njhitz.github.io/images/IMG_7155_Original.JPG" target="_blank" rel="noopener"><img src="https://njhitz.github.io/images/IMG_7155_Original.JPG" alt="Team medals"></a>
+        <p class="lead">Tap any image to view in a full-screen gallery. Swipe on mobile or use your arrow keys.</p>
+        <div class="gallery" id="galleryGrid">
+          <!-- Keep href as a fallback, JS will intercept clicks -->
+          <a href="https://njhitz.github.io/images/7F0A3530.jpg"><img src="https://njhitz.github.io/images/7F0A3530.jpg" alt="Swing and contact"></a>
+          <a href="https://njhitz.github.io/images/7F0A3439.jpg"><img src="https://njhitz.github.io/images/7F0A3439.jpg" alt="Diving stop"></a>
+          <a href="https://njhitz.github.io/images/7F0A3679.jpg"><img src="https://njhitz.github.io/images/7F0A3679.jpg" alt="Pitcher stride"></a>
+          <a href="https://njhitz.github.io/images/IMG_7012_Original.JPG"><img src="https://njhitz.github.io/images/IMG_7012_Original.JPG" alt="Outfield between innings"></a>
+          <a href="https://njhitz.github.io/images/IMG_7017_Original.JPG"><img src="https://njhitz.github.io/images/IMG_7017_Original.JPG" alt="Pitch in motion"></a>
+          <a href="https://njhitz.github.io/images/IMG_7155_Original.JPG"><img src="https://njhitz.github.io/images/IMG_7155_Original.JPG" alt="Team medals"></a>
         </div>
         <div class="cta-row" style="margin-top:16px">
           <a class="btn" href="#contact">Contact & Tryouts</a>
@@ -237,7 +290,6 @@
       <div class="container">
         <span class="eyebrow">Join NJ HITZ</span>
         <h2>Ready to Compete?</h2>
-        <!--- <p class="lead">Add a simple contact link, Google Form, or email here for tryout interest and general inquiries.</p> --->
         <div class="cta-row">
           <a class="btn solid" href="mailto:njhitz@mtolivebsa.com">Email Us</a>
           <a class="btn solid" href="tryouts.html" target="_blank" rel="noopener">Tryout Interest Form</a>
@@ -251,8 +303,90 @@
       <span>© <span class="gold">NJ HITZ</span> Softball • New Jersey</span>
     </div>
   </section>
+
+  <!-- Simple hero slider -->
   <script>
-    (function(){ const imgs=[...document.querySelectorAll('.slides img')]; let i=0; setInterval(()=>{ imgs[i].classList.remove('active'); i=(i+1)%imgs.length; imgs[i].classList.add('active'); },5000); })();
+    (function(){
+      const imgs=[...document.querySelectorAll('.slides img')]; let i=0;
+      setInterval(()=>{ imgs[i].classList.remove('active'); i=(i+1)%imgs.length; imgs[i].classList.add('active'); },5000);
+    })();
+  </script>
+
+  <!-- LIGHTBOX / GALLERY MODAL -->
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Photo viewer">
+    <div class="lightbox-content">
+      <button class="lightbox-prev" aria-label="Previous image" type="button">‹</button>
+      <img class="lightbox-img" id="lightboxImg" alt="">
+      <button class="lightbox-next" aria-label="Next image" type="button">›</button>
+      <button class="lightbox-close" aria-label="Close gallery" type="button">✕</button>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const grid = document.getElementById('galleryGrid');
+      const links = Array.from(grid.querySelectorAll('a'));
+      const lightbox = document.getElementById('lightbox');
+      const imgEl = document.getElementById('lightboxImg');
+      const btnPrev = lightbox.querySelector('.lightbox-prev');
+      const btnNext = lightbox.querySelector('.lightbox-next');
+      const btnClose = lightbox.querySelector('.lightbox-close');
+      let index = 0;
+
+      function openLightbox(i){
+        index = i;
+        const href = links[index].getAttribute('href');
+        const alt = links[index].querySelector('img').getAttribute('alt') || '';
+        imgEl.src = href;
+        imgEl.alt = alt;
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox(){
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden','true');
+        imgEl.removeAttribute('src');
+        document.body.style.overflow = '';
+      }
+
+      function next(){ openLightbox((index + 1) % links.length); }
+      function prev(){ openLightbox((index - 1 + links.length) % links.length); }
+
+      // Click handlers
+      links.forEach((a, i) => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          openLightbox(i);
+        });
+      });
+      btnNext.addEventListener('click', next);
+      btnPrev.addEventListener('click', prev);
+      btnClose.addEventListener('click', closeLightbox);
+
+      // Click outside image closes
+      lightbox.addEventListener('click', (e) => {
+        const content = e.target.closest('.lightbox-content');
+        if(!content || e.target === lightbox){ closeLightbox(); }
+      });
+
+      // Keyboard support
+      window.addEventListener('keydown', (e) => {
+        if(!lightbox.classList.contains('open')) return;
+        if(e.key === 'Escape') closeLightbox();
+        if(e.key === 'ArrowRight') next();
+        if(e.key === 'ArrowLeft') prev();
+      });
+
+      // Basic touch swipe
+      let touchStartX = 0;
+      imgEl.addEventListener('touchstart', (e)=>{ touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+      imgEl.addEventListener('touchend', (e)=>{
+        const dx = e.changedTouches[0].screenX - touchStartX;
+        if(Math.abs(dx) > 50){ dx < 0 ? next() : prev(); }
+      }, {passive:true});
+    })();
   </script>
 </body>
 </html>
