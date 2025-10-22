@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  
+  <!--- <script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script> --->
+  
   <style>
     :root{
       --hitz-purple:#4c2a85;
@@ -147,6 +150,64 @@
     .form-success{color:#71ffb0; font-weight:700; margin-top:10px}
     .form-error{color:#ff9c9c; font-weight:700; margin-top:10px}
     @media (max-width:600px){ .modal__dialog{margin:6vh auto;padding:18px 16px} }
+
+    /* Field-level errors & invalid state */
+    .field-error {
+      color: #ff9c9c;
+      font-size: 0.9rem;
+      margin: -12px 0 12px 0;
+      min-height: 1em; /* reserve space to avoid layout shift */
+    }
+    .modal input[aria-invalid="true"],
+    .modal textarea[aria-invalid="true"] {
+      border-color: #ff6b6b !important;
+      box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.15);
+    }
+    /* existing modal styles assumed present:
+      .modal, .modal.open, .modal__backdrop, .modal__dialog, .modal__close, .modal__actions, .hp, .form-success, .form-error */
+
+    /* Field layout */
+    .modal .form-field {
+      display: block;
+      /*margin-bottom: 16px;*/        /* space between fields */
+    }
+
+    /* Tighten input spacing; the error gets its own block below */
+    .modal .form-field input,
+    .modal .form-field textarea {
+      margin-bottom: 6px;         /* small gap before error text */
+    }
+
+    /* Reset and align error blocks cleanly under inputs */
+    .field-error {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ff9c9c;
+      font-size: 0.92rem;
+      line-height: 1.3;
+      margin: 0;                  /* remove negative margins */
+      min-height: 1.1em;          /* reserve space to avoid layout shift */
+    }
+
+    /* Optional: a subtle error dot */
+    /*.field-error::before {
+      content: "●";
+      font-size: 0.8em;
+    }*/
+
+    /* Invalid field visuals */
+    .modal input[aria-invalid="true"],
+    .modal textarea[aria-invalid="true"] {
+      border-color: #ff6b6b !important;
+      box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.15);
+    }
+
+    /* Ensure labels are consistent */
+    .modal label {
+      margin: 10px 0 6px;
+      display: block;
+    }
   </style>  
 </head>
 <body>
@@ -338,21 +399,36 @@
       <h3 id="emailModalTitle">Contact NJ HITZ</h3>
       <p class="modal__subtitle">Send us a message and we’ll get back to you.</p>
 
-      <form id="emailForm" action="https://formspree.io/f/mdkwrgov" method="POST" novalidate>
-        <!-- helpful metadata -->
+      <form id="emailForm" action="https://formspree.io/f/your_form_id" method="POST" novalidate>
         <input type="hidden" name="_subject" value="NJ HITZ Website — Contact Form" />
-        <input type="hidden" name="_format" value="plain" />
-        <!-- honeypot (spam protection) -->
+        <input type="hidden" name="g-recaptcha-response" id="recaptchaToken" />
         <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-        <label for="cfName">Your Name</label>
-        <input id="cfName" name="name" type="text" required placeholder="Jane Doe" />
+        <div class="form-field">
+          <label for="cfName">Your Name</label>
+          <input id="cfName" name="name" type="text" required placeholder="Jane Doe" />
+          <div class="field-error" id="errName" aria-live="polite"></div>
+        </div>
 
-        <label for="cfEmail">Your Email</label>
-        <input id="cfEmail" name="email" type="email" required placeholder="jane@example.com" />
+        <div class="form-field">
+          <label for="cfEmail">Your Email</label>
+          <input id="cfEmail" name="email" type="email" required placeholder="jane@example.com" />
+          <div class="field-error" id="errEmail" aria-live="polite"></div>
+        </div>
 
-        <label for="cfMessage">Message</label>
-        <textarea id="cfMessage" name="message" rows="4" required placeholder="How can we help?"></textarea>
+        <div class="form-field">
+          <label for="cfPhone">Phone Number</label>
+          <input id="cfPhone" name="phone" type="tel" required placeholder="(555) 123-4567"
+                pattern="^(\+?\d{1,2}\s?)?(\(?\d{3}\)?[\\s.-]?)?\\d{3}[\\s.-]?\\d{4}$"
+                title="Enter a valid 10-digit phone number" />
+          <div class="field-error" id="errPhone" aria-live="polite"></div>
+        </div>
+
+        <div class="form-field">
+          <label for="cfMessage">Message</label>
+          <textarea id="cfMessage" name="message" rows="4" required placeholder="How can we help?"></textarea>
+          <div class="field-error" id="errMessage" aria-live="polite"></div>
+        </div>
 
         <div class="modal__actions">
           <button class="btn solid" type="submit" id="sendBtn">Send</button>
@@ -360,11 +436,10 @@
         </div>
 
         <p class="form-success" id="emailSuccess" hidden>✅ Thanks! Your message has been sent.</p>
-        <p class="form-error" id="emailError" hidden>⚠️ Sorry—there was a problem. Please try again.</p>
+        <p class="form-error" id="emailError" hidden>⚠️ Sorry — please check your details and try again.</p>
       </form>
     </div>
   </div>
-
 
   <!-- Simple hero slider -->
   <script>
@@ -451,6 +526,7 @@
     })();
   </script>
 
+  <!-- MODAL JS -->
   <script>
     (function(){
       const openBtn = document.getElementById('openEmailModal');
@@ -461,50 +537,133 @@
       const successEl = document.getElementById('emailSuccess');
       const errorEl = document.getElementById('emailError');
       const sendBtn = document.getElementById('sendBtn');
+      const recaptchaTokenEl = document.getElementById('recaptchaToken');
+
+      // Fields + error elements
+      const fName = document.getElementById('cfName');
+      const fEmail = document.getElementById('cfEmail');
+      const fPhone = document.getElementById('cfPhone');
+      const fMsg = document.getElementById('cfMessage');
+
+      const eName = document.getElementById('errName');
+      const eEmail = document.getElementById('errEmail');
+      const ePhone = document.getElementById('errPhone');
+      const eMsg = document.getElementById('errMessage');
+
       let lastFocus = null;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^(\+?\d{1,2}\s?)?(\(?\d{3}\)?[\s.-]?)?\d{3}[\s.-]?\d{4}$/;
 
       function openModal(){
         lastFocus = document.activeElement;
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
         document.body.style.overflow = 'hidden';
-        // focus first field
-        setTimeout(()=> document.getElementById('cfName').focus(), 50);
+        setTimeout(()=> fName.focus(), 50);
       }
       function closeModal(){
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden','true');
         document.body.style.overflow = '';
         if(lastFocus) lastFocus.focus();
+        // clear messages
+        [eName,eEmail,ePhone,eMsg].forEach(el => el.textContent = '');
+        [fName,fEmail,fPhone,fMsg].forEach(el => el.removeAttribute('aria-invalid'));
+        successEl.hidden = true; errorEl.hidden = true;
       }
-      // open
+
       if (openBtn) openBtn.addEventListener('click', openModal);
-      // close buttons & backdrop
       closeEls.forEach(el => el.addEventListener('click', closeModal));
-      // ESC to close
-      window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
-      // click outside dialog closes
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape'&&modal.classList.contains('open')) closeModal(); });
       modal.addEventListener('click', (e)=>{ if(!dialog.contains(e.target)) closeModal(); });
 
-      // Submit via Formspree
+      // Real-time validation (on input)
+      [fName,fEmail,fPhone,fMsg].forEach(input => {
+        input.addEventListener('input', ()=> validateField(input));
+      });
+
+      function setError(input, errorEl, message){
+        input.setAttribute('aria-invalid','true');
+        errorEl.textContent = message;
+      }
+      function clearError(input, errorEl){
+        input.removeAttribute('aria-invalid');
+        errorEl.textContent = '';
+      }
+
+      function validateField(input){
+        const id = input.id;
+        const val = input.value.trim();
+
+        if (id === 'cfName'){
+          if (!val){ setError(input, eName, 'Name is required.'); return false; }
+          clearError(input, eName); return true;
+        }
+        if (id === 'cfEmail'){
+          if (!val){ setError(input, eEmail, 'Email is required.'); return false; }
+          if (!emailRegex.test(val)){ setError(input, eEmail, 'Enter a valid email address.'); return false; }
+          clearError(input, eEmail); return true;
+        }
+        if (id === 'cfPhone'){
+          if (!val){ setError(input, ePhone, 'Phone is required.'); return false; }
+          if (!phoneRegex.test(val)){ setError(input, ePhone, 'Enter a valid phone number.'); return false; }
+          clearError(input, ePhone); return true;
+        }
+        if (id === 'cfMessage'){
+          if (!val){ setError(input, eMsg, 'Message is required.'); return false; }
+          clearError(input, eMsg); return true;
+        }
+        return true;
+      }
+
+      function validateAll(){
+        const results = [
+          validateField(fName),
+          validateField(fEmail),
+          validateField(fPhone),
+          validateField(fMsg)
+        ];
+        // focus first invalid
+        const firstInvalid = [fName,fEmail,fPhone,fMsg].find(el => el.getAttribute('aria-invalid') === 'true');
+        if (firstInvalid) firstInvalid.focus();
+        return results.every(Boolean);
+      }
+
+      // Submit via Formspree with reCAPTCHA v3
       form.addEventListener('submit', async (e)=>{
         e.preventDefault();
         successEl.hidden = true; errorEl.hidden = true;
+
+        // Run all validations every time
+        const ok = validateAll();
+        if (!ok) { errorEl.hidden = false; errorEl.textContent = '⚠️ Please fix the highlighted fields.'; return; }
+
         sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
+
+        // Execute reCAPTCHA v3
+        try{
+          await grecaptcha.ready();
+          const token = await grecaptcha.execute('YOUR_RECAPTCHA_SITE_KEY', {action: 'contact'});
+          recaptchaTokenEl.value = token;
+        }catch(err){
+          // If reCAPTCHA fails to load, we can still attempt submit; or block if you prefer strict enforcement.
+          console.warn('reCAPTCHA error:', err);
+        }
 
         try{
           const data = new FormData(form);
           const resp = await fetch(form.action, { method:'POST', body:data, headers:{'Accept':'application/json'} });
           if(resp.ok){
             form.reset();
+            [fName,fEmail,fPhone,fMsg].forEach(el => el.removeAttribute('aria-invalid'));
             successEl.hidden = false;
-            // optionally close after a short delay
-            setTimeout(closeModal, 1400);
-          }else{
-            errorEl.hidden = false;
+            setTimeout(closeModal, 1500);
+          } else {
+            errorEl.hidden = false; errorEl.textContent = '⚠️ There was a problem sending your message. Please try again.';
           }
-        }catch(err){
-          errorEl.hidden = false;
+        }catch{
+          errorEl.hidden = false; errorEl.textContent = '⚠️ Network error. Please try again.';
         }finally{
           sendBtn.disabled = false; sendBtn.textContent = 'Send';
         }
