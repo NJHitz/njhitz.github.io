@@ -174,8 +174,10 @@
       padding: 30px 10px;
       font-size: 0.9rem;
       color: #aaa;
+      /*
       border-top: 2px solid var(--hitz-gold);
       margin-top: 40px;
+      */
     }
 
     .success-message {
@@ -184,6 +186,43 @@
       color: var(--hitz-gold);
       font-weight: 700;
       margin-top: 10px;
+    }
+
+    /* Footer */
+    .stripe{background:linear-gradient(90deg,var(--hitz-purple),var(--hitz-gold));height:4px}
+    .footer{padding:18px 0 36px;text-align:center;color:#cfcfdb;font-size:.9rem}
+    .gold{color:var(--hitz-gold)}
+
+    /* Social Links */
+    .footer .social {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+    .footer .social a {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--hitz-purple);
+      border: 2px solid var(--hitz-gold);
+      color: var(--hitz-gold);
+      transition: all 0.25s ease;
+      text-decoration: none;
+      font-size: 1.2rem;
+    }
+    .footer .social a:hover {
+      background: var(--hitz-gold);
+      color: var(--hitz-black);
+      transform: translateY(-2px);
+    }
+    .footer .social svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
     }
   </style>
 </head>
@@ -232,9 +271,23 @@
     </form>
   </div>
 
-  <footer>
-    © <span style="color: var(--hitz-gold); font-weight: 700;">NJ HITZ</span> Softball • New Jersey
-  </footer>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="footer container">
+    <div>
+      <img src="https://njhitz.github.io/images/hitzhoodie.png" alt="NJ HITZ mark"
+          style="height:26px;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))">
+      <span>© <span class="gold">NJ HITZ</span> Softball • New Jersey</span>
+    </div>
+
+    <div class="social">
+      <a href="https://www.facebook.com/nj.hitz" target="_blank" aria-label="Facebook">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.1 0-121.07 44.38-121.07 124.72v70.62H22.89V288h81.4v224h100.17V288z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/njhitz_softball/" target="_blank" aria-label="Instagram">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224,202.66A53.34,53.34,0,1,0,277.34,256,53.38,53.38,0,0,0,224,202.66ZM398.8,80A47.7,47.7,0,0,0,351.1,32H96.9A47.7,47.7,0,0,0,49.2,80V432a47.7,47.7,0,0,0,47.7,48H351.1a47.7,47.7,0,0,0,47.7-48ZM224,338a82,82,0,1,1,82-82A82.09,82.09,0,0,1,224,338Zm104-146a19,19,0,1,1,19-19A19,19,0,0,1,328,192Z"/></svg>
+      </a>
+    </div>
+  </div>
 
   <script>
     // Formspree submission handler
