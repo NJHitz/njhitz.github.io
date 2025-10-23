@@ -115,8 +115,8 @@
         </div>
 
         <div class="form-field">
-          <label for="ageGradYear">Player's Age & Grad Year</label>
-          <input type="text" id="ageGradYear" placeholder="14U • Class of 2029" required />
+          <label for="ageGradYear">Player's Grad Year</label>
+          <input type="text" id="ageGradYear" placeholder="Class of 2029" required />
           <span class="field-error" id="errAgeGrad"></span>
         </div>
       </div>
@@ -239,7 +239,7 @@
       clearError(input,eEmail); return true;
     }
     if(id === 'birthdate'){ if(!val){ setError(input,eBirth,'Birthdate is required.'); return false;} clearError(input,eBirth); return true; }
-    if(id === 'ageGradYear'){ if(!val){ setError(input,eAgeGrad,'Age & Grad Year is required.'); return false;} clearError(input,eAgeGrad); return true; }
+    if(id === 'ageGradYear'){ if(!val){ setError(input,eAgeGrad,'Grad Year is required.'); return false;} clearError(input,eAgeGrad); return true; }
     return true;
   }
 
