@@ -263,6 +263,7 @@
           <div class="cta-row">
             <a class="btn solid" href="#program">Explore Programs</a>
             <a class="btn" href="#mission">Our Mission</a>
+            <a class="btn" href="teams.html" style="display: none;" id="teams-btn">Our Teams</a>
             <a class="btn" href="#gallery">Photo Gallery</a>
             <a class="btn" href="#contact">Contact Us</a>
           </div>
@@ -711,6 +712,23 @@
         }
       });
     })();
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const teamsButton = document.getElementById('teams-btn');
+
+      // Example 1: Display if a specific query parameter exists
+      if (urlParams.get('preview') === 'y') {
+        teamsButton.style.display = 'block'; // or 'inline-block', 'flex', etc.
+      }
+
+      // Example 2: Display if a specific query parameter has a specific value
+      // if (urlParams.get('userRole') === 'admin') {
+      //   myButton.style.display = 'block';
+      // }
+    });
   </script>
 
 </body>
