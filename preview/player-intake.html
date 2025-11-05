@@ -9,18 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
 
+  <link href="css/main.css" rel="stylesheet">
   <style>
-    :root {
-      --hitz-purple:#4c2a85;
-      --hitz-gold:#b38b35;
-      --hitz-black:#050509;
-      --hitz-white:#ffffff;
-      --hitz-gray:#181820;
-      --error:#ff7676;
-    }
-
-    * { box-sizing:border-box; }
-
     body {
       margin:0;
       font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -31,162 +21,6 @@
 
     a { color:inherit; text-decoration:none; }
     a:hover { text-decoration:underline; }
-
-    /* Shared site header & navigation (matching site) */
-    .site-header{
-      position:sticky;
-      top:0;
-      z-index:50;
-      background:linear-gradient(90deg,rgba(12,10,24,.97),rgba(17,13,30,.98));
-      border-bottom:2px solid var(--hitz-gold);
-      backdrop-filter:blur(10px);
-    }
-    .nav-inner{
-      max-width:1100px;
-      margin:0 auto;
-      padding:8px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .nav-brand{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      text-decoration:none;
-      color:#ffffff;
-    }
-    .nav-brand img{
-      height:44px;
-      width:auto;
-      filter:drop-shadow(0 2px 10px rgba(0,0,0,.6));
-    }
-    .nav-brand span{
-      font-size:.8rem;
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      font-weight:800;
-      white-space:nowrap;
-    }
-    .nav-links{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .nav-links a{
-      font-size:.8rem;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid transparent;
-      text-decoration:none;
-      color:#eaeaf5;
-      white-space:nowrap;
-    }
-    .nav-links a:hover{
-      border-color:rgba(255,255,255,.2);
-      background:rgba(179,139,53,.12);
-      text-decoration:none;
-    }
-    .nav-toggle{
-      display:none;
-      width:38px;
-      height:32px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.35);
-      background:rgba(10,10,16,.9);
-      color:#fff;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      gap:4px;
-      padding:0;
-      cursor:pointer;
-    }
-    .nav-toggle-bar{
-      width:18px;
-      height:2px;
-      border-radius:999px;
-      background:#fff;
-    }
-    .nav-menu{
-      display:none;
-      background:#101018;
-      border-bottom:1px solid rgba(255,255,255,.12);
-    }
-    .nav-menu--open{
-      display:block;
-    }
-    .nav-menu a{
-      display:block;
-      padding:10px 18px;
-      border-top:1px solid rgba(255,255,255,.06);
-      text-decoration:none;
-      font-size:.9rem;
-      color:#f1f1ff;
-    }
-    .nav-menu a:hover{
-      background:rgba(179,139,53,.16);
-      text-decoration:none;
-    }
-    @media (max-width:768px){
-      .nav-links{
-        display:none;
-      }
-      .nav-toggle{
-        display:inline-flex;
-      }
-    }
-    @media (min-width:769px){
-      .nav-menu{
-        display:none !important;
-      }
-    }
-
-    /* Hero section (mirrors teams/player pages) */
-    .hero{
-      position:relative;
-      padding:28px 16px 22px;
-      background:
-        linear-gradient(140deg,rgba(76,42,133,.9),rgba(11,11,20,.98)),
-        url("images/7F0A3530.jpg") center/cover no-repeat;
-      border-bottom:3px solid var(--hitz-gold);
-    }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:radial-gradient(circle at 10% 0,rgba(179,139,53,.26),transparent 55%);
-      opacity:.85;
-      pointer-events:none;
-    }
-    .hero-inner{
-      position:relative;
-      max-width:1100px;
-      margin:0 auto;
-      text-align:left;
-    }
-    .hero-eyebrow{
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      font-size:.8rem;
-      color:var(--hitz-gold);
-      margin-bottom:6px;
-      font-weight:800;
-    }
-    .hero h1{
-      margin:0 0 6px;
-      font-size:clamp(26px,4vw,32px);
-      letter-spacing:.03em;
-    }
-    .hero p{
-      margin:0;
-      max-width:640px;
-      color:#f1f1fa;
-      font-size:.95rem;
-    }
 
     main {
       max-width:1100px;
@@ -337,7 +171,7 @@
       opacity:.6;
       cursor:default;
     }
-    .btn-secondary {
+    .btn-cancel {
       border-radius:999px;
       padding:8px 16px;
       font-size:.85rem;
@@ -347,55 +181,57 @@
       cursor:pointer;
     }
 
-    footer{
-      padding:14px 16px 20px;
-      border-top:2px solid rgba(255,255,255,.08);
-      font-size:.82rem;
-      color:#bdbdd1;
+    /* Processing overlay */
+    .processing-overlay {
+      position:fixed;
+      inset:0;
+      background:rgba(5,5,12,.82);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      backdrop-filter:blur(3px);
+    }
+    .processing-overlay.is-visible {
+      display:flex;
+    }
+    .processing-box {
+      background:rgba(10,10,18,.96);
+      border-radius:14px;
+      padding:18px 20px 16px;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 18px 32px rgba(0,0,0,.8);
+      min-width:260px;
+      max-width:320px;
       text-align:center;
-      background:#050509;
-      margin-top:10px;
+    }
+    .processing-spinner {
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      border:3px solid rgba(255,255,255,.24);
+      border-top-color:var(--hitz-gold);
+      margin:0 auto 10px;
+      animation:spin .8s linear infinite;
+    }
+    .processing-text {
+      font-size:.92rem;
+      font-weight:600;
+      margin-bottom:2px;
+    }
+    .processing-subtext {
+      font-size:.8rem;
+      color:#d0d0e2;
+    }
+    @keyframes spin {
+      to { transform:rotate(360deg); }
     }
   </style>
 </head>
 
 <body>
   <!-- Shared site header -->
-  <header class="site-header">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-brand">
-        <img src="images/hitzpurple.png" alt="NJ HITZ Softball logo">
-        <span>NJ HITZ SOFTBALL</span>
-      </a>
-
-      <!-- Desktop navigation -->
-      <nav class="nav-links" aria-label="Primary navigation">
-        <a href="index.html#program">Program</a>
-        <a href="index.html#mission">Mission</a>
-        <a href="index.html#gallery">Gallery</a>
-        <a href="teams.html">Teams</a>
-        <a href="index.html#contact">Contact</a>
-        <a href="tryouts">Tryouts</a>
-      </nav>
-
-      <!-- Mobile hamburger -->
-      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-      </button>
-    </div>
-
-    <!-- Mobile nav panel -->
-    <nav class="nav-menu" aria-label="Mobile navigation">
-      <a href="index.html#program">Program</a>
-      <a href="index.html#mission">Mission</a>
-      <a href="index.html#gallery">Gallery</a>
-      <a href="teams.html">Teams</a>
-      <a href="index.html#contact">Contact</a>
-      <a href="tryouts">Tryouts</a>
-    </nav>
-  </header>
+  <header class="site-header" id="header"></header>
 
   <!-- Hero -->
   <section class="hero">
@@ -414,7 +250,13 @@
       After submission, coaches or staff may edit entries for clarity and formatting before publishing on the site.
     </p>
 
-    <form id="playerForm" action="/player-intake" method="POST" enctype="multipart/form-data" novalidate>
+    <form
+      id="playerForm"
+      action="https://docs.google.com/forms/d/e/1FAIpQLScszlEehm2qct_CuGZH5mPBGtxbaEb_ILkqNJMG3hvSgjqjHA/formResponse"
+      method="POST"
+      enctype="multipart/form-data"
+      novalidate>
+      <div id="form-status" class="form-status"></div>
       <div id="formError" class="form-error"></div>
       <div id="formSuccess" class="form-success"></div>
 
@@ -431,10 +273,10 @@
             <label for="teamName">Team *</label>
             <select id="teamName" name="teamName">
               <option value="">Select team</option>
-              <option value="NJ HITZ 18U 2029">NJ HITZ 18U 2029</option>
-              <option value="NJ HITZ 16U 2029">NJ HITZ 16U 2029</option>
-              <option value="NJ HITZ 14U 2030-31">NJ HITZ 14U 2030-31</option>
-              <option value="NJ HITZ 12U 2030-31">NJ HITZ 12U 2030-31</option>
+              <option value="NJ HITZ 18U 2026">NJ HITZ 18U 2026</option>
+              <option value="NJ HITZ 16U 2026">NJ HITZ 16U 2026</option>
+              <option value="NJ HITZ 14U 2026">NJ HITZ 14U 2026</option>
+              <option value="NJ HITZ 12U 2026">NJ HITZ 12U 2026</option>
             </select>
           </div>
 
@@ -740,191 +582,432 @@
         </div>
       </div>
 
-      <!-- SECTION 9: Photo Upload -->
-      <h2 class="section-title">Player Photo</h2>
+      <!-- SECTION 9: Optional Player File Upload (Google Drive, not Google Forms) -->
+      <h2 class="section-title">Optional Player Photo Upload</h2>
       <div class="form-card">
         <div class="field">
-          <label for="photoMain">Upload Player Photo</label>
-          <small>Image files only (JPG, PNG, etc.). Maximum size 10MB.</small>
+          <label for="playerPhoto">Upload Player Photo (Optional)</label>
           <div class="file-input">
-            <input type="file" id="photoMain" name="photoMain" accept="image/*" />
+            <input
+              type="file"
+              id="playerPhoto"
+              name="playerPhoto"
+              accept=".png,.jpg,.jpeg,.heic"
+            />
           </div>
+          <small>
+            The file will be renamed as: <code>player-name-jersey-number.ext</code> (lowercase, spaces → dashes).
+          </small>
         </div>
       </div>
 
       <div class="btn-row">
         <button type="submit" class="btn-primary" id="submitBtn">Submit</button>
-        <button type="reset" class="btn-secondary">Reset</button>
+        <button type="reset" class="btn-cancel">Reset</button>
       </div>
     </form>
   </main>
 
-  <footer>
-    © <span id="year"></span> NJ HITZ Softball — Player Showcase Intake
-  </footer>
+  <div id="footer"></div>
+
+  <!-- Processing overlay -->
+  <div id="processingOverlay" class="processing-overlay" aria-hidden="true">
+    <div class="processing-box" role="status" aria-live="polite">
+      <div class="processing-spinner"></div>
+      <div class="processing-text">Submitting your information…</div>
+      <div class="processing-subtext">Please don’t close or refresh this page.</div>
+    </div>
+  </div>
 
   <script>
-    // Footer year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Shared mobile nav toggle script
-    (function () {
-      const toggle = document.querySelector('.nav-toggle');
-      const menu = document.querySelector('.nav-menu');
-      if (!toggle || !menu) return;
-      toggle.addEventListener('click', function () {
-        const isOpen = menu.classList.toggle('nav-menu--open');
-        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  // Shared mobile nav toggle script
+  (function () {
+    const toggle = document.querySelector('.nav-toggle');
+    const menu = document.querySelector('.nav-menu');
+    if (!toggle || !menu) return;
+    toggle.addEventListener('click', function () {
+      const isOpen = menu.classList.toggle('nav-menu--open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    menu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        menu.classList.remove('nav-menu--open');
+        toggle.setAttribute('aria-expanded', 'false');
       });
-      menu.querySelectorAll('a').forEach(function (link) {
-        link.addEventListener('click', function () {
-          menu.classList.remove('nav-menu--open');
-          toggle.setAttribute('aria-expanded', 'false');
-        });
-      });
-    })();
+    });
+  })();
 
-    // Form validation & sanitization
-    (function () {
-      const form = document.getElementById('playerForm');
-      const errorBox = document.getElementById('formError');
-      const successBox = document.getElementById('formSuccess');
-      const submitBtn = document.getElementById('submitBtn');
+  function scrollToTopSmooth() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-      function sanitizeText(value) {
-        if (!value) return '';
-        return value.toString().trim();
+  // Form validation, sanitization, Google Forms mapping & Drive file upload
+  (function () {
+    const form = document.getElementById('playerForm');
+    const errorBox = document.getElementById('formError');
+    const successBox = document.getElementById('formSuccess');
+    const submitBtn = document.getElementById('submitBtn');
+    const playerPhotoInput = document.getElementById('playerPhoto');
+    const processingOverlay = document.getElementById('processingOverlay');
+
+    if (!form || !errorBox || !successBox || !submitBtn) return;
+
+    const GOOGLE_FORM_ACTION =
+      'https://docs.google.com/forms/d/e/1FAIpQLScszlEehm2qct_CuGZH5mPBGtxbaEb_ILkqNJMG3hvSgjqjHA/formResponse';
+    form.action = GOOGLE_FORM_ACTION;
+    form.method = 'POST';
+
+    // Google Apps Script / backend endpoint that handles file saving in Drive
+    const DRIVE_UPLOAD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
+
+    // Date-of-birth field IDs (year/month/day)
+    const DOB_YEAR_FIELD = 'entry.220950726_year';
+    const DOB_MONTH_FIELD = 'entry.220950726_month';
+    const DOB_DAY_FIELD = 'entry.220950726_day';
+
+    const GOOGLE_FIELD_MAP = {
+      // Player & team
+      playerName: 'entry.2105312405',
+      teamName: 'entry.1802389373',
+      jerseyNumber: 'entry.1734998094',
+      primaryPosition: 'entry.2068309731',
+      batsThrows: 'entry.268373608',
+      positions: 'entry.2004426139',
+
+      // Player details (DOB handled separately as year/month/day)
+      gradYear: 'entry.1617042637',
+      height: 'entry.386018176',
+      weight: 'entry.1344738696',
+      cityState: 'entry.201173754',
+
+      // Academics
+      schoolName: 'entry.1279434410',
+      gpa: 'entry.861343878',
+      intendedMajor: 'entry.1130833279',
+      honors: 'entry.1768183972',
+      academics: 'entry.1877576210',
+
+      // Contact info
+      playerEmail: 'entry.837991769',
+      playerPhone: 'entry.1435609041',
+      guardian1Name: 'entry.1780727691',
+      guardian1Email: 'entry.1185509856',
+      guardian1Phone: 'entry.2071795513',
+      guardian2Name: 'entry.2021272578',
+      guardian2Email: 'entry.725155767',
+      guardian2Phone: 'entry.1662121608',
+      family: 'entry.1318357319',
+
+      // Player bio
+      bio: 'entry.591496362',
+
+      // Speed / measurables
+      homeToFirst: 'entry.1886233881',
+      overhandVelo: 'entry.206281335',
+      exitVelo: 'entry.1247835329',
+      offSeason: 'entry.1630116037',
+
+      // Offensive stats
+      avg: 'entry.1323059165',
+      obp: 'entry.1681158292',
+      slg: 'entry.1610719629',
+      ops: 'entry.1255655983',
+      hr: 'entry.1727464589',
+      rbi: 'entry.393172318',
+      statsNote: 'entry.804266947',
+
+      // Pitching stats
+      pitSeason: 'entry.252675725', // approximate mapping
+      era: 'entry.670638349',
+      ip: 'entry.86384439',
+      k: 'entry.444513990',
+      bb: 'entry.509750451',
+      whip: 'entry.868851338',
+
+      // Links
+      highlightVideoUrl: 'entry.582934884',
+      recruitingProfileUrl: 'entry.757615083',
+      additionalLinks: 'entry.1520931313'
+    };
+
+    function sanitizeText(value) {
+      if (!value) return '';
+      return value.toString().trim();
+    }
+
+    function isValidEmail(value) {
+      if (!value) return true;
+      return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value.trim());
+    }
+
+    function isValidUrl(value) {
+      if (!value) return true;
+      try {
+        const u = new URL(value.trim());
+        return !!u.protocol && !!u.host;
+      } catch (e) {
+        return false;
       }
+    }
 
-      function isValidEmail(value) {
-        if (!value) return true;
-        return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value.trim());
+    function showErrors(errors) {
+      if (!errors.length) {
+        errorBox.style.display = 'none';
+        errorBox.innerHTML = '';
+        return;
       }
+      errorBox.style.display = 'block';
+      errorBox.innerHTML =
+        '<strong>Please fix the following before submitting:</strong><ul>' +
+        errors.map(e => '<li>' + e + '</li>').join('') +
+        '</ul>';
+      successBox.style.display = 'none';
+      successBox.textContent = '';
+    }
 
-      function isValidUrl(value) {
-        if (!value) return true;
-        try {
-          const u = new URL(value.trim());
-          return !!u.protocol && !!u.host;
-        } catch (e) {
-          return false;
+    function showProcessing() {
+      if (processingOverlay) {
+        processingOverlay.classList.add('is-visible');
+        processingOverlay.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function hideProcessing() {
+      if (processingOverlay) {
+        processingOverlay.classList.remove('is-visible');
+        processingOverlay.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    // Build FormData containing ONLY Google entry.* fields
+    function buildGoogleFormData() {
+      const fd = new FormData();
+
+      Object.entries(GOOGLE_FIELD_MAP).forEach(([localName, entryName]) => {
+        if (!entryName) return;
+
+        // Positions checkboxes: send one entry.* field per checked value
+        if (localName === 'positions') {
+          const checked = form.querySelectorAll('input[name="positions"]:checked');
+          if (checked && checked.length) {
+            Array.from(checked).forEach(cbox => {
+              fd.append(entryName, (cbox.value || '').trim());
+            });
+          }
+          return;
         }
+
+        const el = form.elements[localName] || document.getElementById(localName);
+        if (!el) return;
+        const value = (el.value || '').trim();
+        fd.append(entryName, value);
+      });
+
+      // Date of Birth: "YYYY-MM-DD" from <input type="date">
+      const dobInput = form.elements['dob'] || document.getElementById('dob');
+      const dobRaw = dobInput && dobInput.value ? dobInput.value.trim() : '';
+
+      if (dobRaw) {
+        const parts = dobRaw.split('-');
+        const year = parts[0] || '';
+        const month = parts[1] || '';
+        const day = parts[2] || '';
+
+        // Strip leading zeros
+        if (year)  fd.append(DOB_YEAR_FIELD,  String(parseInt(year, 10)));
+        if (month) fd.append(DOB_MONTH_FIELD, String(parseInt(month, 10)));
+        if (day)   fd.append(DOB_DAY_FIELD,   String(parseInt(day, 10)));
+      } else {
+        fd.append(DOB_YEAR_FIELD, '');
+        fd.append(DOB_MONTH_FIELD, '');
+        fd.append(DOB_DAY_FIELD, '');
       }
 
-      function showErrors(errors) {
-        if (!errors.length) {
+      return fd;
+    }
+
+    // Build a safe filename: player-name-jersey-number.ext
+    function buildplayerPhotoName(playerName, jerseyNumber, originalName) {
+      const baseNameRaw = (playerName || 'player').toString().trim().toLowerCase();
+      const baseName = baseNameRaw.replace(/\s+/g, '-');
+      const num = (jerseyNumber || '').toString().trim();
+      const suffix = num ? '-' + num : '';
+
+      let ext = '';
+      if (originalName && originalName.indexOf('.') !== -1) {
+        ext = originalName.substring(originalName.lastIndexOf('.'));
+      }
+
+      return baseName + suffix + ext;
+    }
+
+    // Upload the selected file (if any) to Google Drive endpoint
+    async function uploadplayerPhotoIfAny(playerName, jerseyNumber) {
+      if (!playerPhotoInput || !playerPhotoInput.files || !playerPhotoInput.files.length) {
+        return { attempted: false, success: true };
+      }
+      if (!DRIVE_UPLOAD_ENDPOINT || DRIVE_UPLOAD_ENDPOINT.indexOf('REPLACE_WITH_YOUR_WEB_APP_ID') !== -1) {
+        console.warn('Drive upload endpoint not configured; skipping file upload.');
+        return { attempted: false, success: false };
+      }
+
+      const file = playerPhotoInput.files[0];
+      const safeName = buildplayerPhotoName(playerName, jerseyNumber, file.name);
+
+      try {
+        await fetch(DRIVE_UPLOAD_ENDPOINT + "?filename=" + encodeURIComponent(safeName), {
+          method: 'POST',
+          mode: 'no-cors',
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream'
+          }
+        });
+
+        // Treat any non-network error as success in no-cors mode
+        return { attempted: true, success: true };
+      } catch (err) {
+        console.error('Error uploading player file:', err);
+        return { attempted: true, success: false };
+      }
+    }
+
+    form.addEventListener('submit', async function (evt) {
+      evt.preventDefault();
+      const errors = [];
+
+      hideProcessing(); // just in case
+
+      // Required fields
+      const playerName = sanitizeText(form.playerName.value);
+      const teamName = sanitizeText(form.teamName.value);
+      const jerseyNumber = sanitizeText(form.jerseyNumber.value);
+      const primaryPosition = sanitizeText(form.primaryPosition.value);
+      const batsThrows = sanitizeText(form.batsThrows.value);
+      const gradYear = sanitizeText(form.gradYear.value);
+      const cityState = sanitizeText(form.cityState.value);
+      const schoolName = sanitizeText(form.schoolName.value);
+      const guardian1Name = sanitizeText(form.guardian1Name.value);
+      const guardian1Email = sanitizeText(form.guardian1Email.value);
+      const guardian1Phone = sanitizeText(form.guardian1Phone.value);
+
+      // Put sanitized values back
+      form.playerName.value = playerName;
+      form.teamName.value = teamName;
+      form.jerseyNumber.value = jerseyNumber;
+      form.primaryPosition.value = primaryPosition;
+      form.batsThrows.value = batsThrows;
+      form.gradYear.value = gradYear;
+      form.cityState.value = cityState;
+      form.schoolName.value = schoolName;
+      form.guardian1Name.value = guardian1Name;
+      form.guardian1Email.value = guardian1Email;
+      form.guardian1Phone.value = guardian1Phone;
+
+      if (!playerName) errors.push('Player Name is required.');
+      if (!teamName) errors.push('Team is required.');
+      if (!jerseyNumber) errors.push('Jersey Number is required.');
+      if (!primaryPosition) errors.push('Primary Position is required.');
+      if (!batsThrows) errors.push('Bats / Throws is required.');
+      if (!gradYear || !/^\d{4}$/.test(gradYear)) {
+        errors.push('High School Graduation Year is required and must be a 4-digit year.');
+      }
+      if (!cityState) errors.push('City & State is required.');
+      if (!schoolName) errors.push('Current School Name is required.');
+      if (!guardian1Name) errors.push('Parent/Guardian 1 Name is required.');
+      if (!guardian1Email) errors.push('Parent/Guardian 1 Email is required.');
+      if (guardian1Email && !isValidEmail(guardian1Email)) {
+        errors.push('Parent/Guardian 1 Email is not a valid email address.');
+      }
+      if (!guardian1Phone) errors.push('Parent/Guardian 1 Phone is required.');
+
+      // Optional emails
+      const playerEmail = sanitizeText(form.playerEmail.value);
+      const guardian2Email = sanitizeText(form.guardian2Email.value);
+      form.playerEmail.value = playerEmail;
+      form.guardian2Email.value = guardian2Email;
+
+      if (playerEmail && !isValidEmail(playerEmail)) {
+        errors.push('Player Email is not a valid email address.');
+      }
+      if (guardian2Email && !isValidEmail(guardian2Email)) {
+        errors.push('Parent/Guardian 2 Email is not a valid email address.');
+      }
+
+      // URLs
+      const highlightVideoUrl = sanitizeText(form.highlightVideoUrl.value);
+      const recruitingProfileUrl = sanitizeText(form.recruitingProfileUrl.value);
+      form.highlightVideoUrl.value = highlightVideoUrl;
+      form.recruitingProfileUrl.value = recruitingProfileUrl;
+
+      if (!isValidUrl(highlightVideoUrl)) {
+        errors.push('Highlight Video URL is not a valid URL.');
+      }
+      if (!isValidUrl(recruitingProfileUrl)) {
+        errors.push('Recruiting Profile URL is not a valid URL.');
+      }
+
+      // Show errors, scroll to top if any
+      showErrors(errors);
+      if (errors.length) {
+        scrollToTopSmooth();
+        hideProcessing();
+        return;
+      }
+
+      // Build Google Forms payload
+      const formData = buildGoogleFormData();
+
+      submitBtn.disabled = true;
+      successBox.style.display = 'block';
+      successBox.textContent = 'Submitting...';
+      errorBox.style.display = 'none';
+      errorBox.innerHTML = '';
+
+      showProcessing();
+
+      // 1) Try to upload file (if any) to Drive
+      let fileUploadResult = { attempted: false, success: true };
+      try {
+        fileUploadResult = await uploadplayerPhotoIfAny(playerName, jerseyNumber);
+      } catch (e) {
+        console.error('Unexpected error during file upload:', e);
+      }
+
+      // 2) Submit to Google Forms
+      fetch(GOOGLE_FORM_ACTION, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      })
+        .then(() => {
+          // no-cors: assume success if network didn't throw
+          let msg = 'Thank you! Your information has been submitted.';
+          if (fileUploadResult.attempted && !fileUploadResult.success) {
+            msg += ' Note: your attached file may not have uploaded correctly. Please contact staff if needed.';
+          }
+          successBox.style.display = 'block';
+          successBox.textContent = msg;
           errorBox.style.display = 'none';
           errorBox.innerHTML = '';
-          return;
-        }
-        errorBox.style.display = 'block';
-        errorBox.innerHTML = '<strong>Please fix the following before submitting:</strong><ul>' +
-          errors.map(e => '<li>' + e + '</li>').join('') +
-          '</ul>';
-        successBox.style.display = 'none';
-        successBox.textContent = '';
-      }
-
-      form.addEventListener('submit', function (evt) {
-        evt.preventDefault();
-        const errors = [];
-
-        // Required fields
-        const playerName = sanitizeText(form.playerName.value);
-        const teamName = sanitizeText(form.teamName.value);
-        const jerseyNumber = sanitizeText(form.jerseyNumber.value);
-        const primaryPosition = sanitizeText(form.primaryPosition.value);
-        const batsThrows = sanitizeText(form.batsThrows.value);
-        const gradYear = sanitizeText(form.gradYear.value);
-        const cityState = sanitizeText(form.cityState.value);
-        const schoolName = sanitizeText(form.schoolName.value);
-        const guardian1Name = sanitizeText(form.guardian1Name.value);
-        const guardian1Email = sanitizeText(form.guardian1Email.value);
-        const guardian1Phone = sanitizeText(form.guardian1Phone.value);
-
-        // Put sanitized values back into fields
-        form.playerName.value = playerName;
-        form.teamName.value = teamName;
-        form.jerseyNumber.value = jerseyNumber;
-        form.primaryPosition.value = primaryPosition;
-        form.batsThrows.value = batsThrows;
-        form.gradYear.value = gradYear;
-        form.cityState.value = cityState;
-        form.schoolName.value = schoolName;
-        form.guardian1Name.value = guardian1Name;
-        form.guardian1Email.value = guardian1Email;
-        form.guardian1Phone.value = guardian1Phone;
-
-        if (!playerName) errors.push('Player Name is required.');
-        if (!teamName) errors.push('Team is required.');
-        if (!jerseyNumber) errors.push('Jersey Number is required.');
-        if (!primaryPosition) errors.push('Primary Position is required.');
-        if (!batsThrows) errors.push('Bats / Throws is required.');
-        if (!gradYear || !/^\d{4}$/.test(gradYear)) {
-          errors.push('High School Graduation Year is required and must be a 4-digit year.');
-        }
-        if (!cityState) errors.push('City & State is required.');
-        if (!schoolName) errors.push('Current School Name is required.');
-        if (!guardian1Name) errors.push('Parent/Guardian 1 Name is required.');
-        if (!guardian1Email) errors.push('Parent/Guardian 1 Email is required.');
-        if (guardian1Email && !isValidEmail(guardian1Email)) {
-          errors.push('Parent/Guardian 1 Email is not a valid email address.');
-        }
-        if (!guardian1Phone) errors.push('Parent/Guardian 1 Phone is required.');
-
-        // Optional emails
-        const playerEmail = sanitizeText(form.playerEmail.value);
-        const guardian2Email = sanitizeText(form.guardian2Email.value);
-        form.playerEmail.value = playerEmail;
-        form.guardian2Email.value = guardian2Email;
-
-        if (playerEmail && !isValidEmail(playerEmail)) {
-          errors.push('Player Email is not a valid email address.');
-        }
-        if (guardian2Email && !isValidEmail(guardian2Email)) {
-          errors.push('Parent/Guardian 2 Email is not a valid email address.');
-        }
-
-        // URLs
-        const highlightVideoUrl = sanitizeText(form.highlightVideoUrl.value);
-        const recruitingProfileUrl = sanitizeText(form.recruitingProfileUrl.value);
-        form.highlightVideoUrl.value = highlightVideoUrl;
-        form.recruitingProfileUrl.value = recruitingProfileUrl;
-
-        if (!isValidUrl(highlightVideoUrl)) {
-          errors.push('Highlight Video URL is not a valid URL.');
-        }
-        if (!isValidUrl(recruitingProfileUrl)) {
-          errors.push('Recruiting Profile URL is not a valid URL.');
-        }
-
-        // File validation
-        const fileInput = document.getElementById('photoMain');
-        const file = fileInput.files[0];
-        if (file) {
-          if (!file.type || !file.type.startsWith('image/')) {
-            errors.push('Player photo must be an image file (JPG, PNG, etc.).');
-          }
-          const maxBytes = 10 * 1024 * 1024; // 10MB
-          if (file.size > maxBytes) {
-            errors.push('Player photo must be less than 10MB.');
-          }
-        }
-
-        showErrors(errors);
-        if (errors.length) {
-          return;
-        }
-
-        // If valid: submit
-        submitBtn.disabled = true;
-        successBox.style.display = 'block';
-        successBox.textContent = 'Submitting...';
-
-        // NOTE: server must still do its own validation & sanitization.
-        form.submit();
-      });
-    })();
+          form.reset();
+        })
+        .catch(() => {
+          errorBox.style.display = 'block';
+          errorBox.innerHTML =
+            'There was a problem submitting your information. Please try again in a moment.';
+          successBox.style.display = 'none';
+          successBox.textContent = '';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          hideProcessing();
+          scrollToTopSmooth();
+        });
+    });
+  })();
   </script>
+
+  <script src="scripts/template-loader.js"></script>
 </body>
 </html>
