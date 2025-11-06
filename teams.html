@@ -9,156 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
 
+  <link href="css/main.css" rel="stylesheet">
   <style>
-    :root {
-      --hitz-purple:#4c2a85;
-      --hitz-gold:#b38b35;
-      --hitz-black:#0e0e0f;
-      --hitz-white:#ffffff;
-      --hitz-gray:#1a1a1f;
-    }
-
-    *{ box-sizing:border-box; }
-
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-      background:var(--hitz-black);
-      color:var(--hitz-white);
-      line-height:1.5;
-    }
-
-    a{ color:inherit; text-decoration:none; }
-    a:hover{ text-decoration:underline; }
-
-    .page-container{
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* Header */
-    header{
-      position:sticky;
-      top:0;
-      z-index:20;
-      background:linear-gradient(90deg,rgba(12,10,24,.95),rgba(17,13,30,.98));
-      border-bottom:2px solid var(--hitz-gold);
-      padding:10px 14px;
-    }
-    .header-inner{
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:auto 1fr auto;
-      gap:10px;
-      align-items:center;
-    }
-    .header-home{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 12px;
-      border-radius:999px;
-      border:2px solid var(--hitz-gold);
-      background:rgba(10,10,16,.7);
-      color:var(--hitz-white);
-      text-decoration:none;
-      font-size:.9rem;
-      font-weight:600;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-      transition:.2s;
-      white-space:nowrap;
-    }
-    .header-home:hover{
-      background:var(--hitz-white);
-      color:var(--hitz-black);
-      transform:translateY(-1px);
-      text-decoration:none;
-    }
-    .header-logo{
-      justify-self:center;
-      line-height:0;
-    }
-    .header-logo img{
-      height:56px;
-      width:auto;
-      filter:drop-shadow(0 2px 10px rgba(0,0,0,.6));
-    }
-    .header-title{
-      justify-self:end;
-      text-align:right;
-      font-size:.95rem;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:#e8e8f2;
-      font-weight:800;
-    }
-    @media (min-width:640px){
-      .header-logo img{ height:72px; }
-      .header-title{ font-size:1.05rem; }
-    }
-
-    /* Hero */
-    .hero{
-      position:relative;
-      padding:32px 16px 24px;
-      background:
-        linear-gradient(140deg,rgba(76,42,133,.85),rgba(11,11,20,.95)),
-        url("images/7F0A3530.jpg") center/cover no-repeat;
-      border-bottom:3px solid var(--hitz-gold);
-    }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:radial-gradient(circle at 10% 0,rgba(179,139,53,.26),transparent 55%);
-      opacity:.85;
-      pointer-events:none;
-    }
-    .hero-inner{
-      position:relative;
-      max-width:1100px;
-      margin:0 auto;
-      text-align:left;
-    }
-    .hero-eyebrow{
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      font-size:.8rem;
-      color:var(--hitz-gold);
-      margin-bottom:6px;
-      font-weight:800;
-    }
-    .hero h1{
-      margin:0 0 8px;
-      font-size:clamp(26px,4vw,38px);
-      letter-spacing:.03em;
-    }
-    .hero p{
-      margin:0;
-      max-width:640px;
-      color:#f1f1fa;
-      font-size:.98rem;
-    }
-
-    /* Layout */
-    main{
-      flex:1;
-      padding:26px 16px 40px;
-    }
-    .content{
-      max-width:1100px;
-      margin:0 auto;
-    }
-
-    .page-intro{
-      margin-bottom:18px;
-      font-size:.98rem;
-      color:#d7d7e2;
-    }
-
     .filters-row{
       display:flex;
       flex-wrap:wrap;
@@ -181,7 +33,6 @@
       font-size:.9rem;
     }
 
-    /* Team cards */
     .teams-list{
       display:flex;
       flex-direction:column;
@@ -259,7 +110,7 @@
       background:#15151b;
       border-radius:12px;
       overflow:hidden;
-      table-layout:fixed; /* ensure consistent widths */
+      table-layout:fixed;
     }
     .roster-table thead{
       background:rgba(20,20,30,.9);
@@ -292,7 +143,6 @@
       text-decoration:underline;
     }
 
-    /* Column width control – consistent across all roster tables */
     .roster-table col.col-num  { width: 10%; }
     .roster-table col.col-name { width: 50%; }
     .roster-table col.col-pos  { width: 20%; }
@@ -304,35 +154,14 @@
       font-style:italic;
       margin-top:6px;
     }
-
-    /* Footer */
-    footer{
-      padding:14px 16px 20px;
-      border-top:2px solid rgba(255,255,255,.06);
-      font-size:.82rem;
-      color:#bdbdd1;
-      text-align:center;
-      background:#101016;
-    }
   </style>
 </head>
 
 <body>
-  <div class="page-container">
-    <header>
-      <div class="header-inner">
-        <a class="header-home" href="index.html?preview=y">
-          ← Home
-        </a>
-        <div class="header-logo">
-          <img src="images/hitzpurple.png" alt="NJ HITZ logo" />
-        </div>
-        <div class="header-title">
-          Teams & Player Profiles
-        </div>
-      </div>
-    </header>
+  <!-- Shared site header -->
+  <header class="site-header" id="header"></header>
 
+  <div class="page-container">
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-eyebrow">NJ HITZ SOFTBALL</div>
@@ -357,14 +186,11 @@
             Filter by Grad Year:
             <select id="grad-filter">
               <option value="">All</option>
-              <!-- JS will populate unique grad years -->
             </select>
           </label>
         </div>
 
-        <div id="teams-container" class="teams-list">
-          <!-- Populated by JS -->
-        </div>
+        <div id="teams-container" class="teams-list"></div>
 
         <div id="teams-error" class="empty-message" style="display:none;margin-top:16px;">
           Unable to load teams data. Please check that <code>data/teams.json</code> is uploaded and valid.
@@ -372,22 +198,23 @@
       </div>
     </main>
 
+    <div id="footer"></div>
+    <!--
     <footer>
-      © <span id="year"></span> NJ HITZ Softball — Teams & Player Profiles
+      © <span id="year"></span> NJ HITZ Softball — Player Showcase
     </footer>
+    -->
   </div>
 
   <script>
     (function(){
-      // Footer year
-      document.getElementById('year').textContent = new Date().getFullYear();
+      //document.getElementById('year').textContent = new Date().getFullYear();
 
       const teamsContainer = document.getElementById('teams-container');
       const errorEl = document.getElementById('teams-error');
       const gradFilter = document.getElementById('grad-filter');
       let allTeams = [];
 
-      // Desired display order
       const LEVEL_ORDER = {
         '18U': 0,
         '16U': 1,
@@ -402,7 +229,6 @@
           const oa = LEVEL_ORDER.hasOwnProperty(la) ? LEVEL_ORDER[la] : 99;
           const ob = LEVEL_ORDER.hasOwnProperty(lb) ? LEVEL_ORDER[lb] : 99;
           if (oa !== ob) return oa - ob;
-          // secondary sort by name
           return (a.name || '').localeCompare(b.name || '');
         });
       }
@@ -449,7 +275,6 @@
           header.appendChild(meta);
           card.appendChild(header);
 
-          // Coaches
           if(team.coaches && team.coaches.length){
             const coachesBlock = document.createElement('div');
             coachesBlock.className = 'coaches';
@@ -473,7 +298,6 @@
             card.appendChild(coachesBlock);
           }
 
-          // Roster
           const rosterTitle = document.createElement('div');
           rosterTitle.className = 'roster-title';
           rosterTitle.textContent = 'Roster';
@@ -483,7 +307,6 @@
             const table = document.createElement('table');
             table.className = 'roster-table';
 
-            // Colgroup to enforce consistent column widths across all tables
             const colgroup = document.createElement('colgroup');
             ['col-num','col-name','col-pos','col-grad'].forEach(cls => {
               const col = document.createElement('col');
@@ -566,7 +389,6 @@
         renderTeams(gradFilter.value || '');
       });
 
-      // Load JSON
       fetch('data/teams.json', {cache:'no-cache'})
         .then(resp => resp.json())
         .then(data => {
@@ -581,8 +403,28 @@
           console.error('Error loading teams.json:', err);
           errorEl.style.display = 'block';
         });
-
     })();
+
+
+  // Shared mobile nav toggle
+  (function () {
+    const toggle = document.querySelector('.nav-toggle');
+    const menu = document.querySelector('.nav-menu');
+    if (!toggle || !menu) return;
+    toggle.addEventListener('click', function () {
+      const isOpen = menu.classList.toggle('nav-menu--open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    menu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        menu.classList.remove('nav-menu--open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
   </script>
+
+  <script src="scripts/template-loader.js"></script>
 </body>
 </html>

@@ -9,204 +9,77 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- QRCode.js library (lightweight, no dependencies) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <link href="css/main.css" rel="stylesheet">
   <style>
-    :root {
-      --hitz-purple:#4c2a85;
-      --hitz-gold:#b38b35;
-      --hitz-black:#0e0e0f;
-      --hitz-white:#ffffff;
-      --hitz-gray:#1a1a1f;
-    }
-
-    *{ box-sizing:border-box; }
-
     body{
       margin:0;
       font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-      background:var(--hitz-black);
+      background:radial-gradient(1200px 800px at 70% -10%,rgba(179,139,53,.15),#050509);
       color:var(--hitz-white);
       line-height:1.5;
     }
 
     a{ color:inherit; text-decoration:none; }
     a:hover{ text-decoration:underline; }
-
-    .page-container{
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* Header */
-    header{
-      position:sticky;
-      top:0;
-      z-index:20;
-      background:linear-gradient(90deg,rgba(12,10,24,.95),rgba(17,13,30,.98));
-      border-bottom:2px solid var(--hitz-gold);
-      padding:10px 14px;
-    }
-    .header-inner{
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:auto 1fr auto;
-      gap:10px;
-      align-items:center;
-    }
-    .header-home{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 12px;
-      border-radius:999px;
-      border:2px solid var(--hitz-gold);
-      background:rgba(10,10,16,.7);
-      color:var(--hitz-white);
-      text-decoration:none;
-      font-size:.9rem;
-      font-weight:600;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-      transition:.2s;
-      white-space:nowrap;
-    }
-    .header-home:hover{
-      background:var(--hitz-white);
-      color:var(--hitz-black);
-      transform:translateY(-1px);
-      text-decoration:none;
-    }
-    .header-logo{
-      justify-self:center;
-      line-height:0;
-    }
-    .header-logo img{
-      height:56px;
-      width:auto;
-      filter:drop-shadow(0 2px 10px rgba(0,0,0,.6));
-    }
-    .header-title{
-      justify-self:end;
-      text-align:right;
-      font-size:.9rem;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:#e8e8f2;
-      font-weight:800;
-    }
-    @media (min-width:640px){
-      .header-logo img{ height:72px; }
-      .header-title{ font-size:1.05rem; }
-    }
-
-    /* Hero / top */
     .player-hero{
-      position:relative;
-      padding:24px 16px 18px;
-      border-bottom:2px solid rgba(255,255,255,.08);
-      background:
-        radial-gradient(circle at 10% 0,rgba(179,139,53,.26),transparent 55%),
-        linear-gradient(130deg,#181822,#090910);
+      margin-bottom:18px;
     }
-    .player-hero-inner{
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:1.2fr 1fr;
-      gap:18px;
-      align-items:center;
-    }
-    @media (max-width:780px){
-      .player-hero-inner{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .player-photo-wrap{
-      position:relative;
-      border-radius:20px;
-      overflow:hidden;
-      border:2px solid var(--hitz-gold);
-      box-shadow:0 18px 40px rgba(0,0,0,.65);
-      background:#050507;
-    }
-    .player-photo-wrap img{
-      width:100%;
-      height:100%;
-      max-height:380px;
-      object-fit:cover;
-      object-position:center;
-      display:block;
-    }
-    .player-jersey-tag{
-      position:absolute;
-      left:14px;
-      bottom:14px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(0,0,0,.76);
-      border:2px solid var(--hitz-gold);
-      font-weight:800;
-      letter-spacing:.12em;
+    .player-tagline{
       text-transform:uppercase;
+      letter-spacing:.18em;
       font-size:.8rem;
-    }
-
-    .player-overview{
-      padding:4px 0;
+      color:var(--hitz-gold);
+      margin-bottom:6px;
+      font-weight:800;
     }
     .player-name{
-      font-size:clamp(26px,3.4vw,32px);
-      font-weight:900;
-      letter-spacing:.04em;
-      text-transform:uppercase;
       margin:0 0 6px;
+      font-size:clamp(26px,4vw,36px);
+      letter-spacing:.02em;
     }
     .player-subtitle{
-      font-size:.98rem;
-      color:#d3d3e4;
-      margin-bottom:8px;
-    }
-    .player-tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      margin-bottom:12px;
-    }
-    .player-tag{
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:#151520;
-      font-size:.82rem;
-      letter-spacing:.06em;
-      text-transform:uppercase;
-    }
-    .player-meta{
-      font-size:.9rem;
-      color:#cfcfe2;
+      margin:0;
+      color:#d7d7e2;
+      font-size:.96rem;
     }
 
-    /* Main layout */
-    main{
-      flex:1;
-      padding:22px 16px 40px;
-    }
-    .content{
-      max-width:1100px;
-      margin:0 auto;
+    .layout{
       display:grid;
-      grid-template-columns:1.25fr .9fr;
-      gap:20px;
-      align-items:flex-start;
+      grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
+      gap:18px;
     }
-    @media (max-width:900px){
-      .content{
+    @media (max-width:768px){
+      .layout{
         grid-template-columns:1fr;
       }
     }
 
+    .card{
+      background:rgba(13,13,22,.96);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      padding:16px 14px 16px;
+      box-shadow:0 18px 36px rgba(0,0,0,.65);
+    }
+    .card + .card{
+      margin-top:14px;
+    }
+    .card h2,
+    .card h3{
+      margin:0 0 8px;
+      font-size:1rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#eaeaf5;
+    }
+    .card h2 span,
+    .card h3 span{
+      color:var(--hitz-gold);
+    }
     .card{
       background:#14141c;
       border-radius:16px;
@@ -225,6 +98,86 @@
       margin:0 0 8px;
       font-size:.9rem;
       color:#d3d3e2;
+    }
+    .card-center-content {
+      display:flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .player-photo-wrap{
+      position:relative;
+      border-radius:16px;
+      overflow:hidden;
+      background:#050509;
+      min-height:260px;
+      max-height:420px;
+    }
+    .player-photo{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .player-badge{
+      position:absolute;
+      left:12px;
+      bottom:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(5,5,10,.9);
+      border:1px solid rgba(255,255,255,.25);
+      font-size:.8rem;
+    }
+
+    dl.meta{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:6px 14px;
+      margin:10px 0 0;
+      font-size:.9rem;
+    }
+    dl.meta dt{
+      font-weight:600;
+      color:#d7d7ea;
+    }
+    dl.meta dd{
+      margin:0;
+      color:#f5f5ff;
+    }
+
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin:6px 0 0;
+    }
+    .pill{
+      padding:3px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(20,20,30,.9);
+      font-size:.8rem;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      gap:16px;
+    }
+    @media (max-width:640px){
+      .two-col{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .list{
+      margin:6px 0 0;
+      padding-left:18px;
+      font-size:.9rem;
+      color:#e1e1f3;
+    }
+    .list li{
+      margin-bottom:4px;
     }
 
     .info-grid{
@@ -246,61 +199,59 @@
       color:#d0d0e2;
     }
 
-    .contact-block{
+    .measurables-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+      gap:10px;
+      margin-top:6px;
       font-size:.9rem;
-      margin-top:4px;
     }
-    .contact-block div{
-      margin-bottom:4px;
+    .measure-card{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.15);
+      background:#151520;
     }
-    .contact-block a{
-      color:var(--hitz-gold);
-      text-decoration:none;
+    .measure-label{
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:#c8c8dd;
+      margin-bottom:2px;
     }
-    .contact-block a:hover{
-      text-decoration:underline;
+    .measure-value{
+      font-size:.98rem;
+      font-weight:600;
+      color:#ffffff;
     }
 
-    .stats-table{
+    table.stats{
       width:100%;
       border-collapse:collapse;
       font-size:.88rem;
-      margin-top:6px;
+      margin-top:4px;
     }
-    .stats-table th,
-    .stats-table td{
-      border-bottom:1px solid rgba(255,255,255,.08);
+    table.stats th,
+    table.stats td{
       padding:4px 6px;
+      border-bottom:1px solid rgba(255,255,255,.12);
       text-align:left;
     }
-    .stats-table thead{
-      background:#181824;
-    }
-    .stats-table th{
-      font-size:.77rem;
+    table.stats th{
       text-transform:uppercase;
-      letter-spacing:.09em;
-      color:#e2e2f4;
+      letter-spacing:.12em;
+      font-size:.72rem;
+      color:#dcdcf0;
     }
-    .stats-table caption{
-      text-align:left;
-      padding:4px 0;
-      font-size:.82rem;
-      color:#bdbdd3;
+    table.stats tr:nth-child(even){
+      background:rgba(255,255,255,.03);
     }
 
-    .measurables-list{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
+    .note{
       margin-top:6px;
-    }
-    .measurable-pill{
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:#181824;
       font-size:.82rem;
+      color:#bcbcd6;
+      font-style:italic;
     }
 
     .links-list{
@@ -312,7 +263,7 @@
     .links-list li{
       margin-bottom:4px;
     }
-    .links-list a{
+    .links-list a {
       color:var(--hitz-gold);
       text-decoration:none;
     }
@@ -320,69 +271,108 @@
       text-decoration:underline;
     }
 
-    .muted{
-      color:#a8a8bd;
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
       font-size:.86rem;
+      text-decoration:none;
+      color:#e1e1ff;
+      margin-bottom:10px;
+    }
+    .back-link span{
+      font-size:1.1rem;
+      line-height:1;
     }
 
     .error-message{
-      max-width:1100px;
-      margin:32px auto;
-      text-align:center;
-      font-size:.95rem;
-      color:#f4c0c0;
+      margin-top:20px;
+      font-size:.98rem;
+      color:#ff9c9c;
     }
 
-    /* Footer */
-    footer{
-      padding:14px 16px 20px;
-      border-top:2px solid rgba(255,255,255,.06);
-      font-size:.82rem;
-      color:#bdbdd1;
-      text-align:center;
-      background:#101016;
+    #qr-share-widget {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #4c2a85; /* Hitz Purple */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #qr-share-title {
+      color: #f5f2ff;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    #qr-share-code canvas {
+      border-radius: 8px;
     }
   </style>
 </head>
-
 <body>
+  <!-- Shared site header -->
+  <header class="site-header" id="header"></header>
+
   <div class="page-container">
-    <header>
-      <div class="header-inner">
-        <a class="header-home" href="teams.html?preview=y">
-          ← Back to Teams
-        </a>
-        <div class="header-logo">
-          <img src="images/hitzpurple.png" alt="NJ HITZ logo" />
-        </div>
-        <div class="header-title">
-          Player Showcase
-        </div>
-      </div>
-    </header>
-
-    <section id="player-hero" class="player-hero" style="display:none;">
-      <div class="player-hero-inner">
-        <div class="player-photo-wrap">
-          <img id="player-photo" src="images/IMG_9316.PNG" alt="Player photo" />
-          <div class="player-jersey-tag" id="player-jersey-tag"></div>
-        </div>
-        <div class="player-overview">
-          <h1 class="player-name" id="player-name">Player Name</h1>
-          <div class="player-subtitle" id="player-subtitle"></div>
-          <div class="player-tags" id="player-tags"></div>
-          <div class="player-meta" id="player-meta"></div>
-        </div>
-      </div>
-    </section>
-
     <main>
-      <div id="player-error" class="error-message" style="display:none;"></div>
+      <div class="content">
+        <a href="teams.html" class="back-link"><span>←</span> Back to Teams</a>
 
-      <div id="player-content" class="content" style="display:none;">
-        <!-- Left column: narrative, academics, stats -->
-        <div>
-          <article class="card" id="card-bio">
+        <section id="player-hero" class="player-hero" style="display:none;">
+          <!--<div class="player-tagline">Player Showcase</div>-->
+          <h1 class="player-name" id="player-name"></h1>
+          <p class="player-subtitle" id="player-subtitle"></p>
+        </section>
+
+        <div id="player-layout" class="layout" style="display:none;">
+          <div>
+            <article class="card">
+              <!--<h2><span>Profile</span></h2>-->
+              <div class="player-photo-wrap">
+                <img id="player-photo" class="player-photo" src="" alt="Player photo">
+                <div class="player-badge" id="player-badge"></div>
+              </div>
+
+              <dl class="meta">
+                <div>
+                  <dt>Team</dt>
+                  <dd id="meta-team"></dd>
+                </div>
+                <div>
+                  <dt>Grad Year</dt>
+                  <dd id="meta-grad"></dd>
+                </div>
+                <div>
+                  <dt>School</dt>
+                  <dd id="meta-school"></dd>
+                </div>
+                <div>
+                  <dt>GPA</dt>
+                  <dd id="meta-gpa"></dd>
+                </div>
+                <div>
+                  <dt>Height / Weight</dt>
+                  <dd id="meta-size"></dd>
+                </div>
+                <div>
+                  <dt>Bats / Throws</dt>
+                  <dd id="meta-batsthrows"></dd>
+                </div>
+              </dl>
+
+              <div class="pill-row" id="pos-pills"></div>
+            </article>
+
+            <article class="card" id="card-bio">
             <h2>Player Bio</h2>
             <p id="player-bio" class="muted">
               Bio coming soon.
@@ -396,61 +386,69 @@
             </div>
             <p id="academics-notes" class="muted" style="margin-top:8px;"></p>
           </article>
+          </div>
 
-          <article class="card" id="card-stats" style="margin-top:14px;">
-            <h2>Performance & Stats</h2>
-            <div id="stats-container">
-              <!-- Offense / Pitching tables go here -->
-            </div>
-            <p class="muted" id="stats-note" style="margin-top:8px;"></p>
-          </article>
+          <div>
+            <article class="card">
+              <h3><span>Recruiting Contact</span></h3>
+              <ul class="list" id="contact-list"></ul>
+            </article>
+
+            <article class="card">
+              <h3><span>Measurables</span></h3>
+              <div class="measurables-grid" id="measurables-grid"></div>
+            </article>
+
+            <article class="card" id="offense-card" style="display:none;">
+              <h3><span>Offensive Stats</span></h3>
+              <table class="stats" id="offense-table"></table>
+              <p class="note" id="stats-note"></p>
+            </article>
+
+            <article class="card" id="pitching-card" style="display:none;">
+              <h3><span>Pitching Stats</span></h3>
+              <table class="stats" id="pitching-table"></table>
+            </article>
+
+            <article class="card" id="links-card" style="display:none;">
+              <h3><span>Video & Links</span></h3>
+              <ul class="list links-list" id="links-list"></ul>
+            </article>
+
+            <article class="card" id="share-card" style="display:none;">
+              <h3><span>Share This Profile</span></h3>
+              <div class="card-center-content">
+                <div id="qr-share-widget">
+                  <div id="qr-share-title"></div>
+                  <div id="qr-share-code"></div>
+                  <p><span>Click to Share</span></p>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
 
-        <!-- Right column: contact, family, measurables, links -->
-        <div>
-          <article class="card" id="card-contact">
-            <h2>Recruiting Contact</h2>
-            <div class="contact-block" id="contact-block"></div>
-          </article>
-
-          <article class="card" id="card-family" style="margin-top:14px;">
-            <h2>Family & Background</h2>
-            <p id="family-notes" class="muted"></p>
-          </article>
-
-          <article class="card" id="card-measurables" style="margin-top:14px;">
-            <h2>Measurables</h2>
-            <div id="measurables-list" class="measurables-list"></div>
-          </article>
-
-          <article class="card" id="card-links" style="margin-top:14px;">
-            <h2>Highlights & Links</h2>
-            <ul id="links-list" class="links-list"></ul>
-          </article>
-        </div>
+        <p id="player-error" class="error-message" style="display:none;">
+          Player not found. Please return to the <a href="teams.html">Teams</a> page and choose a player from the roster.
+        </p>
       </div>
     </main>
 
+    <div id="footer"></div>
+    <!--
     <footer>
       © <span id="year"></span> NJ HITZ Softball — Player Showcase
     </footer>
+    -->
   </div>
 
   <script>
     (function(){
-      document.getElementById('year').textContent = new Date().getFullYear();
+      //document.getElementById('year').textContent = new Date().getFullYear();
 
-      const params = new URLSearchParams(window.location.search);
-      const slug = params.get('player');
-
-      const heroSection = document.getElementById('player-hero');
-      const contentSection = document.getElementById('player-content');
-      const errorEl = document.getElementById('player-error');
-
-      if(!slug){
-        errorEl.textContent = 'No player specified. Please use a link from the Teams page.';
-        errorEl.style.display = 'block';
-        return;
+      function getParam(name){
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
       }
 
       function setText(id, text, fallback){
@@ -473,261 +471,287 @@
         return wrap;
       }
 
-      function buildStatsTable(id, title, rows, columns){
-        if(!rows || !rows.length) return null;
-
-        const container = document.createElement('div');
-        const table = document.createElement('table');
-        table.className = 'stats-table';
-        table.id = id;
-
-        const caption = document.createElement('caption');
-        caption.textContent = title;
-        table.appendChild(caption);
-
-        const thead = document.createElement('thead');
-        const trHead = document.createElement('tr');
-        columns.forEach(col => {
-          const th = document.createElement('th');
-          th.textContent = col.label;
-          trHead.appendChild(th);
-        });
-        thead.appendChild(trHead);
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-        rows.forEach(row => {
-          const tr = document.createElement('tr');
-          columns.forEach(col => {
-            const td = document.createElement('td');
-            td.textContent = row[col.key] != null ? row[col.key] : '';
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-        table.appendChild(tbody);
-
-        container.appendChild(table);
-        return container;
+      const slug = getParam('player');
+      if(!slug){
+        document.getElementById('player-error').style.display = 'block';
+        return;
       }
 
-      function loadPlayer(){
-        fetch('data/players.json', {cache:'no-cache'})
-          .then(resp => resp.json())
-          .then(data => {
-            const players = (data && data.players) ? data.players : [];
-            const player = players.find(p => p.slug === slug);
+      fetch('data/players.json', {cache:'no-cache'})
+        .then(resp => resp.json())
+        .then(data => {
+          const list = (data && data.players) ? data.players : [];
+          const player = list.find(p => p.slug === slug);
+          if(!player){
+            document.getElementById('player-error').style.display = 'block';
+            return;
+          }
+          renderPlayer(player);
+        })
+        .catch(err => {
+          console.error('Error loading players.json', err);
+          document.getElementById('player-error').style.display = 'block';
+        });
 
-            if(!player){
-              throw new Error('Player not found: ' + slug);
-            }
+      function renderPlayer(p){
+        document.getElementById('player-hero').style.display = '';
+        document.getElementById('player-layout').style.display = '';
 
-            // Hero
-            const photo = document.getElementById('player-photo');
-            photo.src = player.photoMain || 'images/IMG_9316.PNG';
-            photo.alt = player.name || 'Player photo';
+        const nameEl = document.getElementById('player-name');
+        const subtitleEl = document.getElementById('player-subtitle');
 
-            const numberText = player.number != null ? '#' + player.number : '';
-            document.getElementById('player-jersey-tag').textContent = numberText || 'NJ HITZ';
+        nameEl.textContent = p.name || 'Player Name';
+        const jersey = p.number ? '#' + p.number : '';
+        const team = p.teamName || '';
+        const pos = (Array.isArray(p.positions) ? p.positions.join(', ') : (p.positionPrimary || '')).trim();
+        subtitleEl.textContent = [jersey, team, pos].filter(Boolean).join(' • ');
 
-            setText('player-name', player.name || 'Player Name');
-            const subtitleParts = [];
-            if(player.teamName) subtitleParts.push(player.teamName);
-            if(player.positionPrimary) subtitleParts.push(player.positionPrimary);
-            if(player.gradYear) subtitleParts.push('Class of ' + player.gradYear);
-            setText('player-subtitle', subtitleParts.join(' • '));
+        const photoEl = document.getElementById('player-photo');
+        if(p.photoMain){
+          photoEl.src = p.photoMain;
+        } else {
+          photoEl.src = p.batsThrows.charAt(0)=="R" ? 'images/player-profile-placeholder.png' : 'images/player-profile-placeholder-reverse.png';
+        }
+        photoEl.alt = p.name ? (p.name + ' — player photo') : 'Player photo';
 
-            // Tags (positions, bats/throws, hometown)
-            const tagsEl = document.getElementById('player-tags');
-            tagsEl.innerHTML = '';
-            if(player.positions && player.positions.length){
-              const tag = document.createElement('div');
-              tag.className = 'player-tag';
-              tag.textContent = 'Pos: ' + player.positions.join(', ');
-              tagsEl.appendChild(tag);
-            }
-            if(player.batsThrows){
-              const tag = document.createElement('div');
-              tag.className = 'player-tag';
-              tag.textContent = 'B/T: ' + player.batsThrows;
-              tagsEl.appendChild(tag);
-            }
-            if(player.cityState){
-              const tag = document.createElement('div');
-              tag.className = 'player-tag';
-              tag.textContent = player.cityState;
-              tagsEl.appendChild(tag);
-            }
+        const badgeEl = document.getElementById('player-badge');
+        badgeEl.textContent = jersey || 'NJ HITZ';
 
-            const metaBits = [];
-            if(player.height) metaBits.push('Ht: ' + player.height);
-            if(player.weight) metaBits.push('Wt: ' + player.weight);
-            if(player.hand){
-              metaBits.push('Hand: ' + player.hand);
-            }
-            setText('player-meta', metaBits.join(' • '));
+        document.getElementById('meta-team').textContent = p.teamName || '';
+        document.getElementById('meta-grad').textContent = p.gradYear || '';
+        document.getElementById('meta-school').textContent = p.schoolName || '—';
+        document.getElementById('meta-gpa').textContent = p.gpa || '—';
+        document.getElementById('meta-size').textContent = (p.height && p.weight) ? `${p.height} / ${p.weight}` : (p.height || p.weight || '—');
+        document.getElementById('meta-batsthrows').textContent = p.batsThrows || '—';
 
-            // Bio
-            setText('player-bio', player.bio || 'Player bio coming soon.');
+        const posWrap = document.getElementById('pos-pills');
+        posWrap.innerHTML = '';
+        const positions = Array.isArray(p.positions) ? p.positions : (p.positionPrimary ? [p.positionPrimary] : []);
+        positions.forEach(pos => {
+          const span = document.createElement('span');
+          span.className = 'pill';
+          span.textContent = pos;
+          posWrap.appendChild(span);
+        });
 
-            // Academics
-            const acadGrid = document.getElementById('academics-grid');
-            acadGrid.innerHTML = '';
-            const rows = [
-              ['School', player.schoolName],
-              ['GPA', player.gpa],
-              ['Honors / Programs', player.honors],
-              ['Intended Major', player.intendedMajor]
-            ];
-            rows.forEach(([label,value]) => {
-              const rowEl = createInfoRow(label, value);
-              if(rowEl) acadGrid.appendChild(rowEl);
-            });
-            setText('academics-notes', player.academics || '');
+        // Bio
+        setText('player-bio', p.bio || 'Player bio coming soon.');
 
-            // Contact
-            const contactBlock = document.getElementById('contact-block');
-            contactBlock.innerHTML = '';
-            if(player.contactEmail){
-              const div = document.createElement('div');
-              div.innerHTML = 'Email: <a href="mailto:' + player.contactEmail + '">' + player.contactEmail + '</a>';
-              contactBlock.appendChild(div);
-            }
-            if(player.contactPhone){
-              const div = document.createElement('div');
-              div.innerHTML = 'Phone: <a href="tel:' + player.contactPhone + '">' + player.contactPhone + '</a>';
-              contactBlock.appendChild(div);
-            }
-            if(player.guardian1Name || player.guardian1Phone || player.guardian1Email){
-              const div = document.createElement('div');
-              let txt = 'Parent/Guardian: ' + (player.guardian1Name || '');
-              if(player.guardian1Phone) txt += ' • ' + player.guardian1Phone;
-              if(player.guardian1Email) txt += ' • ' + player.guardian1Email;
-              div.textContent = txt;
-              contactBlock.appendChild(div);
-            }
-            if(player.guardian2Name || player.guardian2Phone || player.guardian2Email){
-              const div = document.createElement('div');
-              let txt = 'Parent/Guardian: ' + (player.guardian2Name || '');
-              if(player.guardian2Phone) txt += ' • ' + player.guardian2Phone;
-              if(player.guardian2Email) txt += ' • ' + player.guardian2Email;
-              div.textContent = txt;
-              contactBlock.appendChild(div);
-            }
+        // Academics
+        const acadGrid = document.getElementById('academics-grid');
+        acadGrid.innerHTML = '';
+        const rows = [
+          ['School', p.schoolName],
+          ['GPA', p.gpa],
+          ['Honors / Programs', p.honors],
+          ['Intended Major', p.intendedMajor]
+        ];
+        rows.forEach(([label,value]) => {
+          const rowEl = createInfoRow(label, value);
+          if(rowEl) acadGrid.appendChild(rowEl);
+        });
+        setText('academics-notes', p.academics || '');
 
-            if(!contactBlock.innerHTML){
-              const div = document.createElement('div');
-              div.className = 'muted';
-              div.textContent = 'Recruiting contact details coming soon.';
-              contactBlock.appendChild(div);
-            }
+        /*
+        const acadList = document.getElementById('academics-list');
+        acadList.innerHTML = '';
+        const acadItems = [];
+        if(p.academics){ acadItems.push(p.academics); }
+        if(p.honors){ acadItems.push('Honors: ' + p.honors); }
+        if(p.intendedMajor){ acadItems.push('Intended Major: ' + p.intendedMajor); }
+        if(!acadItems.length){ acadItems.push('Example: strong classroom performance with leadership roles and community involvement.'); }
+        acadItems.forEach(t => {
+          const li = document.createElement('li');
+          li.textContent = t;
+          acadList.appendChild(li);
+        });
 
-            // Family
-            setText('family-notes', player.family || 'Family and background information coming soon.');
+        const bioList = document.getElementById('bio-list');
+        bioList.innerHTML = '';
+        if(p.bio){
+          const li = document.createElement('li');
+          li.textContent = p.bio;
+          bioList.appendChild(li);
+        }
+        if(p.family){
+          const li = document.createElement('li');
+          li.textContent = p.family;
+          bioList.appendChild(li);
+        }
+        */
 
-            // Measurables
-            const measList = document.getElementById('measurables-list');
-            measList.innerHTML = '';
-            if(player.measurables && player.measurables.length){
-              player.measurables.forEach(m => {
-                if(!m.label || !m.value) return;
-                const pill = document.createElement('div');
-                pill.className = 'measurable-pill';
-                pill.textContent = m.label + ': ' + m.value;
-                measList.appendChild(pill);
-              });
-            } else {
-              const pill = document.createElement('div');
-              pill.className = 'measurable-pill';
-              pill.textContent = 'Measurables coming soon.';
-              measList.appendChild(pill);
-            }
+        const contactList = document.getElementById('contact-list');
+        contactList.innerHTML = '';
+        if(p.contactEmail){
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>Email:</strong> <a href="mailto:${p.contactEmail}">${p.contactEmail}</a>`;
+          contactList.appendChild(li);
+        }
+        if(p.contactPhone){
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>Phone:</strong> <a href="tel:${p.contactPhone}">${p.contactPhone}</a>`;
+          contactList.appendChild(li);
+        }
+        if(p.guardian1Name || p.guardian1Email || p.guardian1Phone){
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>Guardian:</strong> ${p.guardian1Name || ''} ${p.guardian1Email ? ' • ' + p.guardian1Email : ''} ${p.guardian1Phone ? ' • ' + p.guardian1Phone : ''}`.trim();
+          contactList.appendChild(li);
+        }
 
-            // Links / highlights
-            const linksEl = document.getElementById('links-list');
-            linksEl.innerHTML = '';
-            const links = [];
-            if(player.highlightVideoUrl) links.push({label:'Highlight Video', url:player.highlightVideoUrl});
-            if(player.recruitingProfileUrl) links.push({label:'Recruiting Profile', url:player.recruitingProfileUrl});
-            if(player.additionalLinks && player.additionalLinks.length){
-              links.push.apply(links, player.additionalLinks);
-            }
-            if(links.length){
-              links.forEach(l => {
-                if(!l.url) return;
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = l.url;
-                a.target = '_blank';
-                a.rel = 'noopener';
-                a.textContent = l.label || l.url;
-                li.appendChild(a);
-                linksEl.appendChild(li);
-              });
-            } else {
-              const li = document.createElement('li');
-              li.className = 'muted';
-              li.textContent = 'Links and highlight media coming soon.';
-              linksEl.appendChild(li);
-            }
+        const measWrap = document.getElementById('measurables-grid');
+        measWrap.innerHTML = '';
+        (p.measurables || []).forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'measure-card';
+          div.innerHTML = `<div class="measure-label">${m.label || ''}</div><div class="measure-value">${m.value || ''}</div>`;
+          measWrap.appendChild(div);
+        });
 
-            // Stats
-            const statsContainer = document.getElementById('stats-container');
-            statsContainer.innerHTML = '';
+        const offCard = document.getElementById('offense-card');
+        const offTable = document.getElementById('offense-table');
+        offTable.innerHTML = '';
+        if(p.statsOffense && p.statsOffense.length){
+          offCard.style.display = '';
+          const rows = p.statsOffense;
+          offTable.innerHTML = `
+            <thead>
+              <tr>
+                <th>Season</th>
+                <th>AVG</th>
+                <th>OBP</th>
+                <th>SLG</th>
+                <th>OPS</th>
+                <th>HR</th>
+                <th>RBI</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr>
+                  <td>${r.season || ''}</td>
+                  <td>${r.avg || ''}</td>
+                  <td>${r.obp || ''}</td>
+                  <td>${r.slg || ''}</td>
+                  <td>${r.ops || ''}</td>
+                  <td>${r.hr != null ? r.hr : ''}</td>
+                  <td>${r.rbi != null ? r.rbi : ''}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          `;
+          document.getElementById('stats-note').textContent = p.statsNote || 'Sample stats for layout display. Replace with verified season data.';
+        }
 
-            const offenseTable = buildStatsTable(
-              'stats-offense',
-              'Offensive Stats',
-              player.statsOffense || [],
-              [
-                {label:'Season', key:'season'},
-                {label:'AVG', key:'avg'},
-                {label:'OBP', key:'obp'},
-                {label:'SLG', key:'slg'},
-                {label:'OPS', key:'ops'},
-                {label:'HR', key:'hr'},
-                {label:'RBI', key:'rbi'}
-              ]
-            );
-            if(offenseTable) statsContainer.appendChild(offenseTable);
+        const pitchCard = document.getElementById('pitching-card');
+        const pitchTable = document.getElementById('pitching-table');
+        pitchTable.innerHTML = '';
+        if(p.statsPitching && p.statsPitching.length){
+          pitchCard.style.display = '';
+          const rowsP = p.statsPitching;
+          pitchTable.innerHTML = `
+            <thead>
+              <tr>
+                <th>Season</th>
+                <th>ERA</th>
+                <th>IP</th>
+                <th>K</th>
+                <th>BB</th>
+                <th>WHIP</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsP.map(r => `
+                <tr>
+                  <td>${r.season || ''}</td>
+                  <td>${r.era || ''}</td>
+                  <td>${r.ip || ''}</td>
+                  <td>${r.k != null ? r.k : ''}</td>
+                  <td>${r.bb != null ? r.bb : ''}</td>
+                  <td>${r.whip || ''}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          `;
+        }
 
-            const pitchingTable = buildStatsTable(
-              'stats-pitching',
-              'Pitching Stats',
-              player.statsPitching || [],
-              [
-                {label:'Season', key:'season'},
-                {label:'ERA', key:'era'},
-                {label:'IP', key:'ip'},
-                {label:'K', key:'k'},
-                {label:'BB', key:'bb'},
-                {label:'WHIP', key:'whip'}
-              ]
-            );
-            if(pitchingTable) statsContainer.appendChild(pitchingTable);
-
-            if(!offenseTable && !pitchingTable){
-              const p = document.createElement('p');
-              p.className = 'muted';
-              p.textContent = 'Statistics will be updated throughout the season.';
-              statsContainer.appendChild(p);
-            }
-
-            setText('stats-note', player.statsNote || '');
-
-            // Show sections
-            heroSection.style.display = 'block';
-            contentSection.style.display = 'grid';
-          })
-          .catch(err => {
-            console.error(err);
-            errorEl.textContent = 'Unable to load player profile. Please confirm the link and data file.';
-            errorEl.style.display = 'block';
+        const linksCard = document.getElementById('links-card');
+        const linksList = document.getElementById('links-list');
+        linksList.innerHTML = '';
+        const links = [];
+        if(p.highlightVideoUrl){
+          links.push({ label: 'Highlight Video', url: p.highlightVideoUrl });
+        }
+        if(p.recruitingProfileUrl){
+          links.push({ label: 'Recruiting Profile', url: p.recruitingProfileUrl });
+        }
+        (p.additionalLinks || []).forEach(x => {
+          if(x && x.url){
+            links.push({ label: x.label || x.url, url: x.url });
+          }
+        });
+        if(links.length){
+          linksCard.style.display = '';
+          links.forEach(l => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`;
+            linksList.appendChild(li);
           });
-      }
+        }
 
-      loadPlayer();
+        //QR Code Generator
+        const shareCard = document.getElementById('share-card');
+        shareCard.style.display = '';
+        document.getElementById('qr-share-title').innerHTML = p.name;
+        var qrContainer = document.getElementById('qr-share-code');
+        new QRCode(qrContainer, {
+          text: window.location.href,          // current page URL
+          width: 200,
+          height: 200,
+          colorDark: "#b38b35",                // Hitz Gold
+          colorLight: "#4c2a85",               // Hitz Purple
+          correctLevel: QRCode.CorrectLevel.H  // high error correction
+        });
+
+        // Mobile / Web Share API handler
+        const qrWidget = document.getElementById('qr-share-widget');
+        const pageUrl = window.location.href;
+        const pageTitle = 'Player Showcase - ' + p.name;
+        qrWidget.addEventListener('click', function () {
+          if (navigator.share) {
+            navigator.share({
+              title: pageTitle,
+              text: 'Check this out:',
+              url: pageUrl
+            }).catch(err => console.warn('Share cancelled or failed:', err));
+          } else {
+            // Fallback: open mail composer with link
+            const mailto = `mailto:?subject=${encodeURIComponent(pageTitle)}&body=${encodeURIComponent('Check this out: ' + pageUrl)}`;
+            window.location.href = mailto;
+          }
+        });
+      }
     })();
+
+
+  // Shared mobile nav toggle
+  (function () {
+    const toggle = document.querySelector('.nav-toggle');
+    const menu = document.querySelector('.nav-menu');
+    if (!toggle || !menu) return;
+    toggle.addEventListener('click', function () {
+      const isOpen = menu.classList.toggle('nav-menu--open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    menu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        menu.classList.remove('nav-menu--open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
   </script>
+
+  <script src="scripts/template-loader.js"></script>
 </body>
 </html>

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NJ HITZ Player/Recruit Intake</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
+
+  <link href="css/main.css" rel="stylesheet">
+  <style>
+    body {
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
+      background:radial-gradient(1200px 800px at 70% -10%,rgba(179,139,53,.15),#050509);
+      color:var(--hitz-white);
+      line-height:1.5;
+    }
+
+    a { color:inherit; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    main {
+      max-width:1100px;
+      margin:18px auto 32px;
+      padding:0 16px 24px;
+    }
+
+    .intro {
+      font-size:.95rem;
+      color:#d7d7e6;
+      margin:8px 0 16px;
+    }
+
+    .section-title {
+      margin:18px 0 6px;
+      font-size:.9rem;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      color:#e4e4f5;
+    }
+
+    .form-card {
+      background:rgba(13,13,22,.96);
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.16);
+      padding:14px 14px 18px;
+      margin-bottom:16px;
+      box-shadow:0 18px 32px rgba(0,0,0,.55);
+    }
+
+    .form-grid-two {
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      gap:10px 16px;
+    }
+    @media (max-width:720px) {
+      .form-grid-two {
+        grid-template-columns:1fr;
+      }
+    }
+
+    .field {
+      margin-bottom:10px;
+    }
+    .field label {
+      display:block;
+      font-size:.86rem;
+      font-weight:600;
+      margin-bottom:3px;
+    }
+    .field small {
+      display:block;
+      font-size:.78rem;
+      color:#c4c4dd;
+      margin-bottom:3px;
+    }
+    .field input[type="text"],
+    .field input[type="number"],
+    .field input[type="email"],
+    .field input[type="tel"],
+    .field input[type="url"],
+    .field input[type="date"],
+    .field select,
+    .field textarea {
+      width:100%;
+      padding:6px 8px;
+      border-radius:8px;
+      border:1px solid #343446;
+      background:#080810;
+      color:var(--hitz-white);
+      font-size:.9rem;
+      outline:none;
+    }
+    .field textarea {
+      min-height:70px;
+      resize:vertical;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color:var(--hitz-gold);
+      box-shadow:0 0 0 1px rgba(179,139,53,.3);
+    }
+
+    .checkbox-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px 12px;
+      margin-top:4px;
+    }
+    .checkbox-row label {
+      display:inline-flex;
+      align-items:center;
+      font-weight:400;
+      font-size:.86rem;
+      gap:4px;
+    }
+
+    .file-input {
+      border:1px dashed #44445b;
+      border-radius:10px;
+      padding:8px;
+      background:#05050c;
+      font-size:.85rem;
+    }
+
+    .form-error {
+      margin:8px 0 10px;
+      padding:6px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,118,118,.9);
+      background:rgba(60,10,10,.9);
+      color:#ffd6d6;
+      font-size:.85rem;
+      display:none;
+    }
+
+    .form-success {
+      margin:8px 0 10px;
+      padding:6px 10px;
+      border-radius:8px;
+      border:1px solid rgba(120,200,140,.9);
+      background:rgba(10,40,20,.9);
+      color:#d5ffe0;
+      font-size:.85rem;
+      display:none;
+    }
+
+    .btn-row {
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .btn-primary {
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      font-size:.9rem;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      background:var(--hitz-gold);
+      color:#050509;
+      cursor:pointer;
+    }
+    .btn-primary:disabled {
+      opacity:.6;
+      cursor:default;
+    }
+    .btn-cancel {
+      border-radius:999px;
+      padding:8px 16px;
+      font-size:.85rem;
+      border:1px solid #55556a;
+      background:transparent;
+      color:#f0f0ff;
+      cursor:pointer;
+    }
+
+    /* Processing overlay */
+    .processing-overlay {
+      position:fixed;
+      inset:0;
+      background:rgba(5,5,12,.82);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      backdrop-filter:blur(3px);
+    }
+    .processing-overlay.is-visible {
+      display:flex;
+    }
+    .processing-box {
+      background:rgba(10,10,18,.96);
+      border-radius:14px;
+      padding:18px 20px 16px;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 18px 32px rgba(0,0,0,.8);
+      min-width:260px;
+      max-width:320px;
+      text-align:center;
+    }
+    .processing-spinner {
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      border:3px solid rgba(255,255,255,.24);
+      border-top-color:var(--hitz-gold);
+      margin:0 auto 10px;
+      animation:spin .8s linear infinite;
+    }
+    .processing-text {
+      font-size:.92rem;
+      font-weight:600;
+      margin-bottom:2px;
+    }
+    .processing-subtext {
+      font-size:.8rem;
+      color:#d0d0e2;
+    }
+    @keyframes spin {
+      to { transform:rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Shared site header -->
+  <header class="site-header" id="header"></header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">NJ HITZ SOFTBALL</div>
+      <h1>Player/Recruit Intake</h1>
+      <p>
+        Submit information used to build your NJ HITZ player profile for college coaches and program marketing.
+        Fields marked with * are required.
+      </p>
+    </div>
+  </section>
+
+  <main>
+    <p class="intro">
+      After submission, coaches or staff may edit entries for clarity and formatting before publishing on the site.
+    </p>
+
+    <form
+      id="playerForm"
+      action="https://docs.google.com/forms/d/e/1FAIpQLScszlEehm2qct_CuGZH5mPBGtxbaEb_ILkqNJMG3hvSgjqjHA/formResponse"
+      method="POST"
+      enctype="multipart/form-data"
+      novalidate>
+      <div id="form-status" class="form-status"></div>
+      <div id="formError" class="form-error"></div>
+      <div id="formSuccess" class="form-success"></div>
+
+      <!-- SECTION 1: Player & Team -->
+      <h2 class="section-title">Player & Team</h2>
+      <div class="form-card">
+        <div class="field">
+          <label for="playerName">Player Name *</label>
+          <input type="text" id="playerName" name="playerName" autocomplete="name" />
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="teamName">Team *</label>
+            <select id="teamName" name="teamName">
+              <option value="">Select team</option>
+              <option value="NJ HITZ 18U 2026">NJ HITZ 18U 2026</option>
+              <option value="NJ HITZ 16U 2026">NJ HITZ 16U 2026</option>
+              <option value="NJ HITZ 14U 2026">NJ HITZ 14U 2026</option>
+              <option value="NJ HITZ 12U 2026">NJ HITZ 12U 2026</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="jerseyNumber">Jersey Number *</label>
+            <input type="text" id="jerseyNumber" name="jerseyNumber" />
+          </div>
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="primaryPosition">Primary Position *</label>
+            <select id="primaryPosition" name="primaryPosition">
+              <option value="">Select position</option>
+              <option value="P">P</option>
+              <option value="C">C</option>
+              <option value="1B">1B</option>
+              <option value="2B">2B</option>
+              <option value="3B">3B</option>
+              <option value="SS">SS</option>
+              <option value="OF">OF</option>
+              <option value="UTIL">UTIL</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="batsThrows">Bats / Throws *</label>
+            <select id="batsThrows" name="batsThrows">
+              <option value="">Select</option>
+              <option value="R/R">R/R</option>
+              <option value="R/L">R/L</option>
+              <option value="L/R">L/R</option>
+              <option value="L/L">L/L</option>
+              <option value="Switch/R">Switch/R</option>
+              <option value="Switch/L">Switch/L</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Other Positions Played</label>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="positions" value="P" /> P</label>
+            <label><input type="checkbox" name="positions" value="C" /> C</label>
+            <label><input type="checkbox" name="positions" value="1B" /> 1B</label>
+            <label><input type="checkbox" name="positions" value="2B" /> 2B</label>
+            <label><input type="checkbox" name="positions" value="3B" /> 3B</label>
+            <label><input type="checkbox" name="positions" value="SS" /> SS</label>
+            <label><input type="checkbox" name="positions" value="OF" /> OF</label>
+            <label><input type="checkbox" name="positions" value="UTIL" /> UTIL</label>
+          </div>
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="gradYear">High School Graduation Year *</label>
+            <input type="text" id="gradYear" name="gradYear" />
+          </div>
+
+          <div class="field">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" name="dob" />
+          </div>
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="height">Height</label>
+            <small>Example: 5'5"</small>
+            <input type="text" id="height" name="height" />
+          </div>
+
+          <div class="field">
+            <label for="weight">Weight</label>
+            <small>Example: 125 lbs</small>
+            <input type="text" id="weight" name="weight" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="cityState">City &amp; State *</label>
+          <small>Example: Flanders, NJ</small>
+          <input type="text" id="cityState" name="cityState" />
+        </div>
+      </div>
+
+      <!-- SECTION 2: School & Academics -->
+      <h2 class="section-title">School & Academics</h2>
+      <div class="form-card">
+        <div class="field">
+          <label for="schoolName">Current School Name *</label>
+          <input type="text" id="schoolName" name="schoolName" />
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="gpa">Current GPA</label>
+            <small>Use 4.0 scale if possible.</small>
+            <input type="text" id="gpa" name="gpa" />
+          </div>
+
+          <div class="field">
+            <label for="intendedMajor">Intended College Major (if known)</label>
+            <input type="text" id="intendedMajor" name="intendedMajor" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="honors">Academic Honors / Awards</label>
+          <textarea id="honors" name="honors"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="academics">Academic Summary</label>
+          <small>Courses, AP/IB, academic interests, etc.</small>
+          <textarea id="academics" name="academics"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Contact -->
+      <h2 class="section-title">Contact Information</h2>
+      <div class="form-card">
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="playerEmail">Player Email</label>
+            <input type="email" id="playerEmail" name="playerEmail" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="playerPhone">Player Phone</label>
+            <input type="tel" id="playerPhone" name="playerPhone" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="guardian1Name">Parent/Guardian 1 Name *</label>
+          <input type="text" id="guardian1Name" name="guardian1Name" />
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="guardian1Email">Parent/Guardian 1 Email *</label>
+            <input type="email" id="guardian1Email" name="guardian1Email" />
+          </div>
+          <div class="field">
+            <label for="guardian1Phone">Parent/Guardian 1 Phone *</label>
+            <input type="tel" id="guardian1Phone" name="guardian1Phone" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="guardian2Name">Parent/Guardian 2 Name</label>
+          <input type="text" id="guardian2Name" name="guardian2Name" />
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="guardian2Email">Parent/Guardian 2 Email</label>
+            <input type="email" id="guardian2Email" name="guardian2Email" />
+          </div>
+          <div class="field">
+            <label for="guardian2Phone">Parent/Guardian 2 Phone</label>
+            <input type="tel" id="guardian2Phone" name="guardian2Phone" />
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: Family & Bio -->
+      <h2 class="section-title">Family & Bio</h2>
+      <div class="form-card">
+        <div class="field">
+          <label for="family">Family / Background Notes</label>
+          <textarea id="family" name="family"></textarea>
+        </div>
+        <div class="field">
+          <label for="bio">Player Bio (for website / college coaches)</label>
+          <textarea id="bio" name="bio"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 5: Measurables -->
+      <h2 class="section-title">Measurables</h2>
+      <div class="form-card">
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="homeToFirst">Home-to-1st Time</label>
+            <small>Example: 3.1s</small>
+            <input type="text" id="homeToFirst" name="homeToFirst" />
+          </div>
+          <div class="field">
+            <label for="overhandVelo">Overhand Throwing Velocity (mph)</label>
+            <input type="text" id="overhandVelo" name="overhandVelo" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="exitVelo">Exit Velocity (mph)</label>
+          <input type="text" id="exitVelo" name="exitVelo" />
+        </div>
+      </div>
+
+      <!-- SECTION 6: Offense Stats -->
+      <h2 class="section-title">Offensive Statistics (Most Recent Season)</h2>
+      <div class="form-card">
+        <div class="field">
+          <label for="offSeason">Offensive Stats - Season Label</label>
+          <small>Example: 2024 Club, 2024 HS Varsity</small>
+          <input type="text" id="offSeason" name="offSeason" />
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="avg">Batting Average (AVG)</label>
+            <input type="text" id="avg" name="avg" />
+          </div>
+          <div class="field">
+            <label for="obp">On-Base Percentage (OBP)</label>
+            <input type="text" id="obp" name="obp" />
+          </div>
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="slg">Slugging Percentage (SLG)</label>
+            <input type="text" id="slg" name="slg" />
+          </div>
+          <div class="field">
+            <label for="ops">OPS</label>
+            <input type="text" id="ops" name="ops" />
+          </div>
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="hr">Home Runs (HR)</label>
+            <input type="text" id="hr" name="hr" />
+          </div>
+          <div class="field">
+            <label for="rbi">Runs Batted In (RBI)</label>
+            <input type="text" id="rbi" name="rbi" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="statsNote">Stats Notes</label>
+          <small>Where stats are from; any clarifications.</small>
+          <textarea id="statsNote" name="statsNote"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 7: Pitching Stats -->
+      <h2 class="section-title">Pitching Statistics (Pitchers Only)</h2>
+      <div class="form-card">
+        <div class="field">
+          <label for="pitSeason">Pitching Stats - Season Label</label>
+          <input type="text" id="pitSeason" name="pitSeason" />
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="era">ERA</label>
+            <input type="text" id="era" name="era" />
+          </div>
+          <div class="field">
+            <label for="ip">Innings Pitched (IP)</label>
+            <input type="text" id="ip" name="ip" />
+          </div>
+        </div>
+
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="k">Strikeouts (K)</label>
+            <input type="text" id="k" name="k" />
+          </div>
+          <div class="field">
+            <label for="bb">Walks (BB)</label>
+            <input type="text" id="bb" name="bb" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="whip">WHIP</label>
+          <input type="text" id="whip" name="whip" />
+        </div>
+      </div>
+
+      <!-- SECTION 8: Video & Links -->
+      <h2 class="section-title">Video & Recruiting Links</h2>
+      <div class="form-card">
+        <div class="field">
+          <label for="highlightVideoUrl">Highlight Video URL</label>
+          <input type="url" id="highlightVideoUrl" name="highlightVideoUrl" />
+        </div>
+
+        <div class="field">
+          <label for="recruitingProfileUrl">Recruiting Profile URL</label>
+          <input type="url" id="recruitingProfileUrl" name="recruitingProfileUrl" />
+        </div>
+
+        <div class="field">
+          <label for="additionalLinks">Any Additional Links</label>
+          <small>Social media or additional video links (Label - URL, one per line).</small>
+          <textarea id="additionalLinks" name="additionalLinks"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 9: Optional Player File Upload (Google Drive, not Google Forms) -->
+      <h2 class="section-title">Optional Player Photo Upload</h2>
+      <div class="form-card">
+        <div class="field">
+          <label for="playerPhoto">Upload Player Photo (Optional)</label>
+          <div class="file-input">
+            <input
+              type="file"
+              id="playerPhoto"
+              name="playerPhoto"
+              accept=".png,.jpg,.jpeg,.heic"
+            />
+          </div>
+          <small>
+            The file will be renamed as: <code>player-name-jersey-number.ext</code> (lowercase, spaces → dashes).
+          </small>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="submit" class="btn-primary" id="submitBtn">Submit</button>
+        <button type="reset" class="btn-cancel">Reset</button>
+      </div>
+    </form>
+  </main>
+
+  <div id="footer"></div>
+
+  <!-- Processing overlay -->
+  <div id="processingOverlay" class="processing-overlay" aria-hidden="true">
+    <div class="processing-box" role="status" aria-live="polite">
+      <div class="processing-spinner"></div>
+      <div class="processing-text">Submitting your information…</div>
+      <div class="processing-subtext">Please don’t close or refresh this page.</div>
+    </div>
+  </div>
+
+  <script>
+  // Shared mobile nav toggle script
+  (function () {
+    const toggle = document.querySelector('.nav-toggle');
+    const menu = document.querySelector('.nav-menu');
+    if (!toggle || !menu) return;
+    toggle.addEventListener('click', function () {
+      const isOpen = menu.classList.toggle('nav-menu--open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    menu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        menu.classList.remove('nav-menu--open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  function scrollToTopSmooth() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Form validation, sanitization, Google Forms mapping & Drive file upload
+  (function () {
+    const form = document.getElementById('playerForm');
+    const errorBox = document.getElementById('formError');
+    const successBox = document.getElementById('formSuccess');
+    const submitBtn = document.getElementById('submitBtn');
+    const playerPhotoInput = document.getElementById('playerPhoto');
+    const processingOverlay = document.getElementById('processingOverlay');
+
+    if (!form || !errorBox || !successBox || !submitBtn) return;
+
+    const GOOGLE_FORM_ACTION =
+      'https://docs.google.com/forms/d/e/1FAIpQLScszlEehm2qct_CuGZH5mPBGtxbaEb_ILkqNJMG3hvSgjqjHA/formResponse';
+    form.action = GOOGLE_FORM_ACTION;
+    form.method = 'POST';
+
+    // Google Apps Script / backend endpoint that handles file saving in Drive
+    const DRIVE_UPLOAD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
+
+    // Date-of-birth field IDs (year/month/day)
+    const DOB_YEAR_FIELD = 'entry.220950726_year';
+    const DOB_MONTH_FIELD = 'entry.220950726_month';
+    const DOB_DAY_FIELD = 'entry.220950726_day';
+
+    const GOOGLE_FIELD_MAP = {
+      // Player & team
+      playerName: 'entry.2105312405',
+      teamName: 'entry.1802389373',
+      jerseyNumber: 'entry.1734998094',
+      primaryPosition: 'entry.2068309731',
+      batsThrows: 'entry.268373608',
+      positions: 'entry.2004426139',
+
+      // Player details (DOB handled separately as year/month/day)
+      gradYear: 'entry.1617042637',
+      height: 'entry.386018176',
+      weight: 'entry.1344738696',
+      cityState: 'entry.201173754',
+
+      // Academics
+      schoolName: 'entry.1279434410',
+      gpa: 'entry.861343878',
+      intendedMajor: 'entry.1130833279',
+      honors: 'entry.1768183972',
+      academics: 'entry.1877576210',
+
+      // Contact info
+      playerEmail: 'entry.837991769',
+      playerPhone: 'entry.1435609041',
+      guardian1Name: 'entry.1780727691',
+      guardian1Email: 'entry.1185509856',
+      guardian1Phone: 'entry.2071795513',
+      guardian2Name: 'entry.2021272578',
+      guardian2Email: 'entry.725155767',
+      guardian2Phone: 'entry.1662121608',
+      family: 'entry.1318357319',
+
+      // Player bio
+      bio: 'entry.591496362',
+
+      // Speed / measurables
+      homeToFirst: 'entry.1886233881',
+      overhandVelo: 'entry.206281335',
+      exitVelo: 'entry.1247835329',
+      offSeason: 'entry.1630116037',
+
+      // Offensive stats
+      avg: 'entry.1323059165',
+      obp: 'entry.1681158292',
+      slg: 'entry.1610719629',
+      ops: 'entry.1255655983',
+      hr: 'entry.1727464589',
+      rbi: 'entry.393172318',
+      statsNote: 'entry.804266947',
+
+      // Pitching stats
+      pitSeason: 'entry.252675725', // approximate mapping
+      era: 'entry.670638349',
+      ip: 'entry.86384439',
+      k: 'entry.444513990',
+      bb: 'entry.509750451',
+      whip: 'entry.868851338',
+
+      // Links
+      highlightVideoUrl: 'entry.582934884',
+      recruitingProfileUrl: 'entry.757615083',
+      additionalLinks: 'entry.1520931313'
+    };
+
+    function sanitizeText(value) {
+      if (!value) return '';
+      return value.toString().trim();
+    }
+
+    function isValidEmail(value) {
+      if (!value) return true;
+      return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value.trim());
+    }
+
+    function isValidUrl(value) {
+      if (!value) return true;
+      try {
+        const u = new URL(value.trim());
+        return !!u.protocol && !!u.host;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function showErrors(errors) {
+      if (!errors.length) {
+        errorBox.style.display = 'none';
+        errorBox.innerHTML = '';
+        return;
+      }
+      errorBox.style.display = 'block';
+      errorBox.innerHTML =
+        '<strong>Please fix the following before submitting:</strong><ul>' +
+        errors.map(e => '<li>' + e + '</li>').join('') +
+        '</ul>';
+      successBox.style.display = 'none';
+      successBox.textContent = '';
+    }
+
+    function showProcessing() {
+      if (processingOverlay) {
+        processingOverlay.classList.add('is-visible');
+        processingOverlay.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function hideProcessing() {
+      if (processingOverlay) {
+        processingOverlay.classList.remove('is-visible');
+        processingOverlay.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    // Build FormData containing ONLY Google entry.* fields
+    function buildGoogleFormData() {
+      const fd = new FormData();
+
+      Object.entries(GOOGLE_FIELD_MAP).forEach(([localName, entryName]) => {
+        if (!entryName) return;
+
+        // Positions checkboxes: send one entry.* field per checked value
+        if (localName === 'positions') {
+          const checked = form.querySelectorAll('input[name="positions"]:checked');
+          if (checked && checked.length) {
+            Array.from(checked).forEach(cbox => {
+              fd.append(entryName, (cbox.value || '').trim());
+            });
+          }
+          return;
+        }
+
+        const el = form.elements[localName] || document.getElementById(localName);
+        if (!el) return;
+        const value = (el.value || '').trim();
+        fd.append(entryName, value);
+      });
+
+      // Date of Birth: "YYYY-MM-DD" from <input type="date">
+      const dobInput = form.elements['dob'] || document.getElementById('dob');
+      const dobRaw = dobInput && dobInput.value ? dobInput.value.trim() : '';
+
+      if (dobRaw) {
+        const parts = dobRaw.split('-');
+        const year = parts[0] || '';
+        const month = parts[1] || '';
+        const day = parts[2] || '';
+
+        // Strip leading zeros
+        if (year)  fd.append(DOB_YEAR_FIELD,  String(parseInt(year, 10)));
+        if (month) fd.append(DOB_MONTH_FIELD, String(parseInt(month, 10)));
+        if (day)   fd.append(DOB_DAY_FIELD,   String(parseInt(day, 10)));
+      } else {
+        fd.append(DOB_YEAR_FIELD, '');
+        fd.append(DOB_MONTH_FIELD, '');
+        fd.append(DOB_DAY_FIELD, '');
+      }
+
+      return fd;
+    }
+
+    // Build a safe filename: player-name-jersey-number.ext
+    function buildplayerPhotoName(playerName, jerseyNumber, originalName) {
+      const baseNameRaw = (playerName || 'player').toString().trim().toLowerCase();
+      const baseName = baseNameRaw.replace(/\s+/g, '-');
+      const num = (jerseyNumber || '').toString().trim();
+      const suffix = num ? '-' + num : '';
+
+      let ext = '';
+      if (originalName && originalName.indexOf('.') !== -1) {
+        ext = originalName.substring(originalName.lastIndexOf('.'));
+      }
+
+      return baseName + suffix + ext;
+    }
+
+    // Upload the selected file (if any) to Google Drive endpoint
+    async function uploadplayerPhotoIfAny(playerName, jerseyNumber) {
+      if (!playerPhotoInput || !playerPhotoInput.files || !playerPhotoInput.files.length) {
+        return { attempted: false, success: true };
+      }
+      if (!DRIVE_UPLOAD_ENDPOINT || DRIVE_UPLOAD_ENDPOINT.indexOf('REPLACE_WITH_YOUR_WEB_APP_ID') !== -1) {
+        console.warn('Drive upload endpoint not configured; skipping file upload.');
+        return { attempted: false, success: false };
+      }
+
+      const file = playerPhotoInput.files[0];
+      const safeName = buildplayerPhotoName(playerName, jerseyNumber, file.name);
+
+      try {
+        await fetch(DRIVE_UPLOAD_ENDPOINT + "?filename=" + encodeURIComponent(safeName), {
+          method: 'POST',
+          mode: 'no-cors',
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream'
+          }
+        });
+
+        // Treat any non-network error as success in no-cors mode
+        return { attempted: true, success: true };
+      } catch (err) {
+        console.error('Error uploading player file:', err);
+        return { attempted: true, success: false };
+      }
+    }
+
+    form.addEventListener('submit', async function (evt) {
+      evt.preventDefault();
+      const errors = [];
+
+      hideProcessing(); // just in case
+
+      // Required fields
+      const playerName = sanitizeText(form.playerName.value);
+      const teamName = sanitizeText(form.teamName.value);
+      const jerseyNumber = sanitizeText(form.jerseyNumber.value);
+      const primaryPosition = sanitizeText(form.primaryPosition.value);
+      const batsThrows = sanitizeText(form.batsThrows.value);
+      const gradYear = sanitizeText(form.gradYear.value);
+      const cityState = sanitizeText(form.cityState.value);
+      const schoolName = sanitizeText(form.schoolName.value);
+      const guardian1Name = sanitizeText(form.guardian1Name.value);
+      const guardian1Email = sanitizeText(form.guardian1Email.value);
+      const guardian1Phone = sanitizeText(form.guardian1Phone.value);
+
+      // Put sanitized values back
+      form.playerName.value = playerName;
+      form.teamName.value = teamName;
+      form.jerseyNumber.value = jerseyNumber;
+      form.primaryPosition.value = primaryPosition;
+      form.batsThrows.value = batsThrows;
+      form.gradYear.value = gradYear;
+      form.cityState.value = cityState;
+      form.schoolName.value = schoolName;
+      form.guardian1Name.value = guardian1Name;
+      form.guardian1Email.value = guardian1Email;
+      form.guardian1Phone.value = guardian1Phone;
+
+      if (!playerName) errors.push('Player Name is required.');
+      if (!teamName) errors.push('Team is required.');
+      if (!jerseyNumber) errors.push('Jersey Number is required.');
+      if (!primaryPosition) errors.push('Primary Position is required.');
+      if (!batsThrows) errors.push('Bats / Throws is required.');
+      if (!gradYear || !/^\d{4}$/.test(gradYear)) {
+        errors.push('High School Graduation Year is required and must be a 4-digit year.');
+      }
+      if (!cityState) errors.push('City & State is required.');
+      if (!schoolName) errors.push('Current School Name is required.');
+      if (!guardian1Name) errors.push('Parent/Guardian 1 Name is required.');
+      if (!guardian1Email) errors.push('Parent/Guardian 1 Email is required.');
+      if (guardian1Email && !isValidEmail(guardian1Email)) {
+        errors.push('Parent/Guardian 1 Email is not a valid email address.');
+      }
+      if (!guardian1Phone) errors.push('Parent/Guardian 1 Phone is required.');
+
+      // Optional emails
+      const playerEmail = sanitizeText(form.playerEmail.value);
+      const guardian2Email = sanitizeText(form.guardian2Email.value);
+      form.playerEmail.value = playerEmail;
+      form.guardian2Email.value = guardian2Email;
+
+      if (playerEmail && !isValidEmail(playerEmail)) {
+        errors.push('Player Email is not a valid email address.');
+      }
+      if (guardian2Email && !isValidEmail(guardian2Email)) {
+        errors.push('Parent/Guardian 2 Email is not a valid email address.');
+      }
+
+      // URLs
+      const highlightVideoUrl = sanitizeText(form.highlightVideoUrl.value);
+      const recruitingProfileUrl = sanitizeText(form.recruitingProfileUrl.value);
+      form.highlightVideoUrl.value = highlightVideoUrl;
+      form.recruitingProfileUrl.value = recruitingProfileUrl;
+
+      if (!isValidUrl(highlightVideoUrl)) {
+        errors.push('Highlight Video URL is not a valid URL.');
+      }
+      if (!isValidUrl(recruitingProfileUrl)) {
+        errors.push('Recruiting Profile URL is not a valid URL.');
+      }
+
+      // Show errors, scroll to top if any
+      showErrors(errors);
+      if (errors.length) {
+        scrollToTopSmooth();
+        hideProcessing();
+        return;
+      }
+
+      // Build Google Forms payload
+      const formData = buildGoogleFormData();
+
+      submitBtn.disabled = true;
+      successBox.style.display = 'block';
+      successBox.textContent = 'Submitting...';
+      errorBox.style.display = 'none';
+      errorBox.innerHTML = '';
+
+      showProcessing();
+
+      // 1) Try to upload file (if any) to Drive
+      let fileUploadResult = { attempted: false, success: true };
+      try {
+        fileUploadResult = await uploadplayerPhotoIfAny(playerName, jerseyNumber);
+      } catch (e) {
+        console.error('Unexpected error during file upload:', e);
+      }
+
+      // 2) Submit to Google Forms
+      fetch(GOOGLE_FORM_ACTION, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      })
+        .then(() => {
+          // no-cors: assume success if network didn't throw
+          let msg = 'Thank you! Your information has been submitted.';
+          if (fileUploadResult.attempted && !fileUploadResult.success) {
+            msg += ' Note: your attached file may not have uploaded correctly. Please contact staff if needed.';
+          }
+          successBox.style.display = 'block';
+          successBox.textContent = msg;
+          errorBox.style.display = 'none';
+          errorBox.innerHTML = '';
+          form.reset();
+        })
+        .catch(() => {
+          errorBox.style.display = 'block';
+          errorBox.innerHTML =
+            'There was a problem submitting your information. Please try again in a moment.';
+          successBox.style.display = 'none';
+          successBox.textContent = '';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          hideProcessing();
+          scrollToTopSmooth();
+        });
+    });
+  })();
+  </script>
+
+  <script src="scripts/template-loader.js"></script>
+</body>
+</html>

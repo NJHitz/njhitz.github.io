@@ -11,19 +11,8 @@
   
   <!--- <script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script> --->
   
+  <link href="css/main.css" rel="stylesheet">
   <style>
-    :root{
-      --hitz-purple:#4c2a85;
-      --hitz-gold:#b38b35;
-      --hitz-black:#0e0e0f;
-      --hitz-white:#ffffff;
-      --hitz-gray:#f5f5f7;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--hitz-white);background:#0f0f11}
-    a{color:inherit}
-    .container{width:min(1100px,92vw);margin:0 auto}
-
     /* HERO */
     .hero{position:relative;height:clamp(360px,55vw,560px);overflow:hidden;border-bottom:4px solid var(--hitz-gold);background:#0f0f11}
     .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.5),rgba(0,0,0,.65) 30%,rgba(0,0,0,.75))}
@@ -120,10 +109,7 @@
       .lightbox-close{ right: 8px; top: 8px; }
     }
 
-    /* Footer */
-    .stripe{background:linear-gradient(90deg,var(--hitz-purple),var(--hitz-gold));height:4px}
-    .footer{padding:18px 0 36px;text-align:center;color:#cfcfdb;font-size:.9rem}
-    .gold{color:var(--hitz-gold)}
+    
 
     /* Modal (Formspree) */
     .modal{position:fixed;inset:0;display:none;z-index:10000}
@@ -209,41 +195,51 @@
       display: block;
     }
 
-    /* Social Links */
-    .footer .social {
-      margin-top: 14px;
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-    }
-    .footer .social a {
-      width: 36px;
-      height: 36px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 999px;
-      background: var(--hitz-purple);
-      border: 2px solid var(--hitz-gold);
-      color: var(--hitz-gold);
-      transition: all 0.25s ease;
-      text-decoration: none;
-      font-size: 1.2rem;
-    }
-    .footer .social a:hover {
-      background: var(--hitz-gold);
-      color: var(--hitz-black);
-      transform: translateY(-2px);
-    }
-    .footer .social svg {
-      width: 18px;
-      height: 18px;
-      fill: currentColor;
-    }
+    
 
   </style>  
 </head>
 <body>
+  <!-- Shared site header -->
+  <header class="site-header" id="header"></header>
+  <!--
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="images/hitzpurple.png" alt="NJ HITZ Softball logo">
+        <span>NJ HITZ SOFTBALL</span>
+      </a>
+
+      <!-- Desktop navigation --
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="index.html#program">Program</a>
+        <a href="index.html#mission">Mission</a>
+        <a href="index.html#gallery">Gallery</a>
+        <a href="teams.html">Teams</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="tryouts">Tryouts</a>
+      </nav>
+
+      <!-- Mobile hamburger --
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+    </div>
+
+    <!-- Mobile nav panel --
+    <nav class="nav-menu" aria-label="Mobile navigation">
+      <a href="index.html#program">Program</a>
+      <a href="index.html#mission">Mission</a>
+      <a href="index.html#gallery">Gallery</a>
+      <a href="teams.html">Teams</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="tryouts">Tryouts</a>
+    </nav>
+  </header>
+  -->
+
   <section id="nj-hitz">
     <!-- HERO -->
     <div class="hero">
@@ -260,10 +256,9 @@
           </div>
           <h1>Fastpitch Culture. Competitive Edge.</h1>
           <p>NJ HITZ is a New Jersey club softball program focused on player development, college-ready fundamentals, and a positive, high-energy culture on and off the field.</p>
-          <div class="cta-row">
+          <div class="cta-row" style="display:none;">
             <a class="btn solid" href="#program">Explore Programs</a>
             <a class="btn" href="#mission">Our Mission</a>
-            <a class="btn" href="teams.html" style="display: none;" id="teams-btn">Our Teams</a>
             <a class="btn" href="#gallery">Photo Gallery</a>
             <a class="btn" href="#contact">Contact Us</a>
           </div>
@@ -414,6 +409,8 @@
       </div>
     </div>
 
+    <div id="footer"></div>
+    <!--
     <div class="stripe" aria-hidden="true"></div>
     <div class="footer container">
       <div>
@@ -431,7 +428,7 @@
         </a>
       </div>
     </div>
-
+    -->
   </section>
 
   <!-- EMAIL MODAL -->
@@ -712,24 +709,26 @@
         }
       });
     })();
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const teamsButton = document.getElementById('teams-btn');
-
-      // Example 1: Display if a specific query parameter exists
-      if (urlParams.get('preview') === 'y') {
-        teamsButton.style.display = 'block'; // or 'inline-block', 'flex', etc.
-      }
-
-      // Example 2: Display if a specific query parameter has a specific value
-      // if (urlParams.get('userRole') === 'admin') {
-      //   myButton.style.display = 'block';
-      // }
+  
+  // Shared mobile nav toggle
+  (function () {
+    const toggle = document.querySelector('.nav-toggle');
+    const menu = document.querySelector('.nav-menu');
+    if (!toggle || !menu) return;
+    toggle.addEventListener('click', function () {
+      const isOpen = menu.classList.toggle('nav-menu--open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
-  </script>
+    menu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        menu.classList.remove('nav-menu--open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
 
+</script>
+
+  <script src="scripts/template-loader.js"></script>
 </body>
 </html>
