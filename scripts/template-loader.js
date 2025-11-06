@@ -1,4 +1,13 @@
-fetch('templates/header.html')
+var localExtTag;
+var headerTemplate;
+if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+  headerTemplate = "header-local.html";
+  localExtTag = ".html";
+} else {
+  headerTemplate = "header.html";
+}
+
+fetch('templates/' + headerTemplate)
   .then(response => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

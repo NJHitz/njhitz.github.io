@@ -365,7 +365,7 @@
   <div class="page-container">
     <main>
       <div class="content">
-        <a href="teams.html" class="back-link"><span>←</span> Back to Teams</a>
+        <a href="teams" class="back-link" id="back-link"><span>←</span> Back to Teams</a>
 
         <section id="player-hero" class="player-hero" style="display:none;">
           <!--<div class="player-tagline">Player Showcase</div>-->
@@ -952,5 +952,6 @@
 </script>
 
 <script src="scripts/template-loader.js"></script>
+<script>if(localExtTag){ document.getElementById("back-link").href = "teams.html"; }</script>
 </body>
 </html>
