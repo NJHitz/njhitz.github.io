@@ -112,6 +112,7 @@
       background:#050509;
       min-height:260px;
       max-height:420px;
+      line-height: 0;
     }
     .player-photo{
       width:100%;
@@ -127,6 +128,7 @@
       background:rgba(5,5,10,.9);
       border:1px solid rgba(255,255,255,.25);
       font-size:.8rem;
+      line-height:1.5;
     }
 
     dl.meta{
@@ -510,7 +512,7 @@
         if(p.photoMain){
           photoEl.src = p.photoMain;
         } else {
-          photoEl.src = p.batsThrows.charAt(0)=="R" ? 'images/player-profile-placeholder.png' : 'images/player-profile-placeholder-reverse.png';
+          photoEl.src = p.batsThrows.charAt(0)=="R" ? 'images/player-profile-placeholder-sq-v2.png' : 'images/player-profile-placeholder-sq-v2-reverse.png';
         }
         photoEl.alt = p.name ? (p.name + ' — player photo') : 'Player photo';
 
