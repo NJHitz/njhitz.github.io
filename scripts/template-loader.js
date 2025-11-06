@@ -1,8 +1,6 @@
-var localExtTag;
 var headerTemplate;
 if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
   headerTemplate = "header-local.html";
-  localExtTag = ".html";
 } else {
   headerTemplate = "header.html";
 }
