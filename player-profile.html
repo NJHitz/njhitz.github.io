@@ -122,7 +122,7 @@
   <!-- QRCode.js library (lightweight, no dependencies) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="scripts/preload.js"></script>
-  
+
   <link href="css/main.css" rel="stylesheet">
   <style>
     body{
@@ -510,7 +510,7 @@
                   <dd id="meta-gpa"></dd>
                 </div>
                 <div>
-                  <dt>Height / Weight</dt>
+                  <dt>Height</dt>
                   <dd id="meta-size"></dd>
                 </div>
                 <div>
@@ -857,7 +857,8 @@
       document.getElementById('meta-school').textContent = p.schoolName || '—';
       document.getElementById('meta-gpa').textContent = p.gpa || '—';
       document.getElementById('meta-size').textContent =
-        (p.height && p.weight) ? `${p.height} / ${p.weight}` : (p.height || p.weight || '—');
+        //(p.height && p.weight) ? `${p.height} / ${p.weight}` : (p.height || p.weight || '—');
+        (p.height) ? `${p.height}` : '—');
       document.getElementById('meta-batsthrows').textContent = p.batsThrows || '—';
 
       const posWrap = document.getElementById('pos-pills');

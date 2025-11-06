@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
+  <script src="scripts/preload.js"></script>
 
   <link href="css/main.css" rel="stylesheet">
   <style>
@@ -344,22 +345,22 @@
 
         <div class="form-grid-two">
           <div class="field">
+            <label for="cityState">City &amp; State *</label>
+            <small>Example: Flanders, NJ</small>
+            <input type="text" id="cityState" name="cityState" />
+          </div>
+          
+          <div class="field">
             <label for="height">Height</label>
             <small>Example: 5'5"</small>
             <input type="text" id="height" name="height" />
           </div>
 
-          <div class="field">
+          <div class="field" style="display:none;">
             <label for="weight">Weight</label>
             <small>Example: 125 lbs</small>
             <input type="text" id="weight" name="weight" />
           </div>
-        </div>
-
-        <div class="field">
-          <label for="cityState">City &amp; State *</label>
-          <small>Example: Flanders, NJ</small>
-          <input type="text" id="cityState" name="cityState" />
         </div>
       </div>
 
