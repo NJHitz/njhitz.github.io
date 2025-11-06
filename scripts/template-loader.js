@@ -7,6 +7,23 @@ fetch('templates/header.html')
   })
   .then(htmlContent => {
     document.getElementById('header').innerHTML = htmlContent; // Insert the HTML into the target element
+
+    // Shared mobile nav toggle
+    (function () {
+      const toggle = document.querySelector('.nav-toggle');
+      const menu = document.querySelector('.nav-menu');
+      if (!toggle || !menu) return;
+      toggle.addEventListener('click', function () {
+        const isOpen = menu.classList.toggle('nav-menu--open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      menu.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          menu.classList.remove('nav-menu--open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
   })
   .catch(error => {
     console.error('Error loading content:', error);

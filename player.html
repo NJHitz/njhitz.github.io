@@ -24,7 +24,7 @@
     }
 
     a{ color:inherit; text-decoration:none; }
-    a:hover{ text-decoration:underline; }
+    /*a:hover{ text-decoration:underline; }*/
     .player-hero{
       margin-bottom:18px;
     }
@@ -731,25 +731,6 @@
         });
       }
     })();
-
-
-  // Shared mobile nav toggle
-  (function () {
-    const toggle = document.querySelector('.nav-toggle');
-    const menu = document.querySelector('.nav-menu');
-    if (!toggle || !menu) return;
-    toggle.addEventListener('click', function () {
-      const isOpen = menu.classList.toggle('nav-menu--open');
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-    menu.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        menu.classList.remove('nav-menu--open');
-        toggle.setAttribute('aria-expanded', 'false');
-      });
-    });
-  })();
-
   </script>
 
   <script src="scripts/template-loader.js"></script>
