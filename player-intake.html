@@ -379,7 +379,8 @@
           </div>
 
           <div class="field">
-            <label for="intendedMajor">Intended College Major (if known)</label>
+            <label for="intendedMajor">Intended College Major</label>
+            <small>(if known)</small>
             <input type="text" id="intendedMajor" name="intendedMajor" />
           </div>
         </div>
@@ -399,6 +400,16 @@
       <!-- SECTION 3: Contact -->
       <h2 class="section-title">Contact Information</h2>
       <div class="form-card">
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="contactDisplayOptIn">Display Contact Information on Website? *</label>
+            <select id="contactDisplayOptIn" name="contactDisplayOptIn">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+        </div>
         <div class="form-grid-two">
           <div class="field">
             <label for="playerEmail">Player Email</label>
@@ -466,14 +477,21 @@
             <input type="text" id="homeToFirst" name="homeToFirst" />
           </div>
           <div class="field">
-            <label for="overhandVelo">Overhand Throwing Velocity (mph)</label>
-            <input type="text" id="overhandVelo" name="overhandVelo" />
+            <label for="firstToThird">1st-to-3rd Time</label>
+            <small>Example: 7.5s</small>
+            <input type="text" id="firstToThird" name="firstToThird" />
           </div>
         </div>
 
-        <div class="field">
-          <label for="exitVelo">Exit Velocity (mph)</label>
-          <input type="text" id="exitVelo" name="exitVelo" />
+        <div class="form-grid-two">
+          <div class="field">
+            <label for="overhandVelo">Overhand Throwing Velocity (mph)</label>
+            <input type="text" id="overhandVelo" name="overhandVelo" />
+          </div>
+          <div class="field">
+            <label for="exitVelo">Exit Velocity (mph)</label>
+            <input type="text" id="exitVelo" name="exitVelo" />
+          </div>
         </div>
       </div>
 
@@ -620,12 +638,11 @@
   </div>
 
   <script>
-
   function scrollToTopSmooth() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Form validation, sanitization, Google Forms mapping & Drive file upload
+  // Form validation, sanitization & send to GAS intake endpoint
   (function () {
     const form = document.getElementById('playerForm');
     const errorBox = document.getElementById('formError');
@@ -636,84 +653,11 @@
 
     if (!form || !errorBox || !successBox || !submitBtn) return;
 
-    const GOOGLE_FORM_ACTION =
-      'https://docs.google.com/forms/d/e/1FAIpQLScszlEehm2qct_CuGZH5mPBGtxbaEb_ILkqNJMG3hvSgjqjHA/formResponse';
-    form.action = GOOGLE_FORM_ACTION;
-    form.method = 'POST';
+    // ✅ New: GAS web app endpoint for gas_NewRecruitIntake.js
+    // Replace this with your deployed Web App URL if different
+    const INTAKE_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
 
-    // Google Apps Script / backend endpoint that handles file saving in Drive
-    const DRIVE_UPLOAD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
-
-    // Date-of-birth field IDs (year/month/day)
-    const DOB_YEAR_FIELD = 'entry.220950726_year';
-    const DOB_MONTH_FIELD = 'entry.220950726_month';
-    const DOB_DAY_FIELD = 'entry.220950726_day';
-
-    const GOOGLE_FIELD_MAP = {
-      // Player & team
-      playerName: 'entry.2105312405',
-      teamName: 'entry.1802389373',
-      jerseyNumber: 'entry.1734998094',
-      primaryPosition: 'entry.2068309731',
-      batsThrows: 'entry.268373608',
-      positions: 'entry.2004426139',
-
-      // Player details (DOB handled separately as year/month/day)
-      gradYear: 'entry.1617042637',
-      height: 'entry.386018176',
-      weight: 'entry.1344738696',
-      cityState: 'entry.201173754',
-
-      // Academics
-      schoolName: 'entry.1279434410',
-      gpa: 'entry.861343878',
-      intendedMajor: 'entry.1130833279',
-      honors: 'entry.1768183972',
-      academics: 'entry.1877576210',
-
-      // Contact info
-      playerEmail: 'entry.837991769',
-      playerPhone: 'entry.1435609041',
-      guardian1Name: 'entry.1780727691',
-      guardian1Email: 'entry.1185509856',
-      guardian1Phone: 'entry.2071795513',
-      guardian2Name: 'entry.2021272578',
-      guardian2Email: 'entry.725155767',
-      guardian2Phone: 'entry.1662121608',
-      family: 'entry.1318357319',
-
-      // Player bio
-      bio: 'entry.591496362',
-
-      // Speed / measurables
-      homeToFirst: 'entry.1886233881',
-      overhandVelo: 'entry.206281335',
-      exitVelo: 'entry.1247835329',
-      offSeason: 'entry.1630116037',
-
-      // Offensive stats
-      avg: 'entry.1323059165',
-      obp: 'entry.1681158292',
-      slg: 'entry.1610719629',
-      ops: 'entry.1255655983',
-      hr: 'entry.1727464589',
-      rbi: 'entry.393172318',
-      statsNote: 'entry.804266947',
-
-      // Pitching stats
-      pitSeason: 'entry.252675725', // approximate mapping
-      era: 'entry.670638349',
-      ip: 'entry.86384439',
-      k: 'entry.444513990',
-      bb: 'entry.509750451',
-      whip: 'entry.868851338',
-
-      // Links
-      highlightVideoUrl: 'entry.582934884',
-      recruitingProfileUrl: 'entry.757615083',
-      additionalLinks: 'entry.1520931313'
-    };
-
+    // Helpers (unchanged behavior)
     function sanitizeText(value) {
       if (!value) return '';
       return value.toString().trim();
@@ -763,51 +707,14 @@
       }
     }
 
-    // Build FormData containing ONLY Google entry.* fields
-    function buildGoogleFormData() {
-      const fd = new FormData();
+    //Build Player Slug
+    function buildPlayerSlug(playerName, jerseyNumber) {
+      const baseNameRaw = (playerName || 'player').toString().trim().toLowerCase();
+      const baseName = baseNameRaw.replace(/\s+/g, '-');
+      const num = (jerseyNumber || '').toString().trim();
+      const suffix = num ? '-' + num : '';
 
-      Object.entries(GOOGLE_FIELD_MAP).forEach(([localName, entryName]) => {
-        if (!entryName) return;
-
-        // Positions checkboxes: send one entry.* field per checked value
-        if (localName === 'positions') {
-          const checked = form.querySelectorAll('input[name="positions"]:checked');
-          if (checked && checked.length) {
-            Array.from(checked).forEach(cbox => {
-              fd.append(entryName, (cbox.value || '').trim());
-            });
-          }
-          return;
-        }
-
-        const el = form.elements[localName] || document.getElementById(localName);
-        if (!el) return;
-        const value = (el.value || '').trim();
-        fd.append(entryName, value);
-      });
-
-      // Date of Birth: "YYYY-MM-DD" from <input type="date">
-      const dobInput = form.elements['dob'] || document.getElementById('dob');
-      const dobRaw = dobInput && dobInput.value ? dobInput.value.trim() : '';
-
-      if (dobRaw) {
-        const parts = dobRaw.split('-');
-        const year = parts[0] || '';
-        const month = parts[1] || '';
-        const day = parts[2] || '';
-
-        // Strip leading zeros
-        if (year)  fd.append(DOB_YEAR_FIELD,  String(parseInt(year, 10)));
-        if (month) fd.append(DOB_MONTH_FIELD, String(parseInt(month, 10)));
-        if (day)   fd.append(DOB_DAY_FIELD,   String(parseInt(day, 10)));
-      } else {
-        fd.append(DOB_YEAR_FIELD, '');
-        fd.append(DOB_MONTH_FIELD, '');
-        fd.append(DOB_DAY_FIELD, '');
-      }
-
-      return fd;
+      return baseName + suffix;
     }
 
     // Build a safe filename: player-name-jersey-number.ext
@@ -825,35 +732,44 @@
       return baseName + suffix + ext;
     }
 
-    // Upload the selected file (if any) to Google Drive endpoint
+    // ✅ New: instead of uploading directly, build a file JSON payload (base64)
     async function uploadplayerPhotoIfAny(playerName, jerseyNumber) {
       if (!playerPhotoInput || !playerPhotoInput.files || !playerPhotoInput.files.length) {
-        return { attempted: false, success: true };
-      }
-      if (!DRIVE_UPLOAD_ENDPOINT || DRIVE_UPLOAD_ENDPOINT.indexOf('REPLACE_WITH_YOUR_WEB_APP_ID') !== -1) {
-        console.warn('Drive upload endpoint not configured; skipping file upload.');
-        return { attempted: false, success: false };
+        return { attempted: false, success: true, file: null };
       }
 
       const file = playerPhotoInput.files[0];
       const safeName = buildplayerPhotoName(playerName, jerseyNumber, file.name);
 
-      try {
-        await fetch(DRIVE_UPLOAD_ENDPOINT + "?filename=" + encodeURIComponent(safeName), {
-          method: 'POST',
-          mode: 'no-cors',
-          body: file,
-          headers: {
-            'Content-Type': file.type || 'application/octet-stream'
-          }
-        });
+      return new Promise(resolve => {
+        const reader = new FileReader();
 
-        // Treat any non-network error as success in no-cors mode
-        return { attempted: true, success: true };
-      } catch (err) {
-        console.error('Error uploading player file:', err);
-        return { attempted: true, success: false };
-      }
+        reader.onload = function (e) {
+          try {
+            const result = e.target.result || '';
+            const base64 = result.toString().split(',')[1] || '';
+            resolve({
+              attempted: true,
+              success: true,
+              file: {
+                data: base64,
+                filename: safeName,
+                mimeType: file.type || 'application/octet-stream'
+              }
+            });
+          } catch (err) {
+            console.error('Error encoding file to base64:', err);
+            resolve({ attempted: true, success: false, file: null });
+          }
+        };
+
+        reader.onerror = function (err) {
+          console.error('FileReader error:', err);
+          resolve({ attempted: true, success: false, file: null });
+        };
+
+        reader.readAsDataURL(file);
+      });
     }
 
     form.addEventListener('submit', async function (evt) {
@@ -871,6 +787,7 @@
       const gradYear = sanitizeText(form.gradYear.value);
       const cityState = sanitizeText(form.cityState.value);
       const schoolName = sanitizeText(form.schoolName.value);
+      const contactDisplayOptIn = sanitizeText(form.contactDisplayOptIn.value);
       const guardian1Name = sanitizeText(form.guardian1Name.value);
       const guardian1Email = sanitizeText(form.guardian1Email.value);
       const guardian1Phone = sanitizeText(form.guardian1Phone.value);
@@ -898,6 +815,7 @@
       }
       if (!cityState) errors.push('City & State is required.');
       if (!schoolName) errors.push('Current School Name is required.');
+      if (!contactDisplayOptIn) errors.push('Display Contact Opt-In selection is required.');
       if (!guardian1Name) errors.push('Parent/Guardian 1 Name is required.');
       if (!guardian1Email) errors.push('Parent/Guardian 1 Email is required.');
       if (guardian1Email && !isValidEmail(guardian1Email)) {
@@ -939,47 +857,151 @@
         return;
       }
 
-      // Build Google Forms payload
-      const formData = buildGoogleFormData();
-
       submitBtn.disabled = true;
       successBox.style.display = 'block';
-      successBox.textContent = 'Submitting...';
+      successBox.textContent = 'Submitting.';
       errorBox.style.display = 'none';
       errorBox.innerHTML = '';
 
       showProcessing();
 
-      // 1) Try to upload file (if any) to Drive
-      let fileUploadResult = { attempted: false, success: true };
+      // Build "fields" object that matches gas_NewRecruitIntake.js expectations
+      const fields = {};
+
+      // Player & team
+      fields.playerName = playerName;
+      fields.playerSlug = buildPlayerSlug(playerName, jerseyNumber);
+      fields.teamName = teamName;
+      fields.jerseyNumber = jerseyNumber;
+      fields.primaryPosition = primaryPosition;
+      fields.batsThrows = batsThrows;
+
+      // Positions (checkboxes)
+      const checkedPositions = form.querySelectorAll('input[name="positions"]:checked');
+      fields.positions = Array.from(checkedPositions)
+        .map(c => (c.value || '').trim())
+        .filter(Boolean);
+
+      // Player details
+      fields.gradYear = gradYear;
+      fields.height = sanitizeText(form.height.value);
+      fields.weight = sanitizeText(form.weight.value);
+      fields.cityState = cityState;
+
+      // DOB -> year/month/day pieces
+      const dobInput = form.elements['dob'] || document.getElementById('dob');
+      const dobRaw = dobInput && dobInput.value ? dobInput.value.trim() : '';
+      if (dobRaw) {
+        const parts = dobRaw.split('-'); // YYYY-MM-DD
+        fields.dobYear = parts[0] || '';
+        fields.dobMonth = parts[1] || '';
+        fields.dobDay = parts[2] || '';
+      } else {
+        fields.dobYear = '';
+        fields.dobMonth = '';
+        fields.dobDay = '';
+      }
+
+      // Academics
+      fields.schoolName = schoolName;
+      fields.gpa = sanitizeText(form.gpa.value);
+      fields.intendedMajor = sanitizeText(form.intendedMajor.value);
+      fields.honors = sanitizeText(form.honors.value);
+      fields.academics = sanitizeText(form.academics.value);
+
+      // Contact
+      fields.contactDisplayOptIn = contactDisplayOptIn;
+      fields.playerEmail = playerEmail;
+      fields.playerPhone = sanitizeText(form.playerPhone.value);
+      fields.guardian1Name = guardian1Name;
+      fields.guardian1Email = guardian1Email;
+      fields.guardian1Phone = guardian1Phone;
+      fields.guardian2Name = sanitizeText(form.guardian2Name.value);
+      fields.guardian2Email = guardian2Email;
+      fields.guardian2Phone = sanitizeText(form.guardian2Phone.value);
+
+      // Family & bio
+      fields.family = sanitizeText(form.family.value);
+      fields.bio = sanitizeText(form.bio.value);
+
+      // Measurables
+      fields.homeToFirst = sanitizeText(form.homeToFirst.value);
+      fields.firstToThird = sanitizeText(form.firstToThird.value);
+      fields.overhandVelo = sanitizeText(form.overhandVelo.value);
+      fields.exitVelo = sanitizeText(form.exitVelo.value);
+      fields.offSeason = sanitizeText(form.offSeason.value);
+
+      // Offensive stats
+      fields.avg = sanitizeText(form.avg.value);
+      fields.obp = sanitizeText(form.obp.value);
+      fields.slg = sanitizeText(form.slg.value);
+      fields.ops = sanitizeText(form.ops.value);
+      fields.hr = sanitizeText(form.hr.value);
+      fields.rbi = sanitizeText(form.rbi.value);
+      fields.statsNote = sanitizeText(form.statsNote.value);
+
+      // Pitching stats
+      fields.pitSeason = sanitizeText(form.pitSeason.value);
+      fields.era = sanitizeText(form.era.value);
+      fields.ip = sanitizeText(form.ip.value);
+      fields.k = sanitizeText(form.k.value);
+      fields.bb = sanitizeText(form.bb.value);
+      fields.whip = sanitizeText(form.whip.value);
+
+      // Links
+      fields.highlightVideoUrl = highlightVideoUrl;
+      fields.recruitingProfileUrl = recruitingProfileUrl;
+      fields.additionalLinks = sanitizeText(form.additionalLinks.value);
+
+      // 1) Prepare file payload (base64) if any
+      let fileUploadResult = { attempted: false, success: true, file: null };
       try {
         fileUploadResult = await uploadplayerPhotoIfAny(playerName, jerseyNumber);
       } catch (e) {
-        console.error('Unexpected error during file upload:', e);
+        console.error('Unexpected error during file preparation:', e);
       }
 
-      // 2) Submit to Google Forms
-      fetch(GOOGLE_FORM_ACTION, {
+      // 2) Send everything to GAS intake endpoint
+      const payload = {
+        fields: fields
+      };
+      if (fileUploadResult.file) {
+        payload.file = fileUploadResult.file;
+      }
+
+      fetch(INTAKE_ENDPOINT, {
         method: 'POST',
-        mode: 'no-cors',
-        body: formData
+        // Important: no explicit Content-Type, let browser use text/plain to avoid preflight
+        body: JSON.stringify(payload)
       })
-        .then(() => {
-          // no-cors: assume success if network didn't throw
+        .then(resp => {
+          if (!resp.ok) {
+            throw new Error('Server error: ' + resp.status);
+          }
+          return resp.json();
+        })
+        .then(data => {
+          if (!data || !data.ok) {
+            throw new Error(data && data.error ? data.error : 'Unknown error from server.');
+          }
+
           let msg = 'Thank you! Your information has been submitted.';
           if (fileUploadResult.attempted && !fileUploadResult.success) {
-            msg += ' Note: your attached file may not have uploaded correctly. Please contact staff if needed.';
+            msg += ' Note: there was an issue preparing your attached file. Please contact staff if needed.';
           }
+
           successBox.style.display = 'block';
           successBox.textContent = msg;
           errorBox.style.display = 'none';
           errorBox.innerHTML = '';
           form.reset();
         })
-        .catch(() => {
+        .catch(err => {
+          console.error('Error submitting intake:', err);
           errorBox.style.display = 'block';
           errorBox.innerHTML =
-            'There was a problem submitting your information. Please try again in a moment.';
+            'There was a problem submitting your information. ' +
+            (err && err.message ? err.message : 'Please try again in a moment.');
           successBox.style.display = 'none';
           successBox.textContent = '';
         })
@@ -990,8 +1012,8 @@
         });
     });
   })();
-  </script>
+</script>
+<script src="scripts/template-loader.js"></script>
 
-  <script src="scripts/template-loader.js"></script>
 </body>
 </html>
