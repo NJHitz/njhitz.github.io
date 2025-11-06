@@ -3,7 +3,116 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Player Showcase | NJ HITZ Softball</title>
+  <title>{{playerName}} | NJ Hitz Softball Player #{{playerNumber}}</title>
+  <meta name="description" content="{{playerName}} (#{playerNumber}) — a standout player for NJ Hitz Softball. View player stats, highlights, and team profile.">
+  <meta name="image" content="https://njhitz.org/images/players/{{slug}}-meta.png">
+
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://njhitz.org/player/{{slug}}">
+  <meta property="og:title" content="{{playerName}} | NJ Hitz Softball Player #{{playerNumber}}">
+  <meta property="og:description" content="{{playerName}}’s player profile, stats, highlights, and achievements.">
+  <meta property="og:image" content="https://njhitz.org/images/players/{{slug}}-meta.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{playerName}} | NJ Hitz Softball Player #{{playerNumber}}">
+  <meta name="twitter:description" content="{{playerName}}’s NJ Hitz player profile and accomplishments.">
+  <meta name="twitter:image" content="https://njhitz.org/images/players/{{slug}}-meta.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{playerName}}",
+    "url": "https://njhitz.org/player/{{slug}}",
+    "memberOf": {
+      "@type": "SportsTeam",
+      "name": "NJ Hitz Softball",
+      "url": "https://njhitz.org/teams"
+    },
+    "image": "https://njhitz.org/images/players/{{slug}}-meta.png",
+    "jobTitle": "Softball Player",
+    "identifier": "{{playerNumber}}"
+  }
+  </script>
+
+  <script>
+    (function() {
+      // Get ?player=<slug> from the query string
+      const urlParams = new URLSearchParams(window.location.search);
+      const slug = urlParams.get('player');
+      if (!slug) return; // No player param → skip
+
+      const parts = slug.split('-');
+      const playerNumber = parts.pop();
+      const playerName = parts.join(' ').replace(/\b\w/g, c => c.toUpperCase());
+      const formats = ['png', 'jpg', 'webp'];
+      const fallbackImage = 'https://njhitz.org/images/players/player-profile-placeholder-sq-meta.png';
+
+      // Try multiple formats until one exists, else fallback
+      async function getExistingImage() {
+        for (const ext of formats) {
+          const url = `https://njhitz.org/images/players/${slug}-meta.${ext}`;
+          const exists = await checkImage(url);
+          if (exists) return url;
+        }
+        return fallbackImage;
+      }
+
+      // Image existence check
+      function checkImage(url) {
+        return new Promise(resolve => {
+          const img = new Image();
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = url + '?v=' + Date.now(); // prevent caching
+        });
+      }
+
+      // Helper: set or update a meta tag
+      function setMeta(property, content, isProperty = false) {
+        const selector = isProperty
+          ? `meta[property="${property}"]`
+          : `meta[name="${property}"]`;
+        let el = document.querySelector(selector);
+        if (!el) {
+          el = document.createElement('meta');
+          if (isProperty) el.setAttribute('property', property);
+          else el.setAttribute('name', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
+
+      // Build the meta tags dynamically
+      getExistingImage().then(imageURL => {
+        const formattedName = playerName || 'NJ Hitz Player';
+        const formattedNumber = playerNumber || '';
+        const fullTitle = formattedNumber
+          ? `${formattedName} | NJ Hitz Softball Player #${formattedNumber}`
+          : `${formattedName} | NJ Hitz Softball Player`;
+
+        document.title = fullTitle;
+
+        const metaContent = {
+          description: `${formattedName} (#${formattedNumber}) — NJ Hitz Softball player profile, stats, and highlights.`,
+          'og:type': 'profile',
+          'og:title': fullTitle,
+          'og:description': `${formattedName} — NJ Hitz Softball standout player.`,
+          'og:image': imageURL,
+          'og:url': `https://njhitz.org/player-profile?player=${slug}`,
+          'twitter:card': 'summary_large_image',
+          'twitter:title': fullTitle,
+          'twitter:description': `${formattedName} — NJ Hitz player profile and highlights.`,
+          'twitter:image': imageURL
+        };
+
+        Object.entries(metaContent).forEach(([key, value]) => {
+          const isProperty = key.startsWith('og:') || key.startsWith('twitter:');
+          setMeta(key, value, isProperty);
+        });
+      });
+    })();
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
