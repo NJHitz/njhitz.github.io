@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Team Schedule | NJ Hitz Softball</title>
+  <meta name="description" content="Live schedule, results, and record for NJ Hitz Softball teams powered by GameChanger." />
+  <meta name="image" content="https://njhitz.org/images/hitz-meta-og.png" />
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://njhitz.org/schedule">
+  <meta property="og:title" content="Team Schedule | NJ Hitz Softball">
+  <meta property="og:description" content="View your NJ Hitz team schedule, results, and record.">
+  <meta property="og:image" content="https://njhitz.org/images/hitz-meta-og.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Team Schedule | NJ Hitz Softball">
+  <meta name="twitter:description" content="View your NJ Hitz team schedule, results, and record.">
+  <meta name="twitter:image" content="https://njhitz.org/images/hitz-meta-og.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
+
+  <link href="css/main.css" rel="stylesheet">
+
+  <style>
+    .page-shell{
+      max-width:1100px;
+      margin:0 auto;
+      padding:26px 16px 40px;
+    }
+    .page-header{
+      display:flex;
+      flex-wrap:wrap;
+      gap:18px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .page-title{
+      font-size:clamp(26px,3vw,34px);
+      margin:0;
+    }
+    .page-subtitle{
+      margin:4px 0 0;
+      font-size:.96rem;
+      color:#d7d7e2;
+    }
+
+    .record-card{
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:radial-gradient(circle at top left,rgba(179,139,53,.14),rgba(20,20,30,.96));
+      min-width:180px;
+    }
+    .record-label{
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#e9d9b0;
+      margin-bottom:4px;
+    }
+    .record-value{
+      font-size:1.7rem;
+      font-weight:900;
+      line-height:1;
+    }
+    .record-meta{
+      font-size:.8rem;
+      color:#d7d7e2;
+      margin-top:4px;
+    }
+
+    .schedule-section{
+      margin-top:10px;
+      position:relative;
+    }
+    .schedule-status{
+      font-size:.9rem;
+      color:#d7d7e2;
+      padding:10px 0;
+    }
+    .schedule-table-wrapper{
+      margin-top:8px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      overflow:hidden;
+      background:rgba(12,12,18,.96);
+      position:relative;
+    }
+    table.schedule-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.88rem;
+      table-layout:fixed;
+    }
+    .schedule-table thead{
+      background:rgba(20,20,30,.98);
+    }
+    .schedule-table th,
+    .schedule-table td{
+      padding:10px 12px;
+      text-align:left;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .schedule-table tbody tr:last-child td{
+      border-bottom:none;
+    }
+    .schedule-table th{
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.09em;
+      color:#c7c7d8;
+    }
+
+    .th-label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+    }
+    .filter-toggle{
+      border:none;
+      background:transparent;
+      padding:0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      opacity:.7;
+    }
+    .filter-toggle:hover{
+      opacity:1;
+    }
+    .filter-toggle svg{
+      width:14px;
+      height:14px;
+    }
+
+    .result{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:24px;
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:.75rem;
+      font-weight:700;
+      border:1px solid transparent;
+      margin-right:4px;
+    }
+    .result-W{
+      background:rgba(25,135,84,.14);
+      border-color:rgba(35,185,110,.8);
+      color:#a6f2c5;
+    }
+    .result-L{
+      background:rgba(220,53,69,.14);
+      border-color:rgba(255,94,110,.9);
+      color:#ffd2d7;
+    }
+    .result-T{
+      background:rgba(108,117,125,.16);
+      border-color:rgba(158,167,175,.9);
+      color:#e6ecf2;
+    }
+    .score{
+      font-size:.8rem;
+      opacity:.9;
+    }
+
+    .filter-panel{
+      position:fixed;
+      z-index:40;
+      min-width:220px;
+      max-width:260px;
+      max-height:300px;
+      overflow:auto;
+      background:rgba(14,14,22,.98);
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 18px 40px rgba(0,0,0,.65);
+      padding:10px 10px 12px;
+      display:none;
+    }
+    .filter-panel-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:6px;
+    }
+    .filter-panel-header span{
+      font-size:.76rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#c7c7e0;
+    }
+    .filter-panel-close{
+      border:none;
+      background:transparent;
+      color:#c7c7e0;
+      cursor:pointer;
+      font-size:14px;
+      padding:0 2px;
+    }
+    .filter-panel-body{
+      font-size:.82rem;
+      color:#e8e8f5;
+    }
+    .filter-panel-body input[type="text"]{
+      width:100%;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(8,8,16,1);
+      color:#f5f5ff;
+      font-size:.8rem;
+      margin-bottom:6px;
+    }
+
+    .filter-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+      margin-bottom:6px;
+    }
+    .filter-actions button{
+      flex:1;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(10,10,18,1);
+      color:#f5f5ff;
+      font-size:.75rem;
+      padding:3px 6px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .filter-actions button:hover{
+      background:rgba(30,30,40,1);
+    }
+
+    .filter-options{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      max-height:220px;
+      overflow:auto;
+    }
+    .filter-option{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:.8rem;
+      cursor:pointer;
+    }
+    .filter-option input{
+      margin:0;
+    }
+
+    @media(max-width:720px){
+      .page-header{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .schedule-table thead{
+        display:none;
+      }
+      .schedule-table,
+      .schedule-table tbody,
+      .schedule-table tr,
+      .schedule-table td{
+        display:block;
+        width:100%;
+      }
+      .schedule-table tr{
+        padding:8px 10px;
+        border-bottom:1px solid rgba(255,255,255,.08);
+      }
+      .schedule-table td{
+        border:none;
+        padding:4px 0;
+        white-space:normal;
+      }
+      .schedule-table td::before{
+        content:attr(data-label);
+        display:block;
+        font-size:.7rem;
+        text-transform:uppercase;
+        letter-spacing:.08em;
+        color:#9ea0b8;
+        margin-bottom:2px;
+      }
+      .schedule-table-wrapper{
+        border-radius:10px;
+      }
+      .filter-panel{
+        max-width:90vw;
+      }
+    }
+  </style>
+
+  <!-- Dynamic meta + data loader -->
+  <script>
+    (function(){
+      const params = new URLSearchParams(window.location.search);
+
+      const gcTeamId   = params.get('team')   || 'SNQqTbSIbwpU';
+      const gcSeason   = params.get('season') || '2025-fall-marauders-12u';
+      const teamName   = params.get('name')   || 'NJ Hitz Team';
+      const levelLabel = params.get('level')  || '';
+
+      const fullTitle = `${teamName} Schedule${levelLabel ? ' | ' + levelLabel : ''} | NJ Hitz Softball`;
+      document.title = fullTitle;
+
+      function setMeta(property, content, isProperty){
+        const selector = isProperty
+          ? `meta[property="${property}"]`
+          : `meta[name="${property}"]`;
+        let el = document.querySelector(selector);
+        if(!el){
+          el = document.createElement('meta');
+          if(isProperty) el.setAttribute('property', property);
+          else el.setAttribute('name', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
+
+      const canonicalUrl = `https://njhitz.org/schedule?team=${encodeURIComponent(gcTeamId)}&season=${encodeURIComponent(gcSeason)}`;
+
+      const metaConfig = {
+        description: `Live schedule, results, and record for ${teamName} powered by GameChanger.`,
+        'og:type': 'website',
+        'og:title': fullTitle,
+        'og:description': `Follow every game for ${teamName} with automatic updates from GameChanger.`,
+        'og:url': canonicalUrl,
+        'og:image': 'https://njhitz.org/images/hitz-meta-og.png',
+        'twitter:card': 'summary_large_image',
+        'twitter:title': fullTitle,
+        'twitter:description': `Live schedule and record for ${teamName}.`,
+        'twitter:image': 'https://njhitz.org/images/hitz-meta-og.png'
+      };
+
+      Object.entries(metaConfig).forEach(([key,value]) => {
+        const isProperty = key.startsWith('og:') || key.startsWith('twitter:');
+        setMeta(key, value, isProperty);
+      });
+
+      window.__GC_SCHEDULE_CONFIG__ = {
+        gcTeamId,
+        gcSeason,
+        teamName,
+        levelLabel
+      };
+    })();
+  </script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div id="header"></div>
+  </header>
+
+  <main class="page-shell">
+    <section class="page-header">
+      <div>
+        <h1 class="page-title" id="schedule-team-title">Team Schedule</h1>
+        <p class="page-subtitle" id="schedule-team-subtitle">
+          Live schedule, results, and record pulled from GameChanger.
+        </p>
+      </div>
+
+      <aside class="record-card">
+        <div class="record-label">Record</div>
+        <div class="record-value" id="schedule-record">–</div>
+        <div class="record-meta" id="schedule-record-meta">Based on completed games</div>
+      </aside>
+    </section>
+
+    <section class="schedule-section">
+      <div class="schedule-status" id="schedule-status">
+        Loading schedule…
+      </div>
+
+      <div class="schedule-table-wrapper" id="schedule-table-wrapper" style="display:none;">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th style="width:16%;">Date</th>
+              <th style="width:12%;">Time</th>
+              <th id="th-opponent" style="width:28%;">
+                <div class="th-label">
+                  <span>Opponent</span>
+                  <button type="button" class="filter-toggle" data-filter="opponent" aria-label="Filter by opponent">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M4 5h16l-6 7.5V19l-4-2v-4.5L4 5z"/>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+              <th id="th-type" style="width:12%;">
+                <div class="th-label">
+                  <span>Type</span>
+                  <button type="button" class="filter-toggle" data-filter="type" aria-label="Filter by type">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M4 5h16l-6 7.5V19l-4-2v-4.5L4 5z"/>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+              <th style="width:20%;">Location</th>
+              <th style="width:12%;">Result</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-body"></tbody>
+        </table>
+
+        <!-- Opponent Filter Panel -->
+        <div class="filter-panel" id="filter-panel-opponent">
+          <div class="filter-panel-header">
+            <span>Filter Opponent</span>
+            <button class="filter-panel-close" data-close="opponent">&times;</button>
+          </div>
+          <div class="filter-panel-body">
+            <div class="filter-actions">
+              <button type="button" id="filter-opponent-select-all">Select all</button>
+              <button type="button" id="filter-opponent-clear">Clear</button>
+            </div>
+            <input type="text" id="filter-opponent-search" placeholder="Search opponents">
+            <div class="filter-options" id="filter-opponent-options"></div>
+          </div>
+        </div>
+
+        <!-- Type Filter Panel -->
+        <div class="filter-panel" id="filter-panel-type">
+          <div class="filter-panel-header">
+            <span>Filter Type</span>
+            <button class="filter-panel-close" data-close="type">&times;</button>
+          </div>
+          <div class="filter-panel-body">
+            <div class="filter-actions">
+              <button type="button" id="filter-type-select-all">Select all</button>
+              <button type="button" id="filter-type-clear">Clear</button>
+            </div>
+            <div class="filter-options" id="filter-type-options">
+              <label class="filter-option">
+                <input type="checkbox" value="game" checked>
+                <span>Game</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="practice" checked>
+                <span>Practice</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div id="footer"></div>
+  </footer>
+
+  <script src="scripts/preload.js"></script>
+
+  <script>
+    (function(){
+      const cfg = window.__GC_SCHEDULE_CONFIG__ || {};
+      const teamName = cfg.teamName || 'NJ Hitz Team';
+      const levelLabel = cfg.levelLabel || '';
+      const headerTitle = document.getElementById('schedule-team-title');
+      const headerSubtitle = document.getElementById('schedule-team-subtitle');
+
+      headerTitle.textContent = `${teamName} Schedule`;
+      headerSubtitle.textContent = levelLabel
+        ? `${levelLabel} · Live schedule, results, and record pulled from GameChanger.`
+        : `Live schedule, results, and record pulled from GameChanger.`;
+
+      const statusEl  = document.getElementById('schedule-status');
+      const bodyEl    = document.getElementById('schedule-body');
+      const tableWrap = document.getElementById('schedule-table-wrapper');
+      const recordEl  = document.getElementById('schedule-record');
+      const recordMetaEl = document.getElementById('schedule-record-meta');
+
+      const thOpponent = document.getElementById('th-opponent');
+      const thType = document.getElementById('th-type');
+
+      const panelOpponent = document.getElementById('filter-panel-opponent');
+      const panelType = document.getElementById('filter-panel-type');
+      const opponentSearchInput = document.getElementById('filter-opponent-search');
+      const opponentOptionsEl = document.getElementById('filter-opponent-options');
+      const typeOptionsEl = document.getElementById('filter-type-options');
+
+      const opponentSelectAllBtn = document.getElementById('filter-opponent-select-all');
+      const opponentClearBtn = document.getElementById('filter-opponent-clear');
+      const typeSelectAllBtn = document.getElementById('filter-type-select-all');
+      const typeClearBtn = document.getElementById('filter-type-clear');
+
+      let allOpponents = [];
+      let selectedOpponents = new Set();
+      let opponentFilterActive = false;
+
+      let selectedTypes = new Set(['game','practice']);
+      let typeFilterActive = false;
+
+      // TODO: replace with your deployed GAS URL
+      const ENDPOINT = 'https://script.google.com/macros/s/AKfycbx0iCzaMgXMkUpUxHswi1klKNpOISdMHja_xFbkY4UkT2c8T8Hhy54ZaR9sJ1luPx0M/exec';
+
+      const query = new URLSearchParams({
+        team: 'marauders12u'
+      });
+
+      function formatDate(dateStr){
+        if(!dateStr) return '';
+        const d = new Date(dateStr);
+        if(isNaN(d.getTime())) return dateStr;
+        return d.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+      }
+
+      function formatTime(timeStr){
+        if(!timeStr) return '';
+        if(/[ap]m/i.test(timeStr)) return timeStr;
+        const parts = timeStr.split(':');
+        if(parts.length < 2) return timeStr;
+        let h = parseInt(parts[0],10);
+        const m = parts[1];
+        if(isNaN(h)) return timeStr;
+        const ampm = h >= 12 ? 'PM':'AM';
+        h = ((h + 11) % 12) + 1;
+        return `${h}:${m} ${ampm}`;
+      }
+
+      // Strip leading "vs " or "@ " to get the bare opponent name
+      function getOpponentName(opponentDisplay){
+        const s = (opponentDisplay || '').trim();
+        if (!s) return '';
+        const m = s.match(/^(vs|@)\s+(.+)$/i);
+        if (m) return m[2].trim();
+        return s;
+      }
+
+      function applyFilters(){
+        const rows = bodyEl.querySelectorAll('tr');
+        rows.forEach(row => {
+          const rowOppName = (row.dataset.opponentName || '');
+          const rowType = (row.dataset.type || '');
+
+          const oppMatch = !opponentFilterActive || selectedOpponents.has(rowOppName);
+          const typeMatch = !typeFilterActive || selectedTypes.has(rowType);
+
+          row.style.display = (oppMatch && typeMatch) ? '' : 'none';
+        });
+      }
+
+      function positionPanel(panel, anchorEl){
+        const rect = anchorEl.getBoundingClientRect();
+        panel.style.left = Math.round(rect.left + window.scrollX) + 'px';
+        panel.style.top  = Math.round(rect.bottom + window.scrollY + 4) + 'px';
+      }
+
+      function openPanel(which){
+        closePanels();
+        if(which === 'opponent'){
+          positionPanel(panelOpponent, thOpponent);
+          panelOpponent.style.display = 'block';
+        } else if(which === 'type'){
+          positionPanel(panelType, thType);
+          panelType.style.display = 'block';
+        }
+      }
+
+      function closePanels(){
+        panelOpponent.style.display = 'none';
+        panelType.style.display = 'none';
+      }
+
+      function recomputeOpponentSelection(){
+        const inputs = opponentOptionsEl.querySelectorAll('input[type="checkbox"]');
+        const checkedValues = [];
+        const allValues = [];
+        inputs.forEach(inp => {
+          allValues.push(inp.value);
+          if(inp.checked) checkedValues.push(inp.value);
+        });
+
+        selectedOpponents.clear();
+        if(checkedValues.length === 0 || checkedValues.length === allValues.length){
+          opponentFilterActive = false;
+        } else {
+          opponentFilterActive = true;
+          checkedValues.forEach(v => selectedOpponents.add(v));
+        }
+        applyFilters();
+      }
+
+      function recomputeTypeSelection(){
+        const inputs = typeOptionsEl.querySelectorAll('input[type="checkbox"]');
+        const checkedValues = [];
+        const allValues = [];
+        inputs.forEach(inp => {
+          allValues.push(inp.value);
+          if(inp.checked) checkedValues.push(inp.value);
+        });
+
+        selectedTypes.clear();
+        if(checkedValues.length === 0 || checkedValues.length === allValues.length){
+          typeFilterActive = false;
+        } else {
+          typeFilterActive = true;
+          checkedValues.forEach(v => selectedTypes.add(v));
+        }
+        applyFilters();
+      }
+
+      function buildOpponentFilter(events){
+        const set = new Set();
+        events.forEach(evt => {
+          const oppName = getOpponentName(evt.opponent || '');
+          if(oppName) set.add(oppName);
+        });
+        allOpponents = Array.from(set).sort((a,b) => a.localeCompare(b));
+
+        opponentOptionsEl.innerHTML = '';
+        allOpponents.forEach(name => {
+          const row = document.createElement('label');
+          row.className = 'filter-option';
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.value = name.toLowerCase();
+          input.checked = true;
+          const span = document.createElement('span');
+          span.textContent = name;
+          row.appendChild(input);
+          row.appendChild(span);
+          opponentOptionsEl.appendChild(row);
+        });
+
+        selectedOpponents.clear();
+        opponentFilterActive = false;
+
+        opponentOptionsEl.addEventListener('change', recomputeOpponentSelection);
+
+        opponentSearchInput.addEventListener('input', () => {
+          const term = opponentSearchInput.value.trim().toLowerCase();
+          const labels = opponentOptionsEl.querySelectorAll('.filter-option');
+          labels.forEach(label => {
+            const text = label.querySelector('span').textContent.toLowerCase();
+            label.style.display = !term || text.indexOf(term) !== -1 ? '' : 'none';
+          });
+        });
+      }
+
+      function initTypeFilter(){
+        typeOptionsEl.addEventListener('change', recomputeTypeSelection);
+      }
+
+      function attachFilterToggles(){
+        const toggles = document.querySelectorAll('.filter-toggle');
+        toggles.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const which = btn.dataset.filter;
+            if(which === 'opponent'){
+              if(panelOpponent.style.display === 'block') closePanels();
+              else openPanel('opponent');
+            } else if(which === 'type'){
+              if(panelType.style.display === 'block') closePanels();
+              else openPanel('type');
+            }
+          });
+        });
+
+        document.querySelectorAll('.filter-panel-close').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closePanels();
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if(!panelOpponent.contains(e.target) && !panelType.contains(e.target) &&
+             !thOpponent.contains(e.target) && !thType.contains(e.target)) {
+            closePanels();
+          }
+        });
+
+        if (opponentSelectAllBtn && opponentClearBtn) {
+          opponentSelectAllBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const inputs = opponentOptionsEl.querySelectorAll('input[type="checkbox"]');
+            inputs.forEach(inp => inp.checked = true);
+            recomputeOpponentSelection();
+          });
+          opponentClearBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const inputs = opponentOptionsEl.querySelectorAll('input[type="checkbox"]');
+            inputs.forEach(inp => inp.checked = false);
+            recomputeOpponentSelection();
+          });
+        }
+
+        if (typeSelectAllBtn && typeClearBtn) {
+          typeSelectAllBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const inputs = typeOptionsEl.querySelectorAll('input[type="checkbox"]');
+            inputs.forEach(inp => inp.checked = true);
+            recomputeTypeSelection();
+          });
+          typeClearBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const inputs = typeOptionsEl.querySelectorAll('input[type="checkbox"]');
+            inputs.forEach(inp => inp.checked = false);
+            recomputeTypeSelection();
+          });
+        }
+      }
+
+      function loadSchedule(){
+        statusEl.textContent = 'Loading schedule…';
+
+        fetch(`${ENDPOINT}?${query.toString()}`, { cache:'no-cache' })
+          .then(resp => {
+            if(!resp.ok) throw new Error('Network error: ' + resp.status);
+            return resp.json();
+          })
+          .then(data => {
+            const events = (data && data.events) ? data.events : [];
+            if(data && data.teamName){
+              headerTitle.textContent = `${data.teamName} Schedule`;
+            }
+            if(!events.length){
+              statusEl.textContent = 'No scheduled events found yet.';
+              tableWrap.style.display = 'none';
+              recordEl.textContent = '0-0';
+              recordMetaEl.textContent = 'No completed games yet.';
+              return;
+            }
+
+            events.sort((a,b) => {
+              const da = new Date(a.date || a.start || a.startDate || 0).getTime();
+              const db = new Date(b.date || b.start || b.startDate || 0).getTime();
+              return da - db;
+            });
+
+            let wins = 0, losses = 0, ties = 0;
+            const now = new Date();
+
+            bodyEl.innerHTML = '';
+
+            events.forEach(evt => {
+              const rawDate = evt.date || evt.startDate || evt.start;
+              if (!rawDate) return;
+
+              const eventDate = new Date(rawDate);
+              const isPast = !isNaN(eventDate.getTime()) && eventDate < now;
+
+              const dateDisplay = evt.dateDisplay || formatDate(rawDate);
+              const timeDisplay = evt.timeDisplay || formatTime(evt.time || evt.startTime || '');
+
+              const opponentDisplay = evt.opponent || evt.opponentName || '';
+              const opponentName = getOpponentName(opponentDisplay);
+
+              const type     = evt.type || evt.eventType || evt.kind || '';
+              const location = evt.location || evt.field || '';
+
+              const typeNorm = (type || '').toLowerCase();
+              const isGame     = typeNorm === 'game';
+              const isPractice = typeNorm === 'practice';
+              const isEvent    = typeNorm === 'event';
+
+              const isComplete = !!evt.isComplete ||
+                                 evt.status === 'Final' ||
+                                 evt.status === 'Completed' ||
+                                 evt.status === 'Done';
+
+              let result = evt.result || '';
+              const ts = evt.teamScore;
+              const os = evt.oppScore;
+              let scoreText = '';
+              const isScored = (typeof ts === 'number' && typeof os === 'number');
+
+              if (isScored){
+                scoreText = `${ts} - ${os}`;
+                if(!result && isComplete){
+                  if(ts > os) result = 'W';
+                  else if(ts < os) result = 'L';
+                  else result = 'T';
+                }
+              }
+
+              if(isGame && isComplete && result){
+                if(result === 'W') wins++;
+                else if(result === 'L') losses++;
+                else if(result === 'T') ties++;
+              }
+
+              let resultHtml = '';
+
+              if (isGame) {
+                if (isScored && result) {
+                  resultHtml = `<span class="result result-${result}">${result}</span>`;
+                } else if (!isScored && isPast) {
+                  resultHtml = 'Canceled';
+                } else if (evt.status) {
+                  resultHtml = evt.status;
+                }
+              } else {
+                if (isScored && result) {
+                  resultHtml = `<span class="result result-${result}">${result}</span>`;
+                } else {
+                  resultHtml = '';
+                }
+              }
+
+              const tr = document.createElement('tr');
+              tr.dataset.opponent = opponentDisplay.toLowerCase();
+              tr.dataset.opponentName = opponentName.toLowerCase();
+              tr.dataset.type = typeNorm;
+
+              tr.innerHTML = `
+                <td data-label="Date">${dateDisplay || ''}</td>
+                <td data-label="Time">${timeDisplay || ''}</td>
+                <td data-label="Opponent">${opponentDisplay || ''}</td>
+                <td data-label="Type">${type || ''}</td>
+                <td data-label="Location">${location || ''}</td>
+                <td data-label="Result">
+                  ${resultHtml}
+                  ${scoreText ? `<span class="score">${scoreText}</span>` : ''}
+                </td>
+              `;
+              bodyEl.appendChild(tr);
+            });
+
+            const gamesCount = wins + losses + ties;
+            recordEl.textContent = `${wins}-${losses}${ties ? '-' + ties : ''}`;
+            recordMetaEl.textContent = gamesCount
+              ? `Based on ${gamesCount} completed game${gamesCount !== 1 ? 's':''}.`
+              : `No completed games yet.`;
+
+            statusEl.style.display = 'none';
+            tableWrap.style.display = 'block';
+
+            buildOpponentFilter(events);
+            initTypeFilter();
+            attachFilterToggles();
+            applyFilters();
+          })
+          .catch(err => {
+            console.error(err);
+            statusEl.textContent = 'Unable to load schedule. Please try again later.';
+            tableWrap.style.display = 'none';
+            recordEl.textContent = '–';
+            recordMetaEl.textContent = 'Record unavailable.';
+          });
+      }
+
+      loadSchedule();
+    })();
+  </script>
+
+  <script src="scripts/template-loader.js"></script>
+</body>
+</html>

@@ -46,7 +46,7 @@
       const playerNumber = parts.pop();
       const playerName = parts.join(' ').replace(/\b\w/g, c => c.toUpperCase());
       const formats = ['png', 'jpg', 'webp'];
-      const fallbackImage = 'https://njhitz.org/images/players/player-profile-placeholder-sq-meta.png';
+      const fallbackImage = 'images/players/player-profile-placeholder-sq-meta.webp';
 
       // Try multiple formats until one exists, else fallback
       async function getExistingImage() {
