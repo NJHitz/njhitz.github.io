@@ -621,6 +621,23 @@
       el.textContent = text || fallback || '';
     }
 
+    function formatPhoneNumber(input) {
+      if (!input) return '';
+
+      // Remove all non-digit characters
+      const digits = input.toString().replace(/\D/g, '');
+
+      // If fewer than 10 digits, return as-is
+      if (digits.length < 10) return digits;
+
+      // If more than 10 digits (like +1 country codes), trim to last 10
+      const clean = digits.length > 10 ? digits.slice(-10) : digits;
+
+      // Format as ###-###-####
+      return `${clean.slice(0, 3)}-${clean.slice(3, 6)}-${clean.slice(6, 10)}`;
+    }
+
+
     function createInfoRow(label, value) {
       if (!value) return null;
       const wrap = document.createElement('div');
@@ -817,8 +834,7 @@
         recruitingProfileUrl: a.recruitingProfileUrl || '',
         additionalLinks: additionalLinks,
 
-        // If/when you add a "Player Photo" URL pattern, wire it in here:
-        // photoMain: a.photoUrl || ''
+        photoMain: ( a.photoUrl ? `images/players/${a.photoUrl}` : '' )
       };
     }
 
@@ -896,7 +912,7 @@
       }
       if (p.contactPhone) {
         const li = document.createElement('li');
-        li.innerHTML = `<strong>Phone:</strong> <a href="tel:${p.contactPhone}">${p.contactPhone}</a>`;
+        li.innerHTML = `<strong>Phone:</strong> <a href="tel:${p.contactPhone}">${formatPhoneNumber(p.contactPhone)}</a>`;
         contactList.appendChild(li);
       }
       if (p.guardian1Name || p.guardian1Email || p.guardian1Phone) {
@@ -904,7 +920,15 @@
         li.innerHTML =
           `<strong>Guardian:</strong> ${p.guardian1Name || ''}` +
           `${p.guardian1Email ? ' • ' + p.guardian1Email : ''}` +
-          `${p.guardian1Phone ? ' • ' + p.guardian1Phone : ''}`;
+          `${p.guardian1Phone ? ' • ' + formatPhoneNumber(p.guardian1Phone) : ''}`;
+        contactList.appendChild(li);
+      }
+      if (p.guardian2Name || p.guardian2Email || p.guardian2Phone) {
+        const li = document.createElement('li');
+        li.innerHTML =
+          `<strong>Guardian:</strong> ${p.guardian2Name || ''}` +
+          `${p.guardian2Email ? ' • ' + p.guardian2Email : ''}` +
+          `${p.guardian2Phone ? ' • ' + formatPhoneNumber(p.guardian2Phone) : ''}`;
         contactList.appendChild(li);
       }
 
