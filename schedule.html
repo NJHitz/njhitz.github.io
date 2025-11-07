@@ -83,6 +83,45 @@
       color:#d7d7e2;
       padding:10px 0;
     }
+
+    /* Top filter toolbar (desktop + mobile) */
+    .filter-toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin:4px 0 8px;
+    }
+    .filter-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(12,12,20,1);
+      padding:4px 10px;
+      font-size:.78rem;
+      cursor:pointer;
+    }
+    .filter-chip span{
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .filter-chip svg{
+      width:14px;
+      height:14px;
+    }
+    .hide-past-toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:.8rem;
+      color:#d7d7e2;
+    }
+    .hide-past-toggle input{
+      margin:0;
+    }
+
     .schedule-table-wrapper{
       margin-top:8px;
       border-radius:14px;
@@ -133,7 +172,7 @@
       align-items:center;
       justify-content:center;
       cursor:pointer;
-      opacity:.7;
+      opacity:.8;
     }
     .filter-toggle:hover{
       opacity:1;
@@ -264,44 +303,131 @@
       margin:0;
     }
 
+    /* Mobile list alternative */
+    .schedule-mobile{
+      display:none;
+      margin-top:8px;
+    }
+    .schedule-mobile-list{
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    .schedule-mobile-item{
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(12,12,18,.96);
+      padding:8px 10px;
+      margin-bottom:8px;
+    }
+    .schedule-mobile-btn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      background:transparent;
+      border:none;
+      color:inherit;
+      text-align:left;
+      padding:0;
+      cursor:pointer;
+    }
+    .schedule-mobile-main{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+    .schedule-mobile-primary{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#c7c7d8;
+    }
+    .schedule-mobile-opponent{
+      font-size:.95rem;
+      font-weight:600;
+      text-transform: none;
+    }
+    .schedule-mobile-arrow{
+      font-size:1.2rem;
+      opacity:.6;
+    }
+
+    /* Modal styles */
+    .schedule-modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.65);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:60;
+    }
+    .schedule-modal-backdrop.open{
+      display:flex;
+    }
+    .schedule-modal{
+      position:relative;
+      background:#10101b;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      max-width:420px;
+      width:90%;
+      padding:16px 18px 14px;
+      box-shadow:0 18px 40px rgba(0,0,0,.75);
+    }
+    .schedule-modal-close{
+      position:absolute;
+      top:8px;
+      right:10px;
+      border:none;
+      background:transparent;
+      color:#d7d7e2;
+      font-size:18px;
+      cursor:pointer;
+    }
+    .schedule-modal h2{
+      margin:0 24px 8px 0;
+      font-size:1.05rem;
+    }
+    .schedule-modal-details{
+      margin:0;
+      padding:0;
+    }
+    .schedule-modal-details-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      font-size:.86rem;
+      margin-bottom:4px;
+    }
+    .schedule-modal-details-row dt{
+      font-weight:600;
+      color:#c7c7d8;
+    }
+    .schedule-modal-details-row dd{
+      margin:0;
+      text-align:right;
+      color:#f5f5ff;
+      white-space:pre-wrap;
+    }
+
+    /* Mobile tweaks */
     @media(max-width:720px){
+      .page-shell{
+        padding:20px 16px 32px;
+      }
       .page-header{
         flex-direction:column;
         align-items:flex-start;
+        gap:12px;
       }
-      .schedule-table thead{
-        display:none;
-      }
-      .schedule-table,
-      .schedule-table tbody,
-      .schedule-table tr,
-      .schedule-table td{
-        display:block;
+      .record-card{
         width:100%;
       }
-      .schedule-table tr{
-        padding:8px 10px;
-        border-bottom:1px solid rgba(255,255,255,.08);
-      }
-      .schedule-table td{
-        border:none;
-        padding:4px 0;
-        white-space:normal;
-      }
-      .schedule-table td::before{
-        content:attr(data-label);
-        display:block;
-        font-size:.7rem;
-        text-transform:uppercase;
-        letter-spacing:.08em;
-        color:#9ea0b8;
-        margin-bottom:2px;
-      }
-      .schedule-table-wrapper{
-        border-radius:10px;
-      }
-      .filter-panel{
-        max-width:90vw;
+      .filter-toolbar{
+        gap:6px;
       }
     }
   </style>
@@ -339,7 +465,7 @@
         description: `Live schedule, results, and record for ${teamName} powered by GameChanger.`,
         'og:type': 'website',
         'og:title': fullTitle,
-        'og:description': `Follow every game for ${teamName} with automatic updates from GameChanger.`,
+        'og:description': `Follow every game for ${teamName} with automatic updates powered by GameChanger.`,
         'og:url': canonicalUrl,
         'og:image': 'https://njhitz.org/images/hitz-meta-og.png',
         'twitter:card': 'summary_large_image',
@@ -373,7 +499,7 @@
       <div>
         <h1 class="page-title" id="schedule-team-title">Team Schedule</h1>
         <p class="page-subtitle" id="schedule-team-subtitle">
-          Live schedule, results, and record pulled from GameChanger.
+          Live schedule, results, and record powered by GameChanger.
         </p>
       </div>
 
@@ -389,6 +515,34 @@
         Loading schedule…
       </div>
 
+      <!-- Top filter toolbar -->
+      <div class="filter-toolbar">
+        <button type="button" class="filter-chip filter-toggle" data-filter="opponent">
+          <span>Opponent</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M4 5h16l-6 7.5V19l-4-2v-4.5L4 5z"/>
+          </svg>
+        </button>
+
+        <button type="button" class="filter-chip filter-toggle" data-filter="type">
+          <span>Type</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M4 5h16l-6 7.5V19l-4-2v-4.5L4 5z"/>
+          </svg>
+        </button>
+
+        <label class="hide-past-toggle">
+          <input type="checkbox" id="hide-past-events">
+          <span>Hide past events</span>
+        </label>
+      </div>
+
+      <!-- Mobile-only list (JS will toggle visibility) -->
+      <div class="schedule-mobile" id="schedule-mobile" style="display:none;">
+        <ul class="schedule-mobile-list" id="schedule-mobile-list"></ul>
+      </div>
+
+      <!-- Desktop table (JS will toggle visibility) -->
       <div class="schedule-table-wrapper" id="schedule-table-wrapper" style="display:none;">
         <table class="schedule-table">
           <thead>
@@ -466,6 +620,15 @@
     </section>
   </main>
 
+  <!-- Modal for event details (mobile & desktop) -->
+  <div class="schedule-modal-backdrop" id="schedule-modal" aria-hidden="true">
+    <div class="schedule-modal" role="dialog" aria-modal="true" aria-labelledby="schedule-modal-title">
+      <button type="button" class="schedule-modal-close" id="schedule-modal-close" aria-label="Close details">&times;</button>
+      <h2 id="schedule-modal-title">Event details</h2>
+      <dl class="schedule-modal-details" id="schedule-modal-body"></dl>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div id="footer"></div>
   </footer>
@@ -482,12 +645,14 @@
 
       headerTitle.textContent = `${teamName} Schedule`;
       headerSubtitle.textContent = levelLabel
-        ? `${levelLabel} · Live schedule, results, and record pulled from GameChanger.`
-        : `Live schedule, results, and record pulled from GameChanger.`;
+        ? `${levelLabel} · Live schedule, results, and record powered by GameChanger.`
+        : `Live schedule, results, and record powered by GameChanger.`;
 
       const statusEl  = document.getElementById('schedule-status');
       const bodyEl    = document.getElementById('schedule-body');
       const tableWrap = document.getElementById('schedule-table-wrapper');
+      const mobileContainer = document.getElementById('schedule-mobile');
+      const mobileListEl = document.getElementById('schedule-mobile-list');
       const recordEl  = document.getElementById('schedule-record');
       const recordMetaEl = document.getElementById('schedule-record-meta');
 
@@ -505,6 +670,14 @@
       const typeSelectAllBtn = document.getElementById('filter-type-select-all');
       const typeClearBtn = document.getElementById('filter-type-clear');
 
+      const hidePastCheckbox = document.getElementById('hide-past-events');
+      const HIDE_PAST_KEY = 'scheduleHidePastEvents';
+
+      const modal = document.getElementById('schedule-modal');
+      const modalBody = document.getElementById('schedule-modal-body');
+      const modalTitle = document.getElementById('schedule-modal-title');
+      const modalClose = document.getElementById('schedule-modal-close');
+
       let allOpponents = [];
       let selectedOpponents = new Set();
       let opponentFilterActive = false;
@@ -512,12 +685,18 @@
       let selectedTypes = new Set(['game','practice']);
       let typeFilterActive = false;
 
-      // TODO: replace with your deployed GAS URL
+      let hidePastActive = false;
+
+      // YOUR GAS WEB APP ENDPOINT
       const ENDPOINT = 'https://script.google.com/macros/s/AKfycbx0iCzaMgXMkUpUxHswi1klKNpOISdMHja_xFbkY4UkT2c8T8Hhy54ZaR9sJ1luPx0M/exec';
 
       const query = new URLSearchParams({
         team: 'marauders12u'
       });
+
+      function isMobileViewport() {
+        return window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+      }
 
       function formatDate(dateStr){
         if(!dateStr) return '';
@@ -549,15 +728,33 @@
       }
 
       function applyFilters(){
+        const now = new Date();
         const rows = bodyEl.querySelectorAll('tr');
-        rows.forEach(row => {
-          const rowOppName = (row.dataset.opponentName || '');
-          const rowType = (row.dataset.type || '');
+        const cards = mobileListEl ? mobileListEl.querySelectorAll('.schedule-mobile-item') : [];
+
+        function visible(el){
+          const rowOppName = (el.dataset.opponentName || '');
+          const rowType = (el.dataset.type || '');
+          const dateStr = el.dataset.date || '';
+
+          let isPast = false;
+          if(dateStr){
+            const d = new Date(dateStr);
+            if(!isNaN(d.getTime()) && d < now) isPast = true;
+          }
 
           const oppMatch = !opponentFilterActive || selectedOpponents.has(rowOppName);
           const typeMatch = !typeFilterActive || selectedTypes.has(rowType);
+          const pastMatch = !hidePastActive || !isPast;
 
-          row.style.display = (oppMatch && typeMatch) ? '' : 'none';
+          return oppMatch && typeMatch && pastMatch;
+        }
+
+        rows.forEach(row => {
+          row.style.display = visible(row) ? '' : 'none';
+        });
+        cards.forEach(card => {
+          card.style.display = visible(card) ? '' : 'none';
         });
       }
 
@@ -567,13 +764,13 @@
         panel.style.top  = Math.round(rect.bottom + window.scrollY + 4) + 'px';
       }
 
-      function openPanel(which){
+      function openPanel(which, anchorEl){
         closePanels();
         if(which === 'opponent'){
-          positionPanel(panelOpponent, thOpponent);
+          positionPanel(panelOpponent, anchorEl || thOpponent);
           panelOpponent.style.display = 'block';
         } else if(which === 'type'){
-          positionPanel(panelType, thType);
+          positionPanel(panelType, anchorEl || thType);
           panelType.style.display = 'block';
         }
       }
@@ -671,10 +868,10 @@
             const which = btn.dataset.filter;
             if(which === 'opponent'){
               if(panelOpponent.style.display === 'block') closePanels();
-              else openPanel('opponent');
+              else openPanel('opponent', btn);
             } else if(which === 'type'){
               if(panelType.style.display === 'block') closePanels();
-              else openPanel('type');
+              else openPanel('type', btn);
             }
           });
         });
@@ -724,10 +921,89 @@
         }
       }
 
+      function initHidePastFilter(){
+        try {
+          const saved = localStorage.getItem(HIDE_PAST_KEY);
+          hidePastActive = (saved === '1');
+        } catch(e){
+          hidePastActive = false;
+        }
+        if(hidePastCheckbox){
+          hidePastCheckbox.checked = hidePastActive;
+          hidePastCheckbox.addEventListener('change', () => {
+            hidePastActive = hidePastCheckbox.checked;
+            try {
+              localStorage.setItem(HIDE_PAST_KEY, hidePastActive ? '1' : '0');
+            } catch(e){}
+            applyFilters();
+          });
+        }
+      }
+
+      function openModal(detail){
+        if(!modal) return;
+        modalTitle.textContent = detail.opponent || 'Event details';
+
+        const rows = [];
+        if(detail.date){
+          rows.push({label:'Date', value:detail.date});
+        }
+        if(detail.time){
+          rows.push({label:'Time', value:detail.time});
+        }
+        if(detail.type){
+          rows.push({label:'Type', value:detail.type});
+        }
+        if(detail.location){
+          rows.push({label:'Location', value:detail.location});
+        }
+        if(detail.resultText){
+          rows.push({label:'Result', value:detail.resultText});
+        }
+        if(detail.status && detail.status !== detail.resultText){
+          rows.push({label:'Status', value:detail.status});
+        }
+
+        modalBody.innerHTML = rows.map(r => `
+          <div class="schedule-modal-details-row">
+            <dt>${r.label}</dt>
+            <dd>${r.value}</dd>
+          </div>
+        `).join('');
+
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+      }
+
+      function closeModal(){
+        if(!modal) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden','true');
+      }
+
+      if(modalClose){
+        modalClose.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeModal();
+        });
+      }
+      if(modal){
+        modal.addEventListener('click', (e) => {
+          if(e.target === modal){
+            closeModal();
+          }
+        });
+      }
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape'){
+          closeModal();
+        }
+      });
+
       function loadSchedule(){
         statusEl.textContent = 'Loading schedule…';
 
-        fetch(`${ENDPOINT}?${query.toString()}`, { cache:'no-cache' })
+        fetch(`${ENDPOINT}?${query.toString()}`)
           .then(resp => {
             if(!resp.ok) throw new Error('Network error: ' + resp.status);
             return resp.json();
@@ -740,6 +1016,7 @@
             if(!events.length){
               statusEl.textContent = 'No scheduled events found yet.';
               tableWrap.style.display = 'none';
+              if(mobileContainer) mobileContainer.style.display = 'none';
               recordEl.textContent = '0-0';
               recordMetaEl.textContent = 'No completed games yet.';
               return;
@@ -755,6 +1032,7 @@
             const now = new Date();
 
             bodyEl.innerHTML = '';
+            if(mobileListEl) mobileListEl.innerHTML = '';
 
             events.forEach(evt => {
               const rawDate = evt.date || evt.startDate || evt.start;
@@ -762,6 +1040,7 @@
 
               const eventDate = new Date(rawDate);
               const isPast = !isNaN(eventDate.getTime()) && eventDate < now;
+              const dateIso = !isNaN(eventDate.getTime()) ? eventDate.toISOString() : '';
 
               const dateDisplay = evt.dateDisplay || formatDate(rawDate);
               const timeDisplay = evt.timeDisplay || formatTime(evt.time || evt.startTime || '');
@@ -804,11 +1083,13 @@
               }
 
               let resultHtml = '';
+              const status = evt.status || '';
+              const isCanceled = isGame && !isScored && isPast;
 
               if (isGame) {
                 if (isScored && result) {
                   resultHtml = `<span class="result result-${result}">${result}</span>`;
-                } else if (!isScored && isPast) {
+                } else if (isCanceled) {
                   resultHtml = 'Canceled';
                 } else if (evt.status) {
                   resultHtml = evt.status;
@@ -821,10 +1102,12 @@
                 }
               }
 
+              // DESKTOP ROW
               const tr = document.createElement('tr');
               tr.dataset.opponent = opponentDisplay.toLowerCase();
               tr.dataset.opponentName = opponentName.toLowerCase();
               tr.dataset.type = typeNorm;
+              tr.dataset.date = dateIso;
 
               tr.innerHTML = `
                 <td data-label="Date">${dateDisplay || ''}</td>
@@ -838,6 +1121,60 @@
                 </td>
               `;
               bodyEl.appendChild(tr);
+
+              // MOBILE CARD
+              if(mobileListEl){
+                const li = document.createElement('li');
+                li.className = 'schedule-mobile-item';
+                li.dataset.opponentName = opponentName.toLowerCase();
+                li.dataset.type = typeNorm;
+                li.dataset.date = dateIso;
+
+                const hasOutcome = (isScored && result) || isCanceled;
+                let primaryLabelHtml = '';
+                let resultTextForModal = '';
+
+                if(hasOutcome){
+                  if (isCanceled) {
+                    const badge = `<span class="result">Canceled</span>`;
+                    primaryLabelHtml = badge;
+                    resultTextForModal = 'Canceled';
+                  } else {
+                    const badge = `<span class="result result-${result}">${result}</span>`;
+                    const scorePart = scoreText ? `<span class="score">${scoreText}</span>` : '';
+                    primaryLabelHtml = `${badge} ${scorePart}`.trim();
+                    resultTextForModal = `${result}${scoreText ? ' ' + scoreText : ''}`;
+                  }
+                } else {
+                  primaryLabelHtml = [dateDisplay, timeDisplay].filter(Boolean).join(' • ');
+                  resultTextForModal = scoreText && result ? `${result} ${scoreText}` : (scoreText || '');
+                }
+
+                li.innerHTML = `
+                  <button type="button" class="schedule-mobile-btn">
+                    <div class="schedule-mobile-main">
+                      <div class="schedule-mobile-primary"></div>
+                      <div class="schedule-mobile-opponent">${opponentDisplay || ''}</div>
+                    </div>
+                    <div class="schedule-mobile-arrow">›</div>
+                  </button>
+                `;
+                const primaryDiv = li.querySelector('.schedule-mobile-primary');
+                primaryDiv.innerHTML = primaryLabelHtml || '&nbsp;';
+
+                li.__detail = {
+                  date: dateDisplay || '',
+                  time: timeDisplay || '',
+                  opponent: opponentDisplay || '',
+                  type: type || '',
+                  location: location || '',
+                  resultText: resultTextForModal || (isCanceled ? 'Canceled' : ''),
+                  status: isCanceled ? 'Canceled' : status || '',
+                };
+
+                li.addEventListener('click', () => openModal(li.__detail));
+                mobileListEl.appendChild(li);
+              }
             });
 
             const gamesCount = wins + losses + ties;
@@ -847,7 +1184,15 @@
               : `No completed games yet.`;
 
             statusEl.style.display = 'none';
-            tableWrap.style.display = 'block';
+
+            // Only show one layout at a time based on viewport
+            if (isMobileViewport()) {
+              if(mobileContainer) mobileContainer.style.display = 'block';
+              tableWrap.style.display = 'none';
+            } else {
+              tableWrap.style.display = 'block';
+              if(mobileContainer) mobileContainer.style.display = 'none';
+            }
 
             buildOpponentFilter(events);
             initTypeFilter();
@@ -858,12 +1203,26 @@
             console.error(err);
             statusEl.textContent = 'Unable to load schedule. Please try again later.';
             tableWrap.style.display = 'none';
+            if(mobileContainer) mobileContainer.style.display = 'none';
             recordEl.textContent = '–';
             recordMetaEl.textContent = 'Record unavailable.';
           });
       }
 
+      initHidePastFilter();
       loadSchedule();
+
+      // Optional: respond to viewport changes (e.g., rotating device)
+      window.addEventListener('resize', () => {
+        if(!bodyEl.children.length) return;
+        if (isMobileViewport()) {
+          if(mobileContainer) mobileContainer.style.display = 'block';
+          tableWrap.style.display = 'none';
+        } else {
+          tableWrap.style.display = 'block';
+          if(mobileContainer) mobileContainer.style.display = 'none';
+        }
+      });
     })();
   </script>
 
