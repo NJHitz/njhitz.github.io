@@ -544,7 +544,7 @@
               <ul class="list" id="contact-list"></ul>
             </article>
 
-            <article class="card">
+            <article class="card" id="measurables-card" style="display:none;">
               <h3><span>Measurables</span></h3>
               <div class="measurables-grid" id="measurables-grid"></div>
             </article>
@@ -721,10 +721,7 @@
 
       // Offense stats – single season row
       const statsOffense = [];
-      if (
-        a.offSeason || a.avg || a.obp || a.slg ||
-        a.ops || a.hr != null || a.rbi != null
-      ) {
+      if (!!a.offSeason || !!a.avg || !!a.obp || !!a.slg || !!a.ops || !!a.hrl || !!a.rbi) {
         statsOffense.push({
           season: a.offSeason || '',
           avg: a.avg != null ? a.avg : '',
@@ -738,7 +735,7 @@
 
       // Pitching stats – single season row
       const statsPitching = [];
-      if (a.pitSeason || a.era != null || a.ip != null || a.k != null || a.bb != null || a.whip != null) {
+      if (!!a.pitSeason || !!a.era || !!a.ip || !!a.k || !!a.bb || !!a.whip ) {
         statsPitching.push({
           season: a.pitSeason || '',
           era: a.era != null ? a.era : '',
@@ -914,6 +911,7 @@
       // Measurables
       const measWrap = document.getElementById('measurables-grid');
       measWrap.innerHTML = '';
+      if(p.measurables.length){ document.getElementById('measurables-card').style.display = ''; }
       (p.measurables || []).forEach(m => {
         const div = document.createElement('div');
         div.className = 'measure-card';
