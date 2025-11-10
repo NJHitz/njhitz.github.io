@@ -1,8 +1,8 @@
 {
   "teams": [
     {
-      "id": "spring-2026-14u",
-      "name": "NJ HITZ 14U",
+      "id": "hitz14u-spring2026",
+      "name": "NJ Hitz Futures 14U",
       "season": "Spring 2026",
       "level": "14U",
       "classYears": "2030-31",
@@ -98,8 +98,8 @@
       ]
     },
     {
-      "id": "spring-2026-12u",
-      "name": "NJ HITZ 12U",
+      "id": "hitz12u-spring2026",
+      "name": "NJ Hitz Futures 12U",
       "season": "Spring 2026",
       "level": "12U",
       "classYears": "2031-32",
@@ -178,8 +178,8 @@
       ]
     },
     {
-      "id": "summer-2026-16u",
-      "name": "NJ HITZ 16U",
+      "id": "hitz16u-summer2026",
+      "name": "NJ Hitz 16U",
       "season": "Summer 2026",
       "level": "16U",
       "classYears": "2029",
@@ -273,8 +273,8 @@
       ]
     },
     {
-      "id": "summer-2026-18u",
-      "name": "NJ HITZ 18U",
+      "id": "hitz18u-summer2026",
+      "name": "NJ Hitz 18U",
       "season": "Summer 2026",
       "level": "18U",
       "classYears": "2027-2029",

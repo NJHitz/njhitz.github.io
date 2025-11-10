@@ -91,6 +91,31 @@
       letter-spacing:.04em;
       text-transform:uppercase;
     }
+    .team-schedule-btn {
+      appearance: none;
+      border: 2px solid var(--hitz-gold);
+      color: var(--hitz-white);
+      background: transparent;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-decoration: none;
+      transition: transform .15s ease, background .2s ease;
+      background: var(--hitz-purple);
+      border-color: var(--hitz-purple);
+      text-decoration: none;
+      text-transform: capitalize;
+      font-weight: normal;
+      font-size: small;
+      margin-left: 10px;
+      vertical-align: top;
+    }
+    .team-schedule-btn:hover {
+      background: var(--hitz-gold);
+      color: var(--hitz-black);
+      transform: translateY(-1px);
+    }
     .team-meta{
       font-size:.9rem;
       color:#c7c7d6;
@@ -200,11 +225,7 @@
 
     <main>
       <div class="content">
-        <p class="page-intro">
-          This page is fully data-driven. Team, coach, and roster information are loaded from
-          <code>data/teams.json</code>, and each player link opens their
-          <code>player.html</code> showcase using a URL parameter.
-        </p>
+        <p class="page-intro"></p>
 
         <div class="filters-row">
           <label>
@@ -284,12 +305,18 @@
           title.className = 'team-title';
           title.textContent = team.name || 'NJ HITZ Team';
 
+          const scheduleLink = document.createElement('a');
+          scheduleLink.className = 'team-schedule-btn';
+          scheduleLink.textContent = 'View Schedule';
+          scheduleLink.href = `schedule${localExtTag}?team=${team.id}&name=${team.name}`;
+
           const meta = document.createElement('div');
           meta.className = 'team-meta';
           const season = team.season ? `Season: ${team.season}` : '';
           const level = team.level ? (season ? ` • Level: ${team.level}` : `Level: ${team.level}`) : '';
           meta.textContent = season + level;
 
+          title.appendChild(scheduleLink);
           header.appendChild(title);
           header.appendChild(meta);
           card.appendChild(header);

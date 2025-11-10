@@ -74,6 +74,39 @@
       margin-top:4px;
     }
 
+    /* LIVE highlight card */
+    .live-card-link {
+        text-decoration: none;
+    }
+    .live-card{
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid rgba(255,115,140,.9);
+      background:radial-gradient(circle at top left,rgba(255,115,140,.16),rgba(25,10,20,.98));
+      min-width:200px;
+      display:none;
+    }
+    .live-label{
+      font-size:.78rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#ff9fb4;
+      margin-bottom:6px;
+      font-weight:bold;
+    }
+    .live-label-live {
+        vertical-align: top;
+    }
+    .live-opponent{
+      font-size:.95rem;
+      font-weight:700;
+      margin-bottom:4px;
+    }
+    .live-score{
+      font-size:1.05rem;
+      font-weight:800;
+    }
+
     .schedule-section{
       margin-top:10px;
       position:relative;
@@ -212,6 +245,46 @@
     .score{
       font-size:.8rem;
       opacity:.9;
+    }
+
+    /* LIVE badge + row */
+    .live-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:.7rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      background:rgba(220,53,69,.2);
+      color:#ffccd7;
+      border:1px solid rgba(255,115,140,.9);
+      margin-right:4px;
+    }
+    .live-row{
+      position:relative;
+      background:radial-gradient(circle at left,rgba(255,115,140,.08),rgba(12,12,18,1));
+      box-shadow:0 0 0 1px rgba(255,115,140,.35);
+    }
+    .live-row .schedule-mobile-primary{
+      color:#ffccd7;
+    }
+
+    .live-score-desktop,
+    .live-score-mobile{
+      display:inline-flex;
+      align-items:baseline;
+      gap:4px;
+    }
+    .score-animate{
+      animation:scorePulse 0.5s ease-out;
+    }
+    @keyframes scorePulse{
+      0%{transform:scale(1);}
+      40%{transform:scale(1.35);}
+      100%{transform:scale(1);}
     }
 
     .filter-panel{
@@ -423,7 +496,8 @@
         align-items:flex-start;
         gap:12px;
       }
-      .record-card{
+      .record-card,
+      .live-card{
         width:100%;
       }
       .filter-toolbar{
@@ -437,12 +511,11 @@
     (function(){
       const params = new URLSearchParams(window.location.search);
 
-      const gcTeamId   = params.get('team')   || 'SNQqTbSIbwpU';
-      const gcSeason   = params.get('season') || '2025-fall-marauders-12u';
-      const teamName   = params.get('name')   || 'NJ Hitz Team';
-      const levelLabel = params.get('level')  || '';
+      const teamId   = params.get('team')       || 'marauders12u';
+      const teamName = params.get('name')       || 'Marauders 12U';
+      const flushIcs = params.get('flushIcs')   || false;
 
-      const fullTitle = `${teamName} Schedule${levelLabel ? ' | ' + levelLabel : ''} | NJ Hitz Softball`;
+      const fullTitle = `${teamName} Schedule | NJ Hitz Softball`;
       document.title = fullTitle;
 
       function setMeta(property, content, isProperty){
@@ -459,7 +532,7 @@
         el.setAttribute('content', content);
       }
 
-      const canonicalUrl = `https://njhitz.org/schedule?team=${encodeURIComponent(gcTeamId)}&season=${encodeURIComponent(gcSeason)}`;
+      const canonicalUrl = `https://njhitz.org/schedule?team=${encodeURIComponent(teamId)}`;
 
       const metaConfig = {
         description: `Live schedule, results, and record for ${teamName} powered by GameChanger.`,
@@ -480,10 +553,9 @@
       });
 
       window.__GC_SCHEDULE_CONFIG__ = {
-        gcTeamId,
-        gcSeason,
+        teamId,
         teamName,
-        levelLabel
+        flushIcs
       };
     })();
   </script>
@@ -502,6 +574,18 @@
           Live schedule, results, and record powered by GameChanger.
         </p>
       </div>
+
+      <!-- NEW LIVE SUMMARY CARD -->
+      <a href="" target="_blank" class="live-card-link" id="live-card-link">
+        <aside class="live-card" id="live-card">
+                <div class="live-label">
+                    <span id="live-label-video" class="live-label-video" style="display:none;"><svg data-testid="video-camera-outline-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.2413 4H6.7587C5.95374 3.99999 5.28937 3.99998 4.74818 4.04419C4.18608 4.09012 3.66937 4.18868 3.18404 4.43598C2.43139 4.81947 1.81947 5.43139 1.43598 6.18404C1.18868 6.66937 1.09012 7.18608 1.04419 7.74818C0.999978 8.28937 0.999988 8.95372 1 9.75869V14.2413C0.999988 15.0463 0.999978 15.7106 1.04419 16.2518C1.09012 16.8139 1.18868 17.3306 1.43598 17.816C1.81947 18.5686 2.43139 19.1805 3.18404 19.564C3.66937 19.8113 4.18608 19.9099 4.74818 19.9558C5.28937 20 5.95373 20 6.7587 20H12.2413C13.0462 20 13.7106 20 14.2518 19.9558C14.8139 19.9099 15.3306 19.8113 15.816 19.564C16.5686 19.1805 17.1805 18.5686 17.564 17.816C17.8113 17.3306 17.9099 16.8139 17.9558 16.2518C17.9968 15.7499 17.9998 15.1419 18 14.4141L19.9535 16.3677C20.1447 16.5589 20.3326 16.7468 20.4973 16.8847C20.6442 17.0078 20.9537 17.2545 21.3823 17.2882C21.861 17.3259 22.3288 17.1321 22.6406 16.767C22.9198 16.4401 22.9642 16.0468 22.9811 15.8559C23.0001 15.6419 23 15.3762 23 15.1058V8.89407C23 8.6237 23.0001 8.35792 22.9811 8.14396C22.9642 7.95307 22.9198 7.55981 22.6406 7.23287C22.3288 6.86775 21.861 6.67399 21.3823 6.71166C20.9537 6.7454 20.6442 6.99211 20.4973 7.11512C20.3326 7.253 20.1447 7.44093 19.9536 7.63213L18 9.58573C17.9998 8.85799 17.9968 8.25011 17.9558 7.74818C17.9099 7.18608 17.8113 6.66937 17.564 6.18404C17.1805 5.43139 16.5686 4.81947 15.816 4.43598C15.3306 4.18868 14.8139 4.09012 14.2518 4.04419C13.7106 3.99998 13.0463 3.99999 12.2413 4ZM8.21317 8.50287C7.82898 8.53305 7.48529 8.72197 7.25965 9.02424C7.00867 9.36161 7 9.4563 7 10.1424L7.00018 13.9749C7.00263 14.4728 7.02833 14.6685 7.26219 14.979C7.48296 15.279 7.83285 15.4713 8.21574 15.4972C8.59304 15.5274 8.69833 15.4914 9.1587 15.1967L12.1652 13.252C12.6644 12.9279 12.7462 12.8635 12.8962 12.5108C13.0341 12.1833 13.0341 11.8175 12.8976 11.4934C12.7462 11.1373 12.6644 11.073 12.1666 10.7497L9.29318 8.89081C8.71952 8.51934 8.63207 8.47355 8.21317 8.50287Z" fill="white"></path></svg></span>
+                    <span class="live-label-live">LIVE</span>
+                </div>
+                <div class="live-opponent" id="live-opponent">No live game</div>
+                <div class="live-score" id="live-score"></div>
+        </aside>
+      </a>
 
       <aside class="record-card">
         <div class="record-label">Record</div>
@@ -623,7 +707,7 @@
   <!-- Modal for event details (mobile & desktop) -->
   <div class="schedule-modal-backdrop" id="schedule-modal" aria-hidden="true">
     <div class="schedule-modal" role="dialog" aria-modal="true" aria-labelledby="schedule-modal-title">
-      <!--<button type="button" class="schedule-modal-close" id="schedule-modal-close" aria-label="Close details">&times;</button>-->
+      <button type="button" class="schedule-modal-close" id="schedule-modal-close" aria-label="Close details">&times;</button>
       <h2 id="schedule-modal-title">Event details</h2>
       <dl class="schedule-modal-details" id="schedule-modal-body"></dl>
     </div>
@@ -678,6 +762,12 @@
       const modalTitle = document.getElementById('schedule-modal-title');
       const modalClose = document.getElementById('schedule-modal-close');
 
+      const liveCard = document.getElementById('live-card');
+      const liveCardLink = document.getElementById('live-card-link');
+      const liveCardVideo = document.getElementById('live-label-video');
+      const liveOpponentEl = document.getElementById('live-opponent');
+      const liveScoreEl = document.getElementById('live-score');
+
       let allOpponents = [];
       let selectedOpponents = new Set();
       let opponentFilterActive = false;
@@ -687,11 +777,19 @@
 
       let hidePastActive = false;
 
-      // YOUR GAS WEB APP ENDPOINT
+      // Live polling state (adjust interval as needed)
+      const LIVE_POLL_INTERVAL_MS = 10000;
+      let livePollTimer = null;
+      let livePollGcTeamId = null;
+      let liveActiveInfo = null;
+      let lastLiveScore = null;
+
+      // GAS web app endpoint
       const ENDPOINT = 'https://script.google.com/macros/s/AKfycbx0iCzaMgXMkUpUxHswi1klKNpOISdMHja_xFbkY4UkT2c8T8Hhy54ZaR9sJ1luPx0M/exec';
 
       const query = new URLSearchParams({
-        team: 'marauders12u'
+        team: window.__GC_SCHEDULE_CONFIG__.teamId,
+        flushIcs: window.__GC_SCHEDULE_CONFIG__.flushIcs
       });
 
       function isMobileViewport() {
@@ -737,6 +835,19 @@
         return s;
       }
 
+      // Desktop & mobile live result HTML builders
+      function buildLiveResultHtmlDesktop(teamScore, oppScore){
+        const ts = (typeof teamScore === 'number') ? teamScore : 0;
+        const os = (typeof oppScore === 'number') ? oppScore : 0;
+        return `<span class="live-badge">Live</span> <span class="score live-score-desktop"><span class="live-score-team">${ts}</span> - <span class="live-score-opp">${os}</span></span>`;
+      }
+
+      function buildLiveResultHtmlMobile(teamScore, oppScore){
+        const ts = (typeof teamScore === 'number') ? teamScore : 0;
+        const os = (typeof oppScore === 'number') ? oppScore : 0;
+        return `<span class="live-badge">Live</span> <span class="score live-score-mobile"><span class="live-score-team">${ts}</span> - <span class="live-score-opp">${os}</span></span>`;
+      }
+
       function applyFilters(){
         const now = new Date();
         const rows = bodyEl.querySelectorAll('tr');
@@ -746,11 +857,12 @@
           const rowOppName = (el.dataset.opponentName || '');
           const rowType = (el.dataset.type || '');
           const dateStr = el.dataset.date || '';
+          const isLive = el.dataset.isLive === '1';
 
           let isPast = false;
           if(dateStr){
             const d = new Date(dateStr);
-            if(!isNaN(d.getTime()) && d < now) isPast = true;
+            if(!isNaN(d.getTime()) && d < now && !isLive) isPast = true; // LIVE not treated as past
           }
 
           const oppMatch = !opponentFilterActive || selectedOpponents.has(rowOppName);
@@ -1010,6 +1122,97 @@
         }
       });
 
+      function stopLivePolling(){
+        if(livePollTimer){
+          clearInterval(livePollTimer);
+          livePollTimer = null;
+        }
+        livePollGcTeamId = null;
+        liveActiveInfo = null;
+      }
+
+      function updateLiveScoreUi(liveInfo, teamScore, oppScore){
+        if(!liveInfo) return;
+        const scoreText = `${teamScore} - ${oppScore}`;
+
+        if(liveScoreEl){
+          liveScoreEl.textContent = scoreText;
+          liveScoreEl.classList.add('score-animate');
+          setTimeout(() => liveScoreEl.classList.remove('score-animate'), 550);
+        }
+
+        if(liveInfo.desktopResultCell){
+          liveInfo.desktopResultCell.innerHTML = buildLiveResultHtmlDesktop(teamScore, oppScore);
+          const wrap = liveInfo.desktopResultCell.querySelector('.live-score-desktop');
+          if(wrap){
+            wrap.classList.add('score-animate');
+            setTimeout(() => wrap.classList.remove('score-animate'), 550);
+          }
+        }
+
+        if(liveInfo.mobilePrimaryEl){
+          liveInfo.mobilePrimaryEl.innerHTML = buildLiveResultHtmlMobile(teamScore, oppScore);
+          const wrap = liveInfo.mobilePrimaryEl.querySelector('.live-score-mobile');
+          if(wrap){
+            wrap.classList.add('score-animate');
+            setTimeout(() => wrap.classList.remove('score-animate'), 550);
+          }
+        }
+      }
+
+      function startLivePolling(gcTeamId, liveInfo){
+        if(!gcTeamId || !liveInfo) return;
+        stopLivePolling();
+        livePollGcTeamId = gcTeamId;
+        liveActiveInfo = liveInfo;
+        if(typeof liveInfo.teamScore === 'number' && typeof liveInfo.oppScore === 'number'){
+            lastLiveScore = {team: liveInfo.teamScore, opp: liveInfo.oppScore};
+        } else {
+            lastLiveScore = null;
+        }
+
+        const url = `${ENDPOINT}?mode=live&gcTeamId=${encodeURIComponent(gcTeamId)}`;
+
+        const poll = () => {
+            fetch(url)       // <-- no more mode: 'no-cors'
+            .then(resp => {
+                if (!resp.ok) {
+                throw new Error('Live proxy error: ' + resp.status);
+                }
+                return resp.json();
+            })
+            .then(data => {
+                if (!data) return;
+
+                // If your Apps Script returns { status: 404 } when no live game:
+                if (data.status === 404) {
+                    stopLivePolling();
+                    liveCard.style.display = 'none';
+                    return;
+                }
+
+                const score = data.score || {};
+                const teamScore = (typeof score.team === 'number') ? score.team : null;
+                const oppScore  = (typeof score.opponent_team === 'number') ? score.opponent_team : null;
+                if (teamScore === null || oppScore === null) return;
+
+                if (!lastLiveScore ||
+                    lastLiveScore.team !== teamScore ||
+                    lastLiveScore.opp  !== oppScore) {
+                lastLiveScore = {team: teamScore, opp: oppScore};
+                updateLiveScoreUi(liveActiveInfo, teamScore, oppScore);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+            });
+        };
+
+        poll();
+        livePollTimer = setInterval(poll, LIVE_POLL_INTERVAL_MS);
+        }
+
+
       function loadSchedule(){
         statusEl.textContent = 'Loading schedule…';
 
@@ -1029,6 +1232,8 @@
               if(mobileContainer) mobileContainer.style.display = 'none';
               recordEl.textContent = '0-0';
               recordMetaEl.textContent = 'No completed games yet.';
+              liveCard.style.display = 'none';
+              stopLivePolling();
               return;
             }
 
@@ -1040,6 +1245,7 @@
 
             let wins = 0, losses = 0, ties = 0;
             const now = new Date();
+            let firstLive = null;
 
             bodyEl.innerHTML = '';
             if(mobileListEl) mobileListEl.innerHTML = '';
@@ -1073,6 +1279,12 @@
                                  evt.status === 'Completed' ||
                                  evt.status === 'Done';
 
+              const isLive = evt.isLive === true ||
+                             evt.isLive === 'true' ||
+                             (evt.status && evt.status.toLowerCase() === 'live') ||
+                             (evt.gameStatus && String(evt.gameStatus).toLowerCase() === 'live');
+              const gameUrl = evt.gameUrl || '';
+
               let result = evt.result || '';
               const ts = evt.teamScore;
               const os = evt.oppScore;
@@ -1088,7 +1300,7 @@
                 }
               }
 
-              if(isGame && isComplete && result){
+              if(isGame && isComplete && !isLive && result){
                 if(result === 'W') wins++;
                 else if(result === 'L') losses++;
                 else if(result === 'T') ties++;
@@ -1096,19 +1308,33 @@
 
               let resultHtml = '';
               const status = evt.status || '';
-              const isCanceled = isGame && !isScored && isPast;
+              const isCanceled = false; //isGame && !isLive && !isScored && isPast; //REMOVING CANCELED LOGIC
 
               if (isGame) {
-                if (isScored && result) {
-                  resultHtml = `<span class="result result-${result}">${result}</span>`;
+                if (isLive) {
+                  if (isScored) {
+                    resultHtml = buildLiveResultHtmlDesktop(ts, os);
+                  } else {
+                    resultHtml = `<span class="live-badge">Live</span>`;
+                  }
+                } else if (isScored && result) {
+                  resultHtml = `<span class="result result-${result}">${result}</span> <span class="score">${scoreText}</span>`;
                 } else if (isCanceled) {
                   resultHtml = 'Canceled';
                 } else if (evt.status) {
                   resultHtml = evt.status;
                 }
               } else {
-                if (isScored && result) {
-                  resultHtml = `<span class="result result-${result}">${result}</span>`;
+                if (isLive) {
+                  if (isScored && result) {
+                    resultHtml = `<span class="result result-${result}">${result}</span> <span class="score">${scoreText}</span>`;
+                  } else if (isScored) {
+                    resultHtml = buildLiveResultHtmlDesktop(ts, os);
+                  } else {
+                    resultHtml = `<span class="live-badge">Live</span>`;
+                  }
+                } else if (isScored && result) {
+                  resultHtml = `<span class="result result-${result}">${result}</span> <span class="score">${scoreText}</span>`;
                 } else {
                   resultHtml = '';
                 }
@@ -1120,6 +1346,8 @@
               tr.dataset.opponentName = opponentName.toLowerCase();
               tr.dataset.type = typeNorm;
               tr.dataset.date = dateIso;
+              tr.dataset.isLive = isLive ? '1' : '0';
+              if (isLive) tr.classList.add('live-row');
 
               tr.innerHTML = `
                 <td data-label="Date">${dateDisplay || ''}</td>
@@ -1129,25 +1357,36 @@
                 <td data-label="Location">${location || ''}</td>
                 <td data-label="Result">
                   ${resultHtml}
-                  ${scoreText ? `<span class="score">${scoreText}</span>` : ''}
                 </td>
               `;
               bodyEl.appendChild(tr);
 
               // MOBILE CARD
+              let mobileItemRef = null;
               if(mobileListEl){
                 const li = document.createElement('li');
                 li.className = 'schedule-mobile-item';
                 li.dataset.opponentName = opponentName.toLowerCase();
                 li.dataset.type = typeNorm;
                 li.dataset.date = dateIso;
+                li.dataset.isLive = isLive ? '1' : '0';
+                if (isLive) li.classList.add('live-row');
 
-                const hasOutcome = (isScored && result) || isCanceled;
+                const hasOutcome = isLive || (isScored && result) || isCanceled;
                 let primaryLabelHtml = '';
                 let resultTextForModal = '';
 
                 if(hasOutcome){
-                  if (isCanceled) {
+                  if (isLive) {
+                    if (isScored) {
+                      primaryLabelHtml = buildLiveResultHtmlMobile(ts, os);
+                      resultTextForModal = `Live ${ts} - ${os}`;
+                    } else {
+                      const badge = `<span class="live-badge">Live</span>`;
+                      primaryLabelHtml = badge;
+                      resultTextForModal = 'Live';
+                    }
+                  } else if (isCanceled) {
                     const badge = `<span class="result">Canceled</span>`;
                     primaryLabelHtml = badge;
                     resultTextForModal = 'Canceled';
@@ -1181,11 +1420,29 @@
                   type: type || '',
                   location: location || '',
                   resultText: resultTextForModal || (isCanceled ? 'Canceled' : ''),
-                  status: isCanceled ? 'Canceled' : status || '',
+                  status: isLive ? 'Live' : (isCanceled ? 'Canceled' : status || ''),
                 };
 
                 li.addEventListener('click', () => openModal(li.__detail));
                 mobileListEl.appendChild(li);
+                mobileItemRef = li;
+              }
+
+              // Track first LIVE game for hero card & polling
+              if (isLive && isGame && !firstLive) {
+                const desktopResultCell = tr.querySelector('td[data-label="Result"]');
+                const mobilePrimaryEl = mobileItemRef ? mobileItemRef.querySelector('.schedule-mobile-primary') : null;
+                firstLive = {
+                  opponent: opponentDisplay || '',
+                  scoreText: scoreText || '',
+                  gameUrl: gameUrl,
+                  desktopRow: tr,
+                  desktopResultCell,
+                  mobileItem: mobileItemRef || null,
+                  mobilePrimaryEl,
+                  teamScore: isScored ? ts : null,
+                  oppScore: isScored ? os : null
+                };
               }
             });
 
@@ -1194,6 +1451,28 @@
             recordMetaEl.textContent = gamesCount
               ? `Based on ${gamesCount} completed game${gamesCount !== 1 ? 's':''}.`
               : `No completed games yet.`;
+
+            // LIVE hero card
+            if (firstLive) {
+              liveOpponentEl.textContent = firstLive.opponent || 'In progress';
+              liveScoreEl.textContent = firstLive.scoreText || '';
+              liveCard.style.display = 'block';
+              if(data.liveEvent && data.liveEvent.video_stream){
+                liveCardVideo.style.display = 'initial';
+                liveCardLink.href = data.gcUrl || firstLive.gameUrl || '';
+              } else {
+                liveCardLink.href = firstLive.gameUrl || '';
+              }
+            } else {
+              liveCard.style.display = 'none';
+            }
+
+            // Start polling GC live feed if a live game and gcTeamId present
+            if (firstLive && data.gcTeamId) {
+              startLivePolling(data.gcTeamId, firstLive);
+            } else {
+              stopLivePolling();
+            }
 
             statusEl.style.display = 'none';
 
@@ -1218,13 +1497,15 @@
             if(mobileContainer) mobileContainer.style.display = 'none';
             recordEl.textContent = '–';
             recordMetaEl.textContent = 'Record unavailable.';
+            liveCard.style.display = 'none';
+            stopLivePolling();
           });
       }
 
       initHidePastFilter();
       loadSchedule();
 
-      // Optional: respond to viewport changes (e.g., rotating device)
+      // Respond to viewport changes
       window.addEventListener('resize', () => {
         if(!bodyEl.children.length) return;
         if (isMobileViewport()) {
