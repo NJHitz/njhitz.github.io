@@ -856,7 +856,7 @@
           return;
         }
 
-        fetch(item.src, { cache: 'no-store' })
+        fetch(item.src, { cache: 'default' })
           .then(resp => {
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             return resp.json();
@@ -891,7 +891,7 @@
 
         lbImg.src = ''; // clear while loading
 
-        fetch(url, { cache: 'no-store' })
+        fetch(url, { cache: 'default' })
           .then(resp => {
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             return resp.json();
@@ -979,24 +979,51 @@
 
       /* ---------- Load from gallery feed (newest → oldest) ---------- */
 
+      const GALLERY_CACHE_KEY = 'hitzGallery:v1';
+
       async function loadGallery(){
         if (!GOOGLE_PHOTOS_FEED_URL){
           console.warn('Set GOOGLE_PHOTOS_FEED_URL to your gallery JSON feed URL.');
           return;
         }
 
-        try{
-          const resp = await fetch(GOOGLE_PHOTOS_FEED_URL, { cache: 'no-store' });
+        // 1) Try sessionStorage first
+        try {
+          const cached = sessionStorage.getItem(GALLERY_CACHE_KEY);
+          if (cached) {
+            const data = JSON.parse(cached);
+            items = (Array.isArray(data) ? data : (data.items || []))
+              .filter(p => p && p.src)
+              .sort((a, b) => {
+                const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return db - da; // newest → oldest
+              });
+
+            if (items.length) {
+              requiredImagesReady = Math.min(MIN_IMAGES_READY, items.length);
+              renderSlider();
+              return; // ✅ done from cache
+            }
+          }
+        } catch (e) {
+          console.warn('Gallery cache parse error, ignoring cache', e);
+        }
+
+        // 2) Fallback to network
+        try {
+          const resp = await fetch(GOOGLE_PHOTOS_FEED_URL, {
+            // Let the browser apply HTTP caching rules.
+            cache: 'default'
+          });
           if (!resp.ok) throw new Error('HTTP ' + resp.status);
           const data = await resp.json();
 
-          // Accept either a bare array or {items:[...]}
           items = (Array.isArray(data) ? data : (data.items || []))
             .filter(p => p && p.src)
             .sort((a, b) => {
               const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
               const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-              // newest → oldest
               return db - da;
             });
 
@@ -1004,14 +1031,15 @@
             throw new Error('No images returned from feed.');
           }
 
-          // Require at least 3 images to be loaded, or all if fewer exist
+          // Store in sessionStorage for rest of tab life
+          try {
+            sessionStorage.setItem(GALLERY_CACHE_KEY, JSON.stringify({ items }));
+          } catch (e) {
+            console.warn('Unable to write gallery cache', e);
+          }
+
           requiredImagesReady = Math.min(MIN_IMAGES_READY, items.length);
-
-          // Build the slider; individual images will lazy-load and
-          // once enough are ready, markImageReady will reveal it
           renderSlider();
-          // NOTE: we do NOT startTimer() here; it starts when slider is ready
-
         } catch (err){
           console.error('Gallery load failed', err);
           if (loadingEl) loadingEl.textContent = '';
@@ -1021,6 +1049,7 @@
           }
         }
       }
+
 
       document.addEventListener('DOMContentLoaded', loadGallery);
     })();
