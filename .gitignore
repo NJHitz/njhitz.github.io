@@ -1,3 +1,4 @@
 # Ignore archive dirs
 _archive/
 _uploads/
+_gallery/
