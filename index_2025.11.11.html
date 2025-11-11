@@ -257,7 +257,7 @@
       display: block;
     }
 
-    /* Gallery slider */
+    /* Gallery slider (Google Photos) */
     .gallery-slider{
       position:relative;
       margin-top:22px;
@@ -265,8 +265,11 @@
       border-radius:16px;
       border:1px solid rgba(255,255,255,.08);
       background:#050507;
+      /* improve mobile touch interactions */
       touch-action: pan-y;
       -webkit-overflow-scrolling: touch;
+
+      /* hidden until ready */
       opacity:0;
       pointer-events:none;
       transition:opacity .35s ease;
@@ -375,6 +378,7 @@
         height:32px;
         font-size:18px;
       }
+      /* slightly taller slides on small screens */
       .gallery-slide{
         height: clamp(220px, 65vw, 360px);
       }
@@ -382,6 +386,8 @@
         display:none;
       }
     }
+
+
   </style>  
 </head>
 <body>
@@ -451,7 +457,7 @@
       <div class="container">
         <span class="eyebrow">Our Mission</span>
         <h2>Build Great Players — And Even Better People</h2>
-        <p class="lead">The NJ Hitz Organization, based out of Mount Olive, New Jersey, is dedicated to providing young ladies across northern New Jersey with a competitive fast-pitch softball program that fosters teamwork, skill development, and personal growth. Our program combines a national-level club look and feel with budget-friendly expenses, ensuring every athlete can experience high-quality training, competition, and development opportunities without the overwhelming financial burden.</p>
+        <p class="lead">The NJ Hitz Organization is based out of Mount Olive, New Jersey. The purpose and objectives of the NJ Hitz Softball program is to provide the young ladies of northern NJ area, a softball program that fosters teamwork, skills, and growth while teaching them the fundamentals of fast-pitch softball at a competitive level.</p>
       </div>
     </div>
 
@@ -634,33 +640,25 @@
     </div>
   </div>
 
-  <!-- GALLERY SLIDER + LIGHTBOX LOGIC -->
   <script>
     (function(){
       /**
        * CONFIG
+       * GOOGLE_PHOTOS_FEED_URL: endpoint that returns images from your PUBLIC Google Photos album.
+       * SLIDER_INTERVAL_MS: autoplay interval (in milliseconds).
        *
-       * GALLERY_JSON_URL:
-       *  Static JSON file (e.g., from GitHub Pages or raw.githubusercontent.com) that
-       *  contains the gallery index. It should have the same structure as the old
-       *  doGet() response:
-       *
-       *  {
-       *    "items": [
-       *      {
-       *        "id": "some-id",
-       *        "src": "https://yourcdn/images/foo_web1920.jpg",     // slider image
-       *        "srcLarge": "https://yourcdn/images/foo_original.jpg", // optional full image
-       *        "alt": "Caption text",
-       *        "createdAt": "2025-11-10T12:44:24.000Z"
-       *      },
-       *      ...
-       *    ]
-       *  }
-       *
-       *  or just an array of items: [ {src:..., ...}, ... ]
+       * Expected JSON shape from GOOGLE_PHOTOS_FEED_URL:
+       * [
+       *   {
+       *     "src": "https://lh3.googleusercontent.com/...",
+       *     "srcLarge": "https://lh3.googleusercontent.com/...",  // optional, for lightbox
+       *     "alt": "NJ Hitz 14U at Spring Fling",
+       *     "createdAt": "2025-03-21T18:45:00Z"                    // optional, used for newest→oldest
+       *   },
+       *   ...
+       * ]
        */
-      const GALLERY_JSON_URL = 'https://njhitz.org/data/gallery.json';
+      const GOOGLE_PHOTOS_FEED_URL = 'https://script.google.com/macros/s/AKfycbwIaSwqHACp8BpTAD1KLFK8-Bsx-Z5Vj4H4IOT_-wb7mkFQBJKUcIIKjmBHG4VKh9z3/exec?max=50&order=asc';
       const SLIDER_INTERVAL_MS = 6000; // 🔁 configurable autoplay interval
 
       const sliderEl   = document.getElementById('gallerySlider');
@@ -689,12 +687,16 @@
       let requiredImagesReady = 0;
       let sliderIsReady      = false;
 
+
       /* ---------- Slider rendering & navigation ---------- */
       function markImageReady(index){
         const item = items[index];
         if (!item) return;
+
+        // Only count each image once
         if (item._readyCounted) return;
         item._readyCounted = true;
+
         imagesReadyCount++;
 
         if (!sliderIsReady && requiredImagesReady > 0 && imagesReadyCount >= requiredImagesReady){
@@ -710,6 +712,7 @@
         dotsEl.innerHTML = '';
 
         items.forEach((item, idx) => {
+          // Slide
           const slide = document.createElement('div');
           slide.className = 'gallery-slide';
 
@@ -717,19 +720,16 @@
           img.alt = item.alt || '';
           img.loading = 'lazy';
 
-          // attach load/error to mark readiness
-          img.addEventListener('load', () => markImageReady(idx), { once: true });
-          img.addEventListener('error', () => {
-            console.error('Slider image failed to load', item.src);
-            markImageReady(idx); // still count so slider can appear
-          });
+          // Lazy-load the actual data URL for this slide (web-sized)
+          loadImageForSlide(idx, img);
 
-          img.src = item.src /* Google File Location */; // direct image URL from gallery.json
-
+          // Clicking a slide opens lightbox & pauses slider
           img.addEventListener('click', () => openLightbox(idx));
+
           slide.appendChild(img);
           trackEl.appendChild(slide);
 
+          // Dot
           const dot = document.createElement('button');
           dot.type = 'button';
           dot.className = 'gallery-dot';
@@ -754,6 +754,7 @@
         if (!animate){
           trackEl.style.transition = 'none';
           trackEl.style.transform = `translateX(${offset}%)`;
+          // force reflow then restore transition
           void trackEl.offsetWidth;
           trackEl.style.transition = '';
         } else {
@@ -818,8 +819,9 @@
         const dx = t.clientX - sliderTouchStartX;
         const dy = t.clientY - sliderTouchStartY;
 
+        // Ignore mostly vertical swipes (scrolling)
         if (Math.abs(dy) > Math.abs(dx)) return;
-        if (Math.abs(dx) < 40) return;
+        if (Math.abs(dx) < 40) return; // swipe threshold in px
 
         if (dx < 0) {
           next();
@@ -842,25 +844,68 @@
         lbImg.style.opacity = '1';
       }
 
+      // Load web-sized image for slider
+      function loadImageForSlide(index, imgEl){
+        const item = items[index];
+        if (!item || !item.src) return;
+
+        // If we've already loaded this one, reuse the cached data URL
+        if (item.dataUrl){
+          imgEl.src = item.dataUrl;
+          markImageReady(index);
+          return;
+        }
+
+        fetch(item.src, { cache: 'default' })
+          .then(resp => {
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            return resp.json();
+          })
+          .then(data => {
+            if (!data || !data.src) return;
+            item.dataUrl = data.src;   // cache web-sized image
+            imgEl.src = item.dataUrl;  // set actual image
+            markImageReady(index);
+          })
+          .catch(err => {
+            console.error('Image load failed for', item.id, err);
+          });
+      }
+
+      // Load full-resolution image for lightbox
       function loadImageForLightbox(index){
         const item = items[index];
         if (!item) return;
 
         const url = item.srcLarge || item.src;
-        if (!url) return;
-
         lbImg.alt = item.alt || '';
+
         showLightboxLoading();
 
-        lbImg.onload = () => {
+        // If we've already loaded the full-res version, reuse it
+        if (item.fullDataUrl){
+          lbImg.src = item.fullDataUrl;
           hideLightboxLoading();
-        };
-        lbImg.onerror = () => {
-          console.error('Lightbox image failed to load', url);
-          hideLightboxLoading();
-        };
+          return;
+        }
 
-        lbImg.src = url;
+        lbImg.src = ''; // clear while loading
+
+        fetch(url, { cache: 'default' })
+          .then(resp => {
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            return resp.json();
+          })
+          .then(data => {
+            if (!data || !data.src) return;
+            item.fullDataUrl = data.src;  // cache full-res image
+            lbImg.src = item.fullDataUrl;
+            hideLightboxLoading();
+          })
+          .catch(err => {
+            console.error('Lightbox image load failed for', item.id, err);
+            hideLightboxLoading();
+          });
       }
 
       function updateLightbox(){
@@ -914,6 +959,7 @@
         if (e.key === 'ArrowLeft') { currentIndex = (currentIndex - 1 + items.length) % items.length; updateLightbox(); goTo(currentIndex); }
       });
 
+      // Basic touch swipe on lightbox image
       let touchStartX = 0;
       lbImg.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
@@ -931,13 +977,13 @@
         }
       }, { passive: true });
 
-      /* ---------- Load from static gallery.json (newest → oldest) ---------- */
+      /* ---------- Load from gallery feed (newest → oldest) ---------- */
 
       const GALLERY_CACHE_KEY = 'hitzGallery:v1';
 
       async function loadGallery(){
-        if (!GALLERY_JSON_URL){
-          console.warn('Set GALLERY_JSON_URL to your gallery JSON file URL.');
+        if (!GOOGLE_PHOTOS_FEED_URL){
+          console.warn('Set GOOGLE_PHOTOS_FEED_URL to your gallery JSON feed URL.');
           return;
         }
 
@@ -957,7 +1003,7 @@
             if (items.length) {
               requiredImagesReady = Math.min(MIN_IMAGES_READY, items.length);
               renderSlider();
-              return;
+              return; // ✅ done from cache
             }
           }
         } catch (e) {
@@ -966,7 +1012,10 @@
 
         // 2) Fallback to network
         try {
-          const resp = await fetch(GALLERY_JSON_URL, { cache: 'no-cache' });
+          const resp = await fetch(GOOGLE_PHOTOS_FEED_URL, {
+            // Let the browser apply HTTP caching rules.
+            cache: 'default'
+          });
           if (!resp.ok) throw new Error('HTTP ' + resp.status);
           const data = await resp.json();
 
@@ -979,9 +1028,10 @@
             });
 
           if (!items.length){
-            throw new Error('No images returned from gallery.json.');
+            throw new Error('No images returned from feed.');
           }
 
+          // Store in sessionStorage for rest of tab life
           try {
             sessionStorage.setItem(GALLERY_CACHE_KEY, JSON.stringify({ items }));
           } catch (e) {
@@ -1000,6 +1050,7 @@
         }
       }
 
+
       document.addEventListener('DOMContentLoaded', loadGallery);
     })();
   </script>
@@ -1017,6 +1068,7 @@
       const sendBtn = document.getElementById('sendBtn');
       const recaptchaTokenEl = document.getElementById('recaptchaToken');
 
+      // Fields + error elements
       const fName = document.getElementById('cfName');
       const fEmail = document.getElementById('cfEmail');
       const fPhone = document.getElementById('cfPhone');
@@ -1044,6 +1096,7 @@
         modal.setAttribute('aria-hidden','true');
         document.body.style.overflow = '';
         if(lastFocus) lastFocus.focus();
+        // clear messages
         [eName,eEmail,ePhone,eMsg].forEach(el => el.textContent = '');
         [fName,fEmail,fPhone,fMsg].forEach(el => el.removeAttribute('aria-invalid'));
         successEl.hidden = true; errorEl.hidden = true;
@@ -1054,6 +1107,7 @@
       window.addEventListener('keydown', (e)=>{ if(e.key==='Escape'&&modal.classList.contains('open')) closeModal(); });
       modal.addEventListener('click', (e)=>{ if(!dialog.contains(e.target)) closeModal(); });
 
+      // Real-time validation (on input)
       [fName,fEmail,fPhone,fMsg].forEach(input => {
         input.addEventListener('input', ()=> validateField(input));
       });
@@ -1099,25 +1153,30 @@
           validateField(fPhone),
           validateField(fMsg)
         ];
+        // focus first invalid
         const firstInvalid = [fName,fEmail,fPhone,fMsg].find(el => el.getAttribute('aria-invalid') === 'true');
         if (firstInvalid) firstInvalid.focus();
         return results.every(Boolean);
       }
 
+      // Submit via Formspree with reCAPTCHA v3
       form.addEventListener('submit', async (e)=>{
         e.preventDefault();
         successEl.hidden = true; errorEl.hidden = true;
 
+        // Run all validations every time
         const ok = validateAll();
         if (!ok) { errorEl.hidden = false; errorEl.textContent = '⚠️ Please fix the highlighted fields.'; return; }
 
         sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
 
+        // Execute reCAPTCHA v3
         try{
           await grecaptcha.ready();
           const token = await grecaptcha.execute('YOUR_RECAPTCHA_SITE_KEY', {action: 'contact'});
           recaptchaTokenEl.value = token;
         }catch(err){
+          // If reCAPTCHA fails to load, we can still attempt submit; or block if you prefer strict enforcement.
           console.warn('reCAPTCHA error:', err);
         }
 
