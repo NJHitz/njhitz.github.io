@@ -684,7 +684,7 @@
       let currentIndex = 0;
       let timer        = null;
       let sliderPaused = false;
-      const MIN_IMAGES_READY = 3;
+      const MIN_IMAGES_READY = 2;
       let imagesReadyCount   = 0;
       let requiredImagesReady = 0;
       let sliderIsReady      = false;
@@ -942,6 +942,7 @@
         }
 
         // 1) Try sessionStorage first
+        /* Gallery data loaded from json now, no need to cache
         try {
           const cached = sessionStorage.getItem(GALLERY_CACHE_KEY);
           if (cached) {
@@ -963,6 +964,7 @@
         } catch (e) {
           console.warn('Gallery cache parse error, ignoring cache', e);
         }
+        */
 
         // 2) Fallback to network
         try {
