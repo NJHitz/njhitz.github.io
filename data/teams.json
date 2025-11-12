@@ -115,7 +115,7 @@
         {
           "number": "4",
           "name": "Caitlin Mahon",
-          "positions": [],
+          "positions": ["P"],
           "gradYear": 2031,
           "slug": "caitlin-mahon-4"
         },
@@ -143,7 +143,7 @@
         {
           "number": "20",
           "name": "Aubrey Schweizer",
-          "positions": [],
+          "positions": ["SS","Util"],
           "gradYear": 2032,
           "slug": "aubrey-schweizer-20"
         },
@@ -157,7 +157,7 @@
         {
           "number": "31",
           "name": "Leah Taylor",
-          "positions": [],
+          "positions": ["P","Util"],
           "gradYear": 2032,
           "slug": "leah-taylor-31"
         },
@@ -188,78 +188,100 @@
         {
           "number": "0",
           "name": "Maya Olic",
-          "positions": [],
+          "positions": [
+            "P",
+            "Util"
+          ],
           "gradYear": 2029,
           "slug": "maya-olic-0"
         },
         {
-          "number": "2",
-          "name": "Pranjal Sabharwal",
-          "positions": [],
-          "gradYear": 2029,
-          "slug": "pranjal-sabharwal-2"
-        },
-        {
-          "number": "14",
-          "name": "Savanah Gentile",
-          "positions": [],
-          "gradYear": 2028,
-          "slug": "savanah-gentile-14"
-        },
-        {
-          "number": "5",
-          "name": "Elana Stoytchev",
-          "positions": [],
-          "gradYear": 2028,
-          "slug": "elana-stoytchev-5"
-        },
-        {
-          "number": "13",
-          "name": "Lillie Babai",
-          "positions": [],
-          "gradYear": 2029,
-          "slug": "lillie-babai-13"
-        },
-        {
-          "number": "17",
-          "name": "Lena Stohrer",
-          "positions": [],
-          "gradYear": 2028,
-          "slug": "lena-stohrer-17"
-        },
-        {
-          "number": "21",
-          "name": "Noelle Mediterraneo",
-          "positions": [],
-          "gradYear": 2029,
-          "slug": "noelle-mediterraneo-21"
-        },
-        {
-          "number": "22",
-          "name": "Mia Kraemer",
-          "positions": [],
-          "gradYear": 2029,
-          "slug": "mia-kraemer-22"
-        },
-        {
-          "number": "24",
-          "name": "Ava Zaycek",
-          "positions": [
-            "P",
-            "1st OF"
-          ],
-          "gradYear": 2029,
-          "slug": "ava-zaycek-24"
-        },
-        {
-          "number": "00",
+          "number": "0",
           "name": "Leighton Mediterraneo",
           "positions": [
             "P",
             "Util"
           ],
           "gradYear": 2029,
-          "slug": "leighton-mediterraneo-00"
+          "slug": "leighton-mediterraneo-0"
+        },
+        {
+          "number": "2",
+          "name": "Pranjal Sabharwal",
+          "positions": [
+            "OF",
+            "C"
+          ],
+          "gradYear": 2029,
+          "slug": "pranjal-sabharwal-2"
+        },
+        {
+          "number": "5",
+          "name": "Elena Stoytchev",
+          "positions": [
+            "OF"
+          ],
+          "gradYear": 2029,
+          "slug": "elena-stoytchev-5"
+        },
+        {
+          "number": "13",
+          "name": "Lillie Babai",
+          "positions": [
+            "3B",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "lillie-babai-13"
+        },
+        {
+          "number": "14",
+          "name": "Savanah Gentile",
+          "positions": [
+            "OF",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "savanah-gentile-14"
+        },
+        {
+          "number": "16",
+          "name": "Ali Ysambart",
+          "positions": [
+            "P",
+            "1B"
+          ],
+          "gradYear": 2029,
+          "slug": "ali-ysambart-16"
+        },
+        {
+          "number": "17",
+          "name": "Lena Stohrer",
+          "positions": [
+            "1B"
+          ],
+          "gradYear": 2029,
+          "slug": "lena-stohrer-17"
+        },
+        {
+          "number": "21",
+          "name": "Noelle Mediterraneo",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "noelle-mediterraneo-21"
+        },
+        {
+          "number": "22",
+          "name": "Mia Kraemer",
+          "positions": [
+            "2B",
+            "OF"
+          ],
+          "gradYear": 2029,
+          "slug": "mia-kraemer-22"
         },
         {
           "number": "23",
@@ -269,6 +291,17 @@
           ],
           "gradYear": 2029,
           "slug": "ashley-rigg-23"
+        },
+        {
+          "number": "24",
+          "name": "Ava Zaycek",
+          "positions": [
+            "P",
+            "1B",
+            "OF"
+          ],
+          "gradYear": 2029,
+          "slug": "ava-zaycek-24"
         }
       ]
     },
@@ -281,14 +314,21 @@
       "coaches": [],
       "roster": [
         {
+          "number": "3",
+          "name": "Carly Romano",
+          "positions": [],
+          "gradYear": 2027,
+          "slug": "carly-romano-3"
+        },
+        {
           "number": "4",
-          "name": "Alana Cusati",
+          "name": "Alana Billich",
           "positions": [
             "C",
             "Util"
           ],
           "gradYear": 2028,
-          "slug": "alana-cusati-4"
+          "slug": "alana-billich-4"
         },
         {
           "number": "8",
@@ -323,8 +363,8 @@
           "number": "12",
           "name": "Angelina Cardona",
           "positions": [
-            "1st",
-            "3rd"
+            "1B",
+            "3B"
           ],
           "gradYear": 2028,
           "slug": "angelina-cardona-12"
@@ -335,6 +375,15 @@
           "positions": [],
           "gradYear": 2027,
           "slug": "chelsea-forte-13"
+        },
+        {
+          "number": "22",
+          "name": "Aubrey Sawler",
+          "positions": [
+            "OF"
+          ],
+          "gradYear": 2026,
+          "slug": "aubrey-sawler-22"
         },
         {
           "number": "24",
@@ -349,7 +398,7 @@
           "number": "25",
           "name": "Isabella Rubino",
           "positions": [
-            "3rd"
+            "3B"
           ],
           "gradYear": 2028,
           "slug": "isabella-rubino-25"
@@ -400,13 +449,6 @@
           ],
           "gradYear": 2027,
           "slug": "madison-dipaolo-45"
-        },
-        {
-          "number": "45",
-          "name": "Carly Romano",
-          "positions": [],
-          "gradYear": 2027,
-          "slug": "carly-romano-45"
         }
       ]
     }
