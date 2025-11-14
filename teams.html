@@ -90,6 +90,9 @@
       font-weight:800;
       letter-spacing:.04em;
       text-transform:uppercase;
+      display:flex;
+      flex-flow:wrap;
+      gap:8px;
     }
     .team-schedule-btn {
       appearance: none;
@@ -108,7 +111,6 @@
       text-transform: capitalize;
       font-weight: normal;
       font-size: small;
-      margin-left: 10px;
       vertical-align: top;
     }
     .team-schedule-btn:hover {
@@ -303,7 +305,9 @@
 
           const title = document.createElement('div');
           title.className = 'team-title';
-          title.textContent = team.name || 'NJ HITZ Team';
+
+          const titleSpan = document.createElement('span');
+          titleSpan.textContent = team.name || 'NJ HITZ Team';
 
           const scheduleLink = document.createElement('a');
           scheduleLink.className = 'team-schedule-btn';
@@ -316,6 +320,7 @@
           const level = team.level ? (season ? ` • Level: ${team.level}` : `Level: ${team.level}`) : '';
           meta.textContent = season + level;
 
+          title.appendChild(titleSpan);
           title.appendChild(scheduleLink);
           header.appendChild(title);
           header.appendChild(meta);
