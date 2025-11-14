@@ -106,6 +106,13 @@
       "coaches": [],
       "roster": [
         {
+          "number": "2",
+          "name": "Seerat Sabharwal",
+          "positions": [],
+          "gradYear": 2032,
+          "slug": "seerat-sabharwal-2"
+        },
+        {
           "number": "3",
           "name": "Olivia Boenitz",
           "positions": [],
