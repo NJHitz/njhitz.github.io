@@ -169,13 +169,6 @@
           "slug": "leah-taylor-31"
         },
         {
-          "number": "35",
-          "name": "Julia Brundt",
-          "positions": [],
-          "gradYear": 2031,
-          "slug": "julia-brundt-35"
-        },
-        {
           "number": "39",
           "name": "Vanessa Gordon",
           "positions": [],
@@ -438,15 +431,6 @@
           ],
           "gradYear": 2028,
           "slug": "casey-dipaolo-32"
-        },
-        {
-          "number": "42",
-          "name": "Mikayla Fisher",
-          "positions": [
-            "Util"
-          ],
-          "gradYear": 2028,
-          "slug": "mikayla-fisher-42"
         },
         {
           "number": "45",

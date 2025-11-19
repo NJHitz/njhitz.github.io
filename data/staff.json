@@ -1,0 +1,317 @@
+{
+  "groups": [
+    {
+      "id": "leadership",
+      "heading": "Program Leadership",
+      "description": "Oversight for the NJ Hitz program — culture, operations, and long-term development across all age groups.",
+      "coaches": [
+        {
+          "id": "carlos-duran",
+          "anchorId": "coach-carlos-duran",
+          "name": "Carlos Duran",
+          "photo": "images/coaches/carlos-duran.jpg",
+          "rolePill": "Senior Advisor",
+          "role": "Senior Advisor • Program Culture & Development",
+          "meta": [
+            "Years Coaching: 10+",
+            "Travel / HS Experience"
+          ],
+          "bio": "Duran brings over a decade of experience working with high-level travel and high-school programs across New Jersey. He focuses on developing softball IQ, leadership, and a healthy, competitive environment for every athlete in the program.",
+          "highlights": [
+            "Guided multiple teams to regional and national-level events.",
+            "Leads program culture, communication, and long-term planning.",
+            "Supports player pathways for showcase and college recruiting."
+          ],
+          "tags": ["Culture", "Leadership", "Player Pathways"],
+          "homeTitle": "Sr. Advisor",
+          "homePills": ["Culture", "Leadership", "Player Pathways"],
+          "showOnHome": true
+        },
+        {
+          "id": "john-babai",
+          "anchorId": "coach-john-babai",
+          "name": "John Babai",
+          "photo": "images/coaches/john-babai.jpg",
+          "rolePill": "General Manager",
+          "role": "General Manager • Program Operations",
+          "meta": [
+            "Years in Softball: 8+",
+            "Program Director"
+          ],
+          "bio": "Babai oversees day-to-day operations for NJ Hitz — team placement, scheduling, facilities, and communication — ensuring families have a clear, organized experience from season to season.",
+          "highlights": [
+            "Coordinates multi-team schedules and tournament logistics.",
+            "Supports coaches with resources, equipment, and facilities.",
+            "Primary contact for families and prospective players."
+          ],
+          "tags": ["Operations", "Scheduling", "Family Experience"],
+          "homeTitle": "General Manager",
+          "homePills": ["Operations", "Scheduling", "Family Experience"],
+          "showOnHome": true
+        }
+      ]
+    },
+    {
+      "id": "18u",
+      "heading": "18U Coaching Staff",
+      "description": "Coaches working with our oldest age groups — focused on college-ready fundamentals, advanced game IQ, and the recruiting process.",
+      "coaches": [
+        {
+          "id": "mike-caputo",
+          "anchorId": "coach-mike-caputo",
+          "name": "Mike Caputo",
+          "photo": "images/coaches/mike-caputo.jpg",
+          "rolePill": "18U Head Coach",
+          "role": "18U Head Coach",
+          "meta": [
+            "Pitching / Defense"
+          ],
+          "bio": "Caputo works closely with pitchers, catchers, and the infield to build strong defensive units. He emphasizes pitch-to-pitch focus, communication, and trusting the game plan.",
+          "highlights": [
+            "Supports pitchers and catchers with game planning and pitch calling.",
+            "Teaches team defensive systems and communication."
+          ],
+          "tags": ["Battery Work", "Defense"],
+          "homeTitle": "18U Head Coach",
+          "homePills": ["Pitching", "Catchers", "Defense"],
+          "showOnHome": true
+        },
+        {
+          "id": "michael-borozan",
+          "anchorId": "coach-michael-borozan",
+          "name": "Michael Borozan",
+          "photo": "images/coaches/michael-borozan.jpg",
+          "rolePill": "18U Staff",
+          "role": "18U Staff",
+          "meta": [
+            "Years Coaching: 7+",
+            "Showcase / Tournament Experience"
+          ],
+          "bio": "Borozan leads the 18U group with an emphasis on situational hitting, aggressive baserunning, and playing fast, intelligent softball. Practices are structured, high-tempo, and built around game-speed reps.",
+          "highlights": [
+            "Experience coaching at high-level showcase and travel events.",
+            "Focus on offensive approach, pressure on the bases, and team defense.",
+            "Helps players prepare for the expectations of the next level."
+          ],
+          "tags": ["18U", "Offense", "Game IQ"],
+          "homeTitle": "18U Staff",
+          "homePills": ["Offense", "Baserunning", "Game IQ"],
+          "showOnHome": true
+        },
+        {
+          "id": "brittany-demarest",
+          "anchorId": "coach-brittany-demarest",
+          "name": "Brittany Demarest",
+          "photo": "images/coaches/brittany-demarest.jpg",
+          "rolePill": "18U Staff",
+          "role": "18U Assistant Coach",
+          "meta": [
+            "Former DIII Player",
+            "Infield / Hitting",
+            "Recruiting Insight"
+          ],
+          "bio": "Brittany is a Mount Olive native and former standout at Saint Elizabeth University, where she competed in NCAA Division III softball from 2017–2022. A four-year team captain, CSAC All-Conference honoree, and five-time All-Academic selection, she holds a bachelor’s in Sports Management & Marketing and a master’s in Graphic Design & Media.\n\nShe currently serves as Assistant Coach for the NJ Hitz 18U Showcase Team and coaches at County College of Morris (JUCO). Her background in collegiate athletics, coaching, and sports communications gives her strong insight into player development, recruiting, and athlete mentorship.",
+          "highlights": [
+            "Former NCAA DIII athlete & four-year team captain",
+            "CSAC All-Conference; 5× All-Academic Team",
+            "18U Showcase Assistant Coach",
+            "JUCO coach – County College of Morris"
+          ],
+          "tags": ["Infield", "Hitting", "Recruiting", "Mentorship"],
+          "homeTitle": "18U Assistant",
+          "homePills": ["Former DIII Player", "Infield", "Hitting"],
+          "showOnHome": true
+        },
+        {
+          "id": "amanda-dizinno",
+          "anchorId": "coach-amanda-dizinno",
+          "name": "Amanda DiZinno",
+          "photo": "images/coaches/amanda-dizinno.jpg",
+          "rolePill": "18U Staff",
+          "role": "18U Assistant Coach",
+          "meta": [
+            "Moravian University (DIII)",
+            "Mount Olive HS Alum",
+            "Corner Infield / Defense"
+          ],
+          "bio": "Amanda is a 2009 graduate of Mount Olive High School, where she played varsity softball from 2006–2009, winning both a conference championship and a state sectional title. She earned multiple All-Conference and All-County honors and joined the 100 Hits Club with 129 career hits.\n\nShe went on to play at Moravian University from 2010–2013, appearing in 162 career games. Moravian captured three conference championships, a regional championship, and made a 2010 Division III College World Series appearance, with that team later inducted into the Moravian Hall of Fame. Amanda recorded 141 career hits and held single-season and career put-out records for both Moravian and the Landmark Conference. She has coached with the NJ Hitz 18U program since 2020.",
+          "highlights": [
+            "Mount Olive varsity standout & 100 Hits Club (129 hits)",
+            "Conference & state sectional champion at Mount Olive HS",
+            "Moravian University DIII athlete (162 career games)",
+            "2010 DIII College World Series appearance & Hall of Fame team member",
+            "18U NJ Hitz coach since 2020"
+          ],
+          "tags": ["Defense", "Corner Infield", "Championship Culture", "18U"],
+          "homeTitle": "18U Assistant",
+          "homePills": ["MOHS Alum", "Moravian DIII", "Defense"],
+          "showOnHome": true
+        }
+      ]
+    },
+    {
+      "id": "16u",
+      "heading": "16U Coaching Staff",
+      "description": "Coaches building the foundation — core mechanics, confidence, and softball IQ for players preparing to move into upper-level competition.",
+      "coaches": [
+        {
+          "id": "16u-head-coach",
+          "anchorId": "16u-head-coach",
+          "name": "Head Coach",
+          "photo": "images/IMG_9316.PNG",
+          "rolePill": "16U Head Coach",
+          "role": "16U Head Coach",
+          "meta": [
+            "Futures Program",
+            "Fundamentals & Fun"
+          ],
+          "bio": "Full profile coming soon.",
+          "highlights": [],
+          "tags": ["16U"],
+          "homeTitle": "16U Head Coach",
+          "homePills": ["Mentor","Offense","Defense"],
+          "showOnHome": true
+        }
+      ]
+    },
+    {
+      "id": "14u",
+      "heading": "14U & Futures Coaching Staff",
+      "description": "Coaches building the foundation — core mechanics, confidence, and softball IQ for players preparing to move into upper-level competition.",
+      "coaches": [
+        {
+          "id": "jon-carter",
+          "anchorId": "coach-jon-carter",
+          "name": "Jon Carter",
+          "photo": "images/coaches/jon-carter.png",
+          "rolePill": "14U Manager",
+          "role": "14U Manager",
+          "meta": [
+            "14U Staff"
+          ],
+          "bio": "Jon Carter is part of the NJ Hitz 14U coaching staff. Full profile coming soon.",
+          "highlights": [],
+          "tags": ["14U", "Staff"],
+          "homeTitle": "14U Manager",
+          "homePills": ["Mentor", "Player Development", "Team-First"],
+          "showOnHome": true
+        },
+        {
+          "id": "morgan-demm",
+          "anchorId": "coach-morgan-demm",
+          "name": "Morgan Demm",
+          "photo": "images/coaches/morgan-demm.jpg",
+          "rolePill": "14U Head Coach",
+          "role": "14U Head Coach",
+          "meta": [
+            "Player Development"
+          ],
+          "bio": "Demm emphasizes effort, communication, and solid fundamentals, helping 14U players adjust to faster play and more advanced team concepts.",
+          "highlights": [
+            "Focus on mechanics, reps, and softball IQ.",
+            "Builds confidence and leadership in young athletes."
+          ],
+          "tags": ["14U", "Player Development"],
+          "homeTitle": "14U Head Coach",
+          "homePills": ["Player Development", "Effort", "Communication"],
+          "showOnHome": true
+        },
+        {
+          "id": "14u-assistant",
+          "anchorId": "coach-14u-assistant",
+          "name": "14U Assistant Coach",
+          "photo": "images/IMG_9316.PNG",
+          "rolePill": "14U Staff",
+          "role": "14U Staff",
+          "meta": [
+            "Futures Program",
+            "Fundamentals & Fun"
+          ],
+          "bio": "Full profile coming soon.",
+          "highlights": [
+            "Teaches core mechanics and position basics.",
+            "Creates an engaging, positive training environment."
+          ],
+          "tags": ["14U", "Futures"],
+          "homeTitle": "14U Staff",
+          "homePills": ["Futures Program", "Fundamentals", "Positive Culture"],
+          "showOnHome": false
+        }
+      ]
+    },
+    {
+      "id": "12u",
+      "heading": "12U & Futures Coaching Staff",
+      "description": "Coaches building the foundation — core mechanics, confidence, and softball IQ for players preparing to move into upper-level competition.",
+      "coaches": [
+        {
+          "id": "dean-taylor",
+          "anchorId": "coach-dean-taylor",
+          "name": "Dean Taylor",
+          "photo": "images/coaches/dean-taylor.png",
+          "rolePill": "12U Manager",
+          "role": "12U Manager",
+          "meta": [
+            "Technology",
+            "Operations",
+            "Liaison",
+            "Mentor"
+          ],
+          "bio": "Dean Taylor brings coaching, team management, and program operations experience to the NJ Hitz program. In addition to player development, Dean leads organizational technology and branding efforts — helping unify communication, digital presence, and behind-the-scenes operations. He also serves as a liaison with the Mount Olive Baseball & Softball Association to support coordinated programming and community alignment.\n\nOn the field, Dean emphasizes effort, communication, and strong fundamentals, helping 12U athletes adjust to faster play and more advanced team concepts. His approach focuses on building confidence, leadership, and a supportive team-first culture.",
+          "highlights": [
+            "Leads NJ Hitz technology, branding, and digital operations",
+            "Liaison with Mt. Olive Baseball & Softball Association",
+            "Emphasizes effort, communication, and fundamentals",
+            "Builds confidence & leadership in developing athletes"
+          ],
+          "tags": [
+            "12U",
+            "Operations",
+            "Technology",
+            "Player Development",
+            "Leadership"
+          ],
+          "homeTitle": "12U Manager",
+          "homePills": ["Technology", "Operations", "Player Development", "Mentor"],
+          "showOnHome": true
+        },
+        {
+          "id": "12u-head-coach",
+          "anchorId": "12u-head-coach",
+          "name": "Head Coach",
+          "photo": "images/IMG_9316.PNG",
+          "rolePill": "12U Head Coach",
+          "role": "12U Head Coach",
+          "meta": [
+            "Futures Program",
+            "Fundamentals & Fun"
+          ],
+          "bio": "Full profile coming soon.",
+          "highlights": [],
+          "tags": ["12U", "Futures"],
+          "homeTitle": "12U Head Coach",
+          "homePills": ["Futures Program", "Fundamentals", "Team-First"],
+          "showOnHome": true
+        },
+        {
+          "id": "giana-caputo",
+          "anchorId": "coach-giana-caputo",
+          "name": "Giana Caputo",
+          "photo": "images/coaches/giana-caputo.jpg",
+          "rolePill": "12U Staff",
+          "role": "12U Staff",
+          "meta": [
+            "Futures Program",
+            "Fundamentals & Fun"
+          ],
+          "bio": "Giana Caputo is part of the NJ Hitz 12U coaching staff. Full profile coming soon.",
+          "highlights": [],
+          "tags": ["12U", "Futures"],
+          "homeTitle": "12U Assistant",
+          "homePills": ["Futures Program", "Fundamentals", "Team-First"],
+          "showOnHome": true
+        }
+      ]
+    }
+  ]
+}

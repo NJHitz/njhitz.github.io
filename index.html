@@ -83,10 +83,11 @@
 
     /* Coach bios */
     .coach-grid{margin-top:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-    .coach{background:#16161a;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center}
+    .coach{background:#16161a;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center; text-decoration:none;}
     .coach .avatar{width:84px;height:84px;border-radius:10px;overflow:hidden;border:2px solid var(--hitz-gold);background:#0e0e10}
     .coach .avatar img{width:100%;height:100%;object-fit:cover}
-    .coach h4{margin:0;font-size:1.05rem}
+    .coach h4{margin:0;font-size:0.9rem}
+    /*.coach h4 > span {font-size:0.9rem; }*/
     .coach small{color:#c9c9d6}
 
     /* Gallery grid */
@@ -463,64 +464,11 @@
       <div class="container">
         <span class="eyebrow">Staff</span>
         <h2>Coaching Team</h2>
-        <p class="lead">Swap the placeholder headshots, titles, and short bios below. Link to email or social profiles if desired.</p>
-        <div class="coach-grid">
-          <div class="coach">
-            <div class="avatar"><img src="images/coaches/e7a5f8_51fb68567862449fa6f065cb6231fa59~mv2.avif" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>Carlos Duran <span class="gold">— Sr. Advisor</span></h4>
-              <small></small>
-            </div>
-          </div>
-          <div class="coach">
-            <div class="avatar"><img src="images/coaches/J-Babai.jpg" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>John Babai <span class="gold">— General Manager</span></h4>
-              <small></small>
-            </div>
-          </div>
-          <div class="coach">
-            <div class="avatar"><img src="images/coaches/e7a5f8_ce0583e32c784fe087137faf14ae8901~mv2.avif" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>Micahel Borozan<span class="gold">— 18U</span></h4>
-              <small>Bio • Core Focus • Skillset</small>
-            </div>
-          </div>
-          <div class="coach">
-            <div class="avatar"><img src="images/coaches/e7a5f8_0c87f41d1ac9434fb973d9a85f45f1af~mv2.avif" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>Mike Caputo <span class="gold">— 18U</span></h4>
-              <small>Bio • Core Focus • Skillset</small>
-            </div>
-          </div>
-          <div class="coach">
-            <div class="avatar"><img src="images/coaches/e7a5f8_6c3f6a675a4d420c81d3780aa45e7cfb~mv2.avif" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>Brittany Demarest <span class="gold">— 18U</span></h4>
-              <small>Bio • Core Focus • Skillset</small>
-            </div>
-          </div>
-          <div class="coach">
-            <div class="avatar"><img src="images/coaches/e7a5f8_1d529215bfe84f258d9fbe80bef43d3e~mv2.avif" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>Amanda Dizinno <span class="gold">— 18U</span></h4>
-              <small>Bio • Core Focus • Skillset</small>
-            </div>
-          </div>
-          <div class="coach">
-            <div class="avatar"><img src="images/coaches/morgan-demm.jpg" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>Morgan Demm <span class="gold">— 14U</span></h4>
-              <small>Bio • Core Focus • Skillset</small>
-            </div>
-          </div>
-          <div class="coach">
-            <div class="avatar"><img src="images/IMG_9316.PNG" alt="Coach headshot placeholder"></div>
-            <div>
-              <h4>Coach Name <span class="gold">— 12U</span></h4>
-              <small>Bio • Core Focus • Skillset</small>
-            </div>
-          </div>
+        <p class="lead">Meet the coaches behind NJ Hitz Softball — program leadership and team staff
+          with experience at the travel, high school, and college levels, all committed
+          to development, culture, and a team-first mindset.</p>
+        <div class="coach-grid" id="homeCoachGrid">
+          <!-- Coach tiles injected from data/staff.json via staff-home.js -->
         </div>
       </div>
     </div>
@@ -1147,5 +1095,6 @@
   </script>
 
   <script src="scripts/template-loader.js"></script>
+  <script src="scripts/staff-home.js"></script>
 </body>
 </html>
