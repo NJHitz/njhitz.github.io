@@ -176,7 +176,7 @@
     },
     {
       "id": "14u",
-      "heading": "14U & Futures Coaching Staff",
+      "heading": "14U Futures Coaching Staff",
       "description": "Coaches building the foundation — core mechanics, confidence, and softball IQ for players preparing to move into upper-level competition.",
       "coaches": [
         {
@@ -241,7 +241,7 @@
     },
     {
       "id": "12u",
-      "heading": "12U & Futures Coaching Staff",
+      "heading": "12U Futures Coaching Staff",
       "description": "Coaches building the foundation — core mechanics, confidence, and softball IQ for players preparing to move into upper-level competition.",
       "coaches": [
         {
@@ -257,7 +257,7 @@
             "Liaison",
             "Mentor"
           ],
-          "bio": "Dean Taylor brings coaching, team management, and program operations experience to the NJ Hitz program. In addition to player development, Dean leads organizational technology and branding efforts — helping unify communication, digital presence, and behind-the-scenes operations. He also serves as a liaison with the Mount Olive Baseball & Softball Association to support coordinated programming and community alignment.\n\nOn the field, Dean emphasizes effort, communication, and strong fundamentals, helping 12U athletes adjust to faster play and more advanced team concepts. His approach focuses on building confidence, leadership, and a supportive team-first culture.",
+          "bio": "Dean brings coaching, team management, and program operations experience to the NJ Hitz program. In addition to player development, Dean leads organizational technology and branding efforts — helping unify communication, digital presence, and behind-the-scenes operations. He also serves as a liaison with the Mount Olive Baseball & Softball Association to support coordinated programming and community alignment.\n\nOn the field, Dean emphasizes effort, communication, and strong fundamentals, helping 12U athletes adjust to faster play and more advanced team concepts. His approach focuses on building confidence, leadership, and a supportive team-first culture.",
           "highlights": [
             "Leads NJ Hitz technology, branding, and digital operations",
             "Liaison with Mt. Olive Baseball & Softball Association",
@@ -272,7 +272,7 @@
             "Leadership"
           ],
           "homeTitle": "12U Manager",
-          "homePills": ["Technology", "Operations", "Player Development", "Mentor"],
+          "homePills": ["Operations", "Player Development", "Mentor"],
           "showOnHome": true
         },
         {
