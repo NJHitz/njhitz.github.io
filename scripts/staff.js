@@ -1,3 +1,4 @@
+// scripts/staff.js
 (function () {
   const STAFF_JSON_URL = 'data/staff.json';
 
@@ -142,10 +143,35 @@
         section.appendChild(grid);
         container.appendChild(section);
       });
+
+      // After everything is rendered, handle #hash scrolling
+      scrollToHashIfNeeded();
     } catch (err) {
       console.error('Error loading staff:', err);
-      // Optional: you could inject a small error message into the page here
     }
+  }
+
+  function scrollToHashIfNeeded() {
+    const hash = window.location.hash;
+    if (!hash || hash.length <= 1) return;
+
+    const id = hash.substring(1);
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    // Small timeout to ensure layout is complete before scrolling
+    setTimeout(() => {
+      try {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      } catch (e) {
+        // Fallback if smooth scroll not supported
+        const rect = target.getBoundingClientRect();
+        window.scrollTo(0, window.scrollY + rect.top);
+      }
+    }, 50);
   }
 
   loadStaff();
