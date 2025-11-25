@@ -388,7 +388,7 @@
               const tdName = document.createElement('td');
               if(player.slug){
                 const link = document.createElement('a');
-                link.href = `player-profile${localExtTag}?player=${encodeURIComponent(player.slug)}`;
+                link.href = `player-profile${localExtTag}?player=${encodeURIComponent(player.slug)}&team=${encodeURIComponent(team.name)}&gradYear=${encodeURIComponent(player.gradYear)}`;
                 link.textContent = player.name || 'Player';
                 tdName.appendChild(link);
               } else {
