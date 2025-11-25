@@ -29,6 +29,16 @@
           "slug": "lailani-cabrera-3"
         },
         {
+          "number": "5",
+          "name": "Adriana Martino",
+          "positions":[
+            "P",
+            "Util"
+          ],
+          "gradYear": "2030",
+          "slug": "adriana-martino-5"
+        },
+        {
           "number": "6",
           "name": "Briana Hudzik",
           "positions": [
@@ -75,6 +85,15 @@
           ],
           "gradYear": 2030,
           "slug": "nalani-feliciano-15"
+        },
+        {
+          "number": "17",
+          "name": "Tessa Erlandson",
+          "positions": [
+            "Util"
+          ],
+          "gradYear": "2030",
+          "slug": "tessa-erlandson-17"
         },
         {
           "number": "34",
@@ -329,16 +348,6 @@
           ],
           "gradYear": 2028,
           "slug": "alana-billich-4"
-        },
-        {
-          "number": "8",
-          "name": "Elise Benning",
-          "positions": [
-            "1B",
-            "OF"
-          ],
-          "gradYear": 2028,
-          "slug": "elise-benning-8"
         },
         {
           "number": "9",
