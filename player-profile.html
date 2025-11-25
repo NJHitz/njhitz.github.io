@@ -673,7 +673,16 @@
           //TEMPORARY - Instead of throwing an error, redirect the static example page
           const urlParams = new URLSearchParams(window.location.search);
           const slug = urlParams.get('player');
-          window.location.href = 'player-example.html?player=' + slug;
+          //window.location.href = 'player-example.html?player=' + slug;
+          const slugArray = slug.split("-");
+          const playerName = `${slugArray[0].charAt(0).toUpperCase() + slugArray[0].slice(1)} ${slugArray[1].charAt(0).toUpperCase() + slugArray[1].slice(1)}`;
+          const playerNumber = slugArray[2];
+          data = {
+            player: {
+              playerName: playerName,
+              jerseyNumber: playerNumber
+            }
+          }
         }
         const apiPlayer = data.player;
         const player = transformApiPlayerToViewPlayer(apiPlayer);
