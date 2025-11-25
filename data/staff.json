@@ -157,13 +157,12 @@
         {
           "id": "16u-head-coach",
           "anchorId": "16u-head-coach",
-          "name": "Head Coach",
-          "photo": "images/IMG_9316.PNG",
+          "name": "John Bush",
+          "photo": "images/coaches/john-bush.png",
           "rolePill": "16U Head Coach",
           "role": "16U Head Coach",
           "meta": [
-            "Futures Program",
-            "Fundamentals & Fun"
+            "16U Staff"
           ],
           "bio": "Full profile coming soon.",
           "highlights": [],
