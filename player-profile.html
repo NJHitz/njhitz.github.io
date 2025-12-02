@@ -163,6 +163,13 @@
       margin-bottom:6px;
       font-weight:800;
     }
+    .player-name-wrapper {
+      display:flex;
+    }
+    .player-name-wrapper > img {
+      width:25px;
+      margin:auto 10px;
+    }
     .player-name{
       margin:0 0 6px;
       font-size:clamp(26px,4vw,36px);
@@ -496,7 +503,10 @@
 
         <section id="player-hero" class="player-hero" style="display:none;">
           <!--<div class="player-tagline">Player Showcase</div>-->
-          <h1 class="player-name" id="player-name"></h1>
+          <div class="player-name-wrapper">
+              <h1 class="player-name" id="player-name"></h1>
+              <img id="player-verified-badge" style="display:none;" src="images/verified-badge-purple.png" />
+          </div>
           <p class="player-subtitle" id="player-subtitle"></p>
         </section>
 
@@ -704,6 +714,8 @@
               gradYear: gradYear
             }
           }
+        } else {
+          document.getElementById("player-verified-badge").style.display = "";
         }
         const apiPlayer = data.player;
         const player = transformApiPlayerToViewPlayer(apiPlayer);
