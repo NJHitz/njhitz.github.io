@@ -1,6 +1,262 @@
 {
   "teams": [
     {
+      "id": "hitz18u-summer2026",
+      "name": "NJ Hitz 18U",
+      "season": "Summer 2026",
+      "level": "18U",
+      "classYears": "2027-2029",
+      "coaches": [],
+      "roster": [
+        {
+          "number": "3",
+          "name": "Carly Romano",
+          "positions": [],
+          "gradYear": 2027,
+          "slug": "carly-romano-3"
+        },
+        {
+          "number": "4",
+          "name": "Alana Billich",
+          "positions": [
+            "C",
+            "Util"
+          ],
+          "gradYear": 2028,
+          "slug": "alana-billich-4"
+        },
+        {
+          "number": "9",
+          "name": "Jillian Alverez",
+          "positions": [
+            "2B"
+          ],
+          "gradYear": 2027,
+          "slug": "jillian-alverez-9"
+        },
+        {
+          "number": "11",
+          "name": "Emma McNeil",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2027,
+          "slug": "emma-mcneil-11"
+        },
+        {
+          "number": "12",
+          "name": "Angelina Cardona",
+          "positions": [
+            "1B",
+            "3B"
+          ],
+          "gradYear": 2028,
+          "slug": "angelina-cardona-12"
+        },
+        {
+          "number": "13",
+          "name": "Chelsea Forte",
+          "positions": [],
+          "gradYear": 2027,
+          "slug": "chelsea-forte-13"
+        },
+        {
+          "number": "22",
+          "name": "Aubrey Sawler",
+          "positions": [
+            "OF"
+          ],
+          "gradYear": 2026,
+          "slug": "aubrey-sawler-22"
+        },
+        {
+          "number": "24",
+          "name": "Madison Widzemok",
+          "positions": [
+            "OF"
+          ],
+          "gradYear": 2027,
+          "slug": "madison-widzemok-24"
+        },
+        {
+          "number": "25",
+          "name": "Isabella Rubino",
+          "positions": [
+            "3B"
+          ],
+          "gradYear": 2028,
+          "slug": "isabella-rubino-25"
+        },
+        {
+          "number": "26",
+          "name": "Megan Smulewicz",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "megan-smulewicz-26"
+        },
+        {
+          "number": "27",
+          "name": "Olivia Heydorn",
+          "positions": [
+            "P",
+            "SS"
+          ],
+          "gradYear": 2028,
+          "slug": "olivia-heydorn-27"
+        },
+        {
+          "number": "32",
+          "name": "Casey DiPaolo",
+          "positions": [
+            "C"
+          ],
+          "gradYear": 2028,
+          "slug": "casey-dipaolo-32"
+        },
+        {
+          "number": "45",
+          "name": "Madison Dipaolo",
+          "positions": [
+            "OF"
+          ],
+          "gradYear": 2027,
+          "slug": "madison-dipaolo-45"
+        }
+      ]
+    },
+    {
+      "id": "hitz16u-summer2026",
+      "name": "NJ Hitz 16U",
+      "season": "Summer 2026",
+      "level": "16U",
+      "classYears": "2029",
+      "coaches": [],
+      "roster": [
+        {
+          "number": "0",
+          "name": "Maya Olic",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "maya-olic-0"
+        },
+        {
+          "number": "00",
+          "name": "Leighton Mediterraneo",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "leighton-mediterraneo-00"
+        },
+        {
+          "number": "2",
+          "name": "Pranjal Sabharwal",
+          "positions": [
+            "OF",
+            "C"
+          ],
+          "gradYear": 2029,
+          "slug": "pranjal-sabharwal-2"
+        },
+        {
+          "number": "5",
+          "name": "Elena Stoytchev",
+          "positions": [
+            "OF"
+          ],
+          "gradYear": 2029,
+          "slug": "elena-stoytchev-5"
+        },
+        {
+          "number": "13",
+          "name": "Lillie Babai",
+          "positions": [
+            "3B",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "lillie-babai-13"
+        },
+        {
+          "number": "14",
+          "name": "Savanah Gentile",
+          "positions": [
+            "OF",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "savanah-gentile-14"
+        },
+        {
+          "number": "16",
+          "name": "Ali Ysambart",
+          "positions": [
+            "P",
+            "1B"
+          ],
+          "gradYear": 2029,
+          "slug": "ali-ysambart-16"
+        },
+        {
+          "number": "17",
+          "name": "Lena Stohrer",
+          "positions": [
+            "1B"
+          ],
+          "gradYear": 2029,
+          "slug": "lena-stohrer-17"
+        },
+        {
+          "number": "21",
+          "name": "Noelle Mediterraneo",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "noelle-mediterraneo-21"
+        },
+        {
+          "number": "22",
+          "name": "Mia Kraemer",
+          "positions": [
+            "2B",
+            "OF"
+          ],
+          "gradYear": 2029,
+          "slug": "mia-kraemer-22"
+        },
+        {
+          "number": "23",
+          "name": "Ashley Rigg",
+          "positions": [
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "ashley-rigg-23"
+        },
+        {
+          "number": "24",
+          "name": "Ava Zaycek",
+          "positions": [
+            "P",
+            "1B",
+            "OF"
+          ],
+          "gradYear": 2029,
+          "slug": "ava-zaycek-24"
+        }
+      ]
+    },
+    {
       "id": "hitz14u-spring2026",
       "name": "NJ Hitz Futures 14U",
       "season": "Spring 2026",
@@ -193,262 +449,6 @@
           "positions": [],
           "gradYear": 2031,
           "slug": "vanessa-gordon-39"
-        }
-      ]
-    },
-    {
-      "id": "hitz16u-summer2026",
-      "name": "NJ Hitz 16U",
-      "season": "Summer 2026",
-      "level": "16U",
-      "classYears": "2029",
-      "coaches": [],
-      "roster": [
-        {
-          "number": "0",
-          "name": "Maya Olic",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "maya-olic-0"
-        },
-        {
-          "number": "00",
-          "name": "Leighton Mediterraneo",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "leighton-mediterraneo-00"
-        },
-        {
-          "number": "2",
-          "name": "Pranjal Sabharwal",
-          "positions": [
-            "OF",
-            "C"
-          ],
-          "gradYear": 2029,
-          "slug": "pranjal-sabharwal-2"
-        },
-        {
-          "number": "5",
-          "name": "Elena Stoytchev",
-          "positions": [
-            "OF"
-          ],
-          "gradYear": 2029,
-          "slug": "elena-stoytchev-5"
-        },
-        {
-          "number": "13",
-          "name": "Lillie Babai",
-          "positions": [
-            "3B",
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "lillie-babai-13"
-        },
-        {
-          "number": "14",
-          "name": "Savanah Gentile",
-          "positions": [
-            "OF",
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "savanah-gentile-14"
-        },
-        {
-          "number": "16",
-          "name": "Ali Ysambart",
-          "positions": [
-            "P",
-            "1B"
-          ],
-          "gradYear": 2029,
-          "slug": "ali-ysambart-16"
-        },
-        {
-          "number": "17",
-          "name": "Lena Stohrer",
-          "positions": [
-            "1B"
-          ],
-          "gradYear": 2029,
-          "slug": "lena-stohrer-17"
-        },
-        {
-          "number": "21",
-          "name": "Noelle Mediterraneo",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "noelle-mediterraneo-21"
-        },
-        {
-          "number": "22",
-          "name": "Mia Kraemer",
-          "positions": [
-            "2B",
-            "OF"
-          ],
-          "gradYear": 2029,
-          "slug": "mia-kraemer-22"
-        },
-        {
-          "number": "23",
-          "name": "Ashley Rigg",
-          "positions": [
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "ashley-rigg-23"
-        },
-        {
-          "number": "24",
-          "name": "Ava Zaycek",
-          "positions": [
-            "P",
-            "1B",
-            "OF"
-          ],
-          "gradYear": 2029,
-          "slug": "ava-zaycek-24"
-        }
-      ]
-    },
-    {
-      "id": "hitz18u-summer2026",
-      "name": "NJ Hitz 18U",
-      "season": "Summer 2026",
-      "level": "18U",
-      "classYears": "2027-2029",
-      "coaches": [],
-      "roster": [
-        {
-          "number": "3",
-          "name": "Carly Romano",
-          "positions": [],
-          "gradYear": 2027,
-          "slug": "carly-romano-3"
-        },
-        {
-          "number": "4",
-          "name": "Alana Billich",
-          "positions": [
-            "C",
-            "Util"
-          ],
-          "gradYear": 2028,
-          "slug": "alana-billich-4"
-        },
-        {
-          "number": "9",
-          "name": "Jillian Alverez",
-          "positions": [
-            "2B"
-          ],
-          "gradYear": 2027,
-          "slug": "jillian-alverez-9"
-        },
-        {
-          "number": "11",
-          "name": "Emma McNeil",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": 2027,
-          "slug": "emma-mcneil-11"
-        },
-        {
-          "number": "12",
-          "name": "Angelina Cardona",
-          "positions": [
-            "1B",
-            "3B"
-          ],
-          "gradYear": 2028,
-          "slug": "angelina-cardona-12"
-        },
-        {
-          "number": "13",
-          "name": "Chelsea Forte",
-          "positions": [],
-          "gradYear": 2027,
-          "slug": "chelsea-forte-13"
-        },
-        {
-          "number": "22",
-          "name": "Aubrey Sawler",
-          "positions": [
-            "OF"
-          ],
-          "gradYear": 2026,
-          "slug": "aubrey-sawler-22"
-        },
-        {
-          "number": "24",
-          "name": "Madison Widzemok",
-          "positions": [
-            "OF"
-          ],
-          "gradYear": 2027,
-          "slug": "madison-widzemok-24"
-        },
-        {
-          "number": "25",
-          "name": "Isabella Rubino",
-          "positions": [
-            "3B"
-          ],
-          "gradYear": 2028,
-          "slug": "isabella-rubino-25"
-        },
-        {
-          "number": "26",
-          "name": "Megan Smulewicz",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "megan-smulewicz-26"
-        },
-        {
-          "number": "27",
-          "name": "Olivia Heydorn",
-          "positions": [
-            "P",
-            "SS"
-          ],
-          "gradYear": 2028,
-          "slug": "olivia-heydorn-27"
-        },
-        {
-          "number": "32",
-          "name": "Casey DiPaolo",
-          "positions": [
-            "C"
-          ],
-          "gradYear": 2028,
-          "slug": "casey-dipaolo-32"
-        },
-        {
-          "number": "45",
-          "name": "Madison Dipaolo",
-          "positions": [
-            "OF"
-          ],
-          "gradYear": 2027,
-          "slug": "madison-dipaolo-45"
         }
       ]
     }

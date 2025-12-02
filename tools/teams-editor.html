@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex,nofollow,noarchive,noimageindex,nosnippet">
+  <meta name="googlebot" content="noindex,nofollow,noarchive,noimageindex,nosnippet">
+  <meta name="referrer" content="no-referrer">
+
+
+  <title>NJ Hitz Teams JSON Editor (Local)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 20px;
+      background: #f4f4f4;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    .controls {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    button {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background: white;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    button:hover {
+      background: #eaeaea;
+    }
+    input[type="text"],
+    input[type="number"] {
+      padding: 3px 5px;
+      font-size: 0.9rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .teams-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .team-card {
+      background: white;
+      border-radius: 6px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .team-header {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .team-header > div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.8rem;
+    }
+    .team-header label {
+      font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 4px 6px;
+      vertical-align: top;
+    }
+    th {
+      background: #fafafa;
+      text-align: left;
+      font-weight: 600;
+    }
+    .positions-cell {
+      max-width: 260px;
+    }
+    .positions-cell label {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 6px;
+      font-size: 0.75rem;
+    }
+    .positions-cell input[type="checkbox"] {
+      margin-right: 3px;
+    }
+    .team-actions, .roster-actions {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .json-output-container {
+      margin-top: 1.5rem;
+    }
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      font-family: "Fira Code", monospace;
+      font-size: 0.8rem;
+      box-sizing: border-box;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      background: #222;
+      color: #fff;
+    }
+    .drag-handle {
+      cursor: grab;
+      user-select: none;
+      font-size: 1rem;
+      text-align: center;
+    }
+    tr.drag-over {
+      outline: 2px dashed #007bff;
+      background: #eef4ff;
+    }
+    .slug-cell-inner {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .slug-cell-inner input {
+      flex: 1;
+    }
+    .slug-regenerate-btn {
+      padding: 3px 6px;
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+    @media (max-width: 900px) {
+      .team-header {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>NJ Hitz Teams JSON Editor <span class="badge">Local Only</span></h1>
+  <p style="max-width: 800px;">
+    Load your existing <code>teams.json</code>, edit team and roster info in the tables,
+    drag rows to reorder players, and use the slug regenerate button to sync slugs with
+    the player name/number. Download the updated JSON and replace your file in the project.
+  </p>
+
+  <div class="controls">
+    <input type="file" id="fileInput" accept="application/json" />
+    <button type="button" onclick="loadFromTextarea()">Load from JSON below</button>
+    <button type="button" onclick="addTeam()">Add New Team</button>
+    <button type="button" onclick="downloadJson()">Download Updated JSON</button>
+  </div>
+
+  <div id="teamsContainer" class="teams-container"></div>
+
+  <div class="json-output-container">
+    <h2>Raw JSON (for paste / backup)</h2>
+    <p style="font-size: 0.8rem; color: #555;">
+      You can paste JSON here and click <b>Load from JSON below</b>, or edit above and then
+      click <b>Download Updated JSON</b>. This area always reflects the latest in-memory data
+      after edits.
+    </p>
+    <textarea id="jsonTextarea" spellcheck="false"></textarea>
+  </div>
+
+  <script>
+    // Positions exposed as checkboxes.
+    const ALL_POSITIONS = [
+      "P", "C", "1B", "2B", "3B", "SS", "OF", "Util"
+    ];
+
+    let teamsData = { teams: [] };
+
+    const fileInput = document.getElementById("fileInput");
+    const teamsContainer = document.getElementById("teamsContainer");
+    const jsonTextarea = document.getElementById("jsonTextarea");
+
+    // Drag state for row reordering
+    let dragState = {
+      teamIndex: null,
+      fromIndex: null
+    };
+
+    // Auto-load ../data/teams.json on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      // If data already exists (e.g., from file upload or textarea), skip auto-load
+      if (teamsData && Array.isArray(teamsData.teams) && teamsData.teams.length > 0) {
+        return;
+      }
+
+      fetch("../data/teams.json")
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to load teams.json");
+          return res.json();
+        })
+        .then(json => {
+          teamsData = json;
+          renderTeams();
+          syncTextarea();
+        })
+        .catch(err => {
+          console.warn("Could not auto-load ../data/teams.json:", err);
+        });
+    });
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (!parsed.teams || !Array.isArray(parsed.teams)) {
+            alert("JSON must have a top-level 'teams' array.");
+            return;
+          }
+          teamsData = parsed;
+          renderTeams();
+          syncTextarea();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to parse JSON file. Check the console for details.");
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function loadFromTextarea() {
+      try {
+        const parsed = JSON.parse(jsonTextarea.value);
+        if (!parsed.teams || !Array.isArray(parsed.teams)) {
+          alert("JSON must have a top-level 'teams' array.");
+          return;
+        }
+        teamsData = parsed;
+        renderTeams();
+        syncTextarea();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to parse JSON from textarea.");
+      }
+    }
+
+    function syncTextarea() {
+      jsonTextarea.value = JSON.stringify(teamsData, null, 2);
+    }
+
+    function renderTeams() {
+      teamsContainer.innerHTML = "";
+
+      if (!teamsData.teams || teamsData.teams.length === 0) {
+        const emptyMsg = document.createElement("p");
+        emptyMsg.textContent = "No teams loaded yet. Load a teams.json file or add a new team.";
+        teamsContainer.appendChild(emptyMsg);
+        return;
+      }
+
+      teamsData.teams.forEach((team, teamIndex) => {
+        const card = document.createElement("div");
+        card.className = "team-card";
+
+        const headerGrid = document.createElement("div");
+        headerGrid.className = "team-header";
+
+        headerGrid.appendChild(makeLabeledInput("ID", team.id, (v) => updateTeamField(teamIndex, "id", v)));
+        headerGrid.appendChild(makeLabeledInput("Name", team.name, (v) => updateTeamField(teamIndex, "name", v)));
+        headerGrid.appendChild(makeLabeledInput("Season", team.season, (v) => updateTeamField(teamIndex, "season", v)));
+        headerGrid.appendChild(makeLabeledInput("Level", team.level, (v) => updateTeamField(teamIndex, "level", v)));
+        headerGrid.appendChild(makeLabeledInput("Class Years", team.classYears, (v) => updateTeamField(teamIndex, "classYears", v)));
+
+        card.appendChild(headerGrid);
+
+        const title = document.createElement("h3");
+        title.textContent = "Roster";
+        title.style.margin = "0.5rem 0 0.25rem";
+        card.appendChild(title);
+
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        thead.innerHTML = `
+          <tr>
+            <th style="width:40px;">⇅</th>
+            <th style="width:60px;">#</th>
+            <th style="width:180px;">Name</th>
+            <th>Positions</th>
+            <th style="width:100px;">Grad Year</th>
+            <th>Slug</th>
+            <th style="width:80px;">Actions</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        const roster = Array.isArray(team.roster) ? team.roster : [];
+        roster.forEach((player, playerIndex) => {
+          const tr = document.createElement("tr");
+
+          // Drag handle cell
+          const tdDrag = document.createElement("td");
+          const handle = document.createElement("span");
+          handle.className = "drag-handle";
+          handle.textContent = "⋮⋮";
+          handle.draggable = true;
+          handle.addEventListener("dragstart", (e) => handleDragStart(e, teamIndex, playerIndex));
+          tdDrag.appendChild(handle);
+          tr.appendChild(tdDrag);
+
+          // Number
+          const tdNum = document.createElement("td");
+          tdNum.appendChild(makeSimpleInput(player.number, (v) => updatePlayerField(teamIndex, playerIndex, "number", v)));
+          tr.appendChild(tdNum);
+
+          // Name
+          const tdName = document.createElement("td");
+          tdName.appendChild(makeSimpleInput(player.name, (v) => updatePlayerField(teamIndex, playerIndex, "name", v)));
+          tr.appendChild(tdName);
+
+          // Positions (checkboxes)
+          const tdPos = document.createElement("td");
+          tdPos.className = "positions-cell";
+          const posContainer = document.createElement("div");
+          const playerPositions = Array.isArray(player.positions) ? player.positions : [];
+
+          ALL_POSITIONS.forEach(pos => {
+            const label = document.createElement("label");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = playerPositions.includes(pos);
+            checkbox.addEventListener("change", () => {
+              togglePosition(teamIndex, playerIndex, pos, checkbox.checked);
+            });
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(pos));
+            posContainer.appendChild(label);
+          });
+
+          tdPos.appendChild(posContainer);
+          tr.appendChild(tdPos);
+
+          // Grad Year
+          const tdGrad = document.createElement("td");
+          const gradValue = player.gradYear !== undefined ? player.gradYear : "";
+          const gradInput = document.createElement("input");
+          gradInput.type = "number";
+          gradInput.value = gradValue;
+          gradInput.addEventListener("input", () => {
+            const val = gradInput.value;
+            const num = val === "" ? "" : parseInt(val, 10);
+            updatePlayerField(teamIndex, playerIndex, "gradYear", isNaN(num) ? "" : num);
+          });
+          tdGrad.appendChild(gradInput);
+          tr.appendChild(tdGrad);
+
+          // Slug with regenerate button
+          const tdSlug = document.createElement("td");
+          const slugInner = document.createElement("div");
+          slugInner.className = "slug-cell-inner";
+
+          const slugInput = makeSimpleInput(player.slug, (v) => updatePlayerField(teamIndex, playerIndex, "slug", v));
+          const slugBtn = document.createElement("button");
+          slugBtn.type = "button";
+          slugBtn.className = "slug-regenerate-btn";
+          slugBtn.title = "Regenerate from name & number";
+          slugBtn.textContent = "↻";
+
+          slugBtn.addEventListener("click", () => {
+            const newSlug = computeSlugFromPlayer(teamsData.teams[teamIndex].roster[playerIndex]);
+            if (!newSlug) {
+              alert("Need both name and number to regenerate slug.");
+              return;
+            }
+            teamsData.teams[teamIndex].roster[playerIndex].slug = newSlug;
+            slugInput.value = newSlug;
+            syncTextarea();
+          });
+
+          slugInner.appendChild(slugInput);
+          slugInner.appendChild(slugBtn);
+          tdSlug.appendChild(slugInner);
+          tr.appendChild(tdSlug);
+
+          // Actions
+          const tdActions = document.createElement("td");
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Delete";
+          delBtn.addEventListener("click", () => deletePlayer(teamIndex, playerIndex));
+          tdActions.appendChild(delBtn);
+          tr.appendChild(tdActions);
+
+          // Drag-over/drop events on the row
+          tr.addEventListener("dragover", (e) => handleDragOver(e, teamIndex, playerIndex));
+          tr.addEventListener("drop", (e) => handleDrop(e, teamIndex, playerIndex));
+          tr.addEventListener("dragleave", handleDragLeave);
+          tr.addEventListener("dragend", handleDragLeave);
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        card.appendChild(table);
+
+        const footer = document.createElement("div");
+        footer.className = "team-actions";
+
+        const rosterActions = document.createElement("div");
+        rosterActions.className = "roster-actions";
+        const addPlayerBtn = document.createElement("button");
+        addPlayerBtn.textContent = "Add Player";
+        addPlayerBtn.addEventListener("click", () => addPlayer(teamIndex));
+        rosterActions.appendChild(addPlayerBtn);
+
+        footer.appendChild(rosterActions);
+
+        const teamButtons = document.createElement("div");
+        const deleteTeamBtn = document.createElement("button");
+        deleteTeamBtn.textContent = "Delete Team";
+        deleteTeamBtn.style.borderColor = "#b00020";
+        deleteTeamBtn.style.color = "#b00020";
+        deleteTeamBtn.addEventListener("click", () => {
+          if (confirm("Delete this entire team?")) {
+            deleteTeam(teamIndex);
+          }
+        });
+        teamButtons.appendChild(deleteTeamBtn);
+
+        footer.appendChild(teamButtons);
+
+        card.appendChild(footer);
+        teamsContainer.appendChild(card);
+      });
+    }
+
+    function makeLabeledInput(labelText, value, onChange) {
+      const wrapper = document.createElement("div");
+
+      const label = document.createElement("label");
+      label.textContent = labelText;
+      wrapper.appendChild(label);
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value ?? "";
+      input.addEventListener("input", () => onChange(input.value));
+      wrapper.appendChild(input);
+
+      return wrapper;
+    }
+
+    function makeSimpleInput(value, onChange) {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value ?? "";
+      input.addEventListener("input", () => onChange(input.value));
+      return input;
+    }
+
+    function updateTeamField(teamIndex, field, value) {
+      teamsData.teams[teamIndex][field] = value;
+      syncTextarea();
+    }
+
+    function updatePlayerField(teamIndex, playerIndex, field, value) {
+      const team = teamsData.teams[teamIndex];
+      if (!team.roster) team.roster = [];
+      team.roster[playerIndex][field] = value;
+      syncTextarea();
+    }
+
+    function togglePosition(teamIndex, playerIndex, position, checked) {
+      const team = teamsData.teams[teamIndex];
+      if (!team.roster) team.roster = [];
+      const player = team.roster[playerIndex];
+      if (!Array.isArray(player.positions)) {
+        player.positions = [];
+      }
+
+      if (checked) {
+        if (!player.positions.includes(position)) {
+          player.positions.push(position);
+        }
+      } else {
+        player.positions = player.positions.filter(p => p !== position);
+      }
+      syncTextarea();
+    }
+
+    function addPlayer(teamIndex) {
+      const team = teamsData.teams[teamIndex];
+      if (!team.roster) team.roster = [];
+      team.roster.push({
+        number: "",
+        name: "",
+        positions: [],
+        gradYear: "",
+        slug: ""
+      });
+      renderTeams();
+      syncTextarea();
+    }
+
+    function deletePlayer(teamIndex, playerIndex) {
+      const team = teamsData.teams[teamIndex];
+      if (!team.roster) return;
+      team.roster.splice(playerIndex, 1);
+      renderTeams();
+      syncTextarea();
+    }
+
+    function addTeam() {
+      if (!teamsData.teams) teamsData.teams = [];
+      const idx = teamsData.teams.length + 1;
+      teamsData.teams.push({
+        id: "new-team-" + idx,
+        name: "New Team " + idx,
+        season: "",
+        level: "",
+        classYears: "",
+        coaches: [],
+        roster: []
+      });
+      renderTeams();
+      syncTextarea();
+    }
+
+    function deleteTeam(teamIndex) {
+      teamsData.teams.splice(teamIndex, 1);
+      renderTeams();
+      syncTextarea();
+    }
+
+    function downloadJson() {
+      const jsonStr = JSON.stringify(teamsData, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "teams-updated.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- Slug generation helpers ----
+    function computeSlugFromPlayer(player) {
+      const name = (player.name || "").trim().toLowerCase();
+      const number = (player.number || "").toString().trim();
+
+      if (!name || !number) return "";
+
+      const parts = name.split(/\s+/);
+      const first = parts[0];
+      const lastPart = parts.slice(1).join(" ");
+      let slugBase = first;
+      if (lastPart) {
+        slugBase += "-" + lastPart;
+      }
+
+      let slug = slugBase + "-" + number;
+      slug = slug
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9\-]/g, "");
+
+      return slug;
+    }
+
+    // ---- Drag and drop helpers ----
+    function handleDragStart(e, teamIndex, playerIndex) {
+      dragState.teamIndex = teamIndex;
+      dragState.fromIndex = playerIndex;
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", "dragging"); // needed for Firefox
+      }
+    }
+
+    function handleDragOver(e, teamIndex, playerIndex) {
+      if (dragState.teamIndex === null || dragState.teamIndex !== teamIndex) return;
+      e.preventDefault();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = "move";
+      }
+      const tr = e.currentTarget;
+      tr.classList.add("drag-over");
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove("drag-over");
+    }
+
+    function handleDrop(e, teamIndex, playerIndex) {
+      e.preventDefault();
+      const tr = e.currentTarget;
+      tr.classList.remove("drag-over");
+
+      if (dragState.teamIndex === null || dragState.teamIndex !== teamIndex) {
+        dragState.teamIndex = null;
+        dragState.fromIndex = null;
+        return;
+      }
+
+      const from = dragState.fromIndex;
+      const to = playerIndex;
+
+      dragState.teamIndex = null;
+      dragState.fromIndex = null;
+
+      if (from === null || to === null || from === to) return;
+
+      const roster = teamsData.teams[teamIndex].roster || [];
+      const [moved] = roster.splice(from, 1);
+      roster.splice(to, 0, moved);
+
+      renderTeams();
+      syncTextarea();
+    }
+  </script>
+</body>
+</html>

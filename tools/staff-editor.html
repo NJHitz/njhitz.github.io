@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex,nofollow,noarchive,noimageindex,nosnippet">
+  <meta name="googlebot" content="noindex,nofollow,noarchive,noimageindex,nosnippet">
+  <meta name="referrer" content="no-referrer">
+
+  <title>NJ Hitz Staff JSON Editor (Local)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 20px;
+      background: #f4f4f4;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    .controls {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    button {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background: white;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    button:hover {
+      background: #eaeaea;
+    }
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      padding: 3px 5px;
+      font-size: 0.9rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .staff-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .group-card {
+      background: white;
+      border-radius: 6px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .group-header {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .group-header > div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.8rem;
+    }
+    .group-header label {
+      font-weight: 600;
+    }
+    .group-description textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 4px 6px;
+      vertical-align: middle;
+    }
+    th {
+      background: #fafafa;
+      text-align: left;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      background: #222;
+      color: #fff;
+    }
+    .drag-handle {
+      cursor: grab;
+      user-select: none;
+      font-size: 1rem;
+      text-align: center;
+    }
+    tr.drag-over {
+      outline: 2px dashed #007bff;
+      background: #eef4ff;
+    }
+    .boolean-cell {
+      text-align: center;
+    }
+    .slug-cell-inner {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .slug-cell-inner input {
+      flex: 1;
+    }
+    .slug-regenerate-btn {
+      padding: 3px 6px;
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+    .group-actions {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .json-output-container {
+      margin-top: 1.5rem;
+    }
+    #jsonTextarea {
+      width: 100%;
+      min-height: 220px;
+      font-family: "Fira Code", monospace;
+      font-size: 0.8rem;
+      box-sizing: border-box;
+    }
+    @media (max-width: 1100px) {
+      .group-header {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 800px) {
+      .group-header {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      table {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal {
+      background: white;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+    }
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .modal-body {
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-right: 2px;
+    }
+    .modal-section {
+      margin-bottom: 12px;
+    }
+    .modal-section h3 {
+      font-size: 0.9rem;
+      margin: 0 0 4px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 2px;
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.85rem;
+    }
+    .field-group label {
+      font-weight: 600;
+    }
+    .array-editor {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .array-item-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .array-item-row input {
+      flex: 1;
+    }
+    .array-add-btn {
+      padding: 3px 6px;
+      font-size: 0.75rem;
+      align-self: flex-start;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      border-top: 1px solid #ddd;
+      padding-top: 6px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>NJ Hitz Staff JSON Editor <span class="badge">Local Only</span></h1>
+  <p style="max-width: 900px;">
+    Compact table for quick tweaks. Click <b>Edit</b> on a coach to open a modal with
+    longer fields (bio, meta, highlights, tags, pills, etc.). Changes save live; use
+    <b>Download Updated JSON</b> when you’re done.
+  </p>
+
+  <div class="controls">
+    <input type="file" id="fileInput" accept="application/json" />
+    <button type="button" onclick="loadFromTextarea()">Load from JSON below</button>
+    <button type="button" onclick="addGroup()">Add New Group</button>
+    <button type="button" onclick="downloadJson()">Download Updated JSON</button>
+  </div>
+
+  <div id="staffContainer" class="staff-container"></div>
+
+  <div class="json-output-container">
+    <h2>Raw JSON (for paste / backup)</h2>
+    <p style="font-size: 0.8rem; color: #555;">
+      You can paste JSON here and click <b>Load from JSON below</b>, or edit above and then
+      click <b>Download Updated JSON</b>. This always reflects the latest in-memory data
+      after edits.
+    </p>
+    <textarea id="jsonTextarea" spellcheck="false"></textarea>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div id="modalTitle" class="modal-title">Edit Coach</div>
+        <button type="button" id="modalCloseBtn">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h3>Basic Info</h3>
+          <div class="modal-grid">
+            <div class="field-group">
+              <label for="modalName">Name</label>
+              <input type="text" id="modalName" />
+            </div>
+            <div class="field-group">
+              <label for="modalRolePill">Role Pill</label>
+              <input type="text" id="modalRolePill" />
+            </div>
+            <div class="field-group">
+              <label for="modalRole">Role (full)</label>
+              <input type="text" id="modalRole" />
+            </div>
+            <div class="field-group">
+              <label for="modalPhoto">Photo path</label>
+              <input type="text" id="modalPhoto" />
+            </div>
+            <div class="field-group">
+              <label for="modalId">ID</label>
+              <input type="text" id="modalId" />
+            </div>
+            <div class="field-group">
+              <label for="modalAnchorId">Anchor (slug)</label>
+              <div class="slug-cell-inner">
+                <input type="text" id="modalAnchorId" />
+                <button type="button" id="modalSlugBtn" class="slug-regenerate-btn" title="Regenerate from name">
+                  ↻
+                </button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Show On Home</label>
+              <label style="display:inline-flex;align-items:center;gap:4px;font-weight:400;">
+                <input type="checkbox" id="modalShowOnHome" />
+                Visible on home section
+              </label>
+            </div>
+            <div class="field-group">
+              <label for="modalHomeTitle">Home Title</label>
+              <input type="text" id="modalHomeTitle" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h3>Arrays (meta, highlights, tags, home pills)</h3>
+          <div class="modal-grid">
+            <div class="field-group">
+              <label>Meta</label>
+              <div id="modalMetaContainer" class="array-editor"></div>
+            </div>
+            <div class="field-group">
+              <label>Highlights</label>
+              <div id="modalHighlightsContainer" class="array-editor"></div>
+            </div>
+            <div class="field-group">
+              <label>Tags</label>
+              <div id="modalTagsContainer" class="array-editor"></div>
+            </div>
+            <div class="field-group">
+              <label>Home Pills</label>
+              <div id="modalHomePillsContainer" class="array-editor"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h3>Bio</h3>
+          <div class="field-group">
+            <label for="modalBio">Bio</label>
+            <textarea id="modalBio" style="min-height: 140px; resize: vertical;"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="modalDoneBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let staffData = { groups: [] };
+
+    const fileInput = document.getElementById("fileInput");
+    const staffContainer = document.getElementById("staffContainer");
+    const jsonTextarea = document.getElementById("jsonTextarea");
+
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const modalDoneBtn = document.getElementById("modalDoneBtn");
+
+    // Modal fields
+    const modalTitleEl = document.getElementById("modalTitle");
+    const modalName = document.getElementById("modalName");
+    const modalRolePill = document.getElementById("modalRolePill");
+    const modalRole = document.getElementById("modalRole");
+    const modalPhoto = document.getElementById("modalPhoto");
+    const modalId = document.getElementById("modalId");
+    const modalAnchorId = document.getElementById("modalAnchorId");
+    const modalSlugBtn = document.getElementById("modalSlugBtn");
+    const modalShowOnHome = document.getElementById("modalShowOnHome");
+    const modalHomeTitle = document.getElementById("modalHomeTitle");
+    const modalMetaContainer = document.getElementById("modalMetaContainer");
+    const modalHighlightsContainer = document.getElementById("modalHighlightsContainer");
+    const modalTagsContainer = document.getElementById("modalTagsContainer");
+    const modalHomePillsContainer = document.getElementById("modalHomePillsContainer");
+    const modalBio = document.getElementById("modalBio");
+
+    // Which coach is being edited in the modal
+    let modalGroupIndex = null;
+    let modalCoachIndex = null;
+
+    // Drag state for row reordering within a group
+    let dragState = {
+      groupIndex: null,
+      fromIndex: null
+    };
+
+    // Auto-load ../data/staff.json on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      // If a file was already loaded or inserted into textarea, skip auto-load
+      if (staffData && Array.isArray(staffData.groups) && staffData.groups.length > 0) {
+        return;
+      }
+
+      fetch("../data/staff.json")
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to load staff.json");
+          return res.json();
+        })
+        .then(json => {
+          // Expecting { groups: [...] }
+          if (!json.groups || !Array.isArray(json.groups)) {
+            throw new Error("staff.json must have a top-level 'groups' array.");
+          }
+          staffData = json;
+          renderStaff();
+          syncTextarea();
+        })
+        .catch(err => {
+          console.warn("Could not auto-load ../data/staff.json:", err);
+          // Fails silently into manual mode (file upload / textarea)
+        });
+    });
+
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.value ?? event.target.result);
+          if (!parsed.groups || !Array.isArray(parsed.groups)) {
+            alert("JSON must have a top-level 'groups' array.");
+            return;
+          }
+          staffData = parsed;
+          renderStaff();
+          syncTextarea();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to parse JSON file. Check the console for details.");
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function loadFromTextarea() {
+      try {
+        const parsed = JSON.parse(jsonTextarea.value);
+        if (!parsed.groups || !Array.isArray(parsed.groups)) {
+          alert("JSON must have a top-level 'groups' array.");
+          return;
+        }
+        staffData = parsed;
+        renderStaff();
+        syncTextarea();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to parse JSON from textarea.");
+      }
+    }
+
+    function syncTextarea() {
+      jsonTextarea.value = JSON.stringify(staffData, null, 2);
+    }
+
+    function renderStaff() {
+      staffContainer.innerHTML = "";
+
+      if (!staffData.groups || staffData.groups.length === 0) {
+        const emptyMsg = document.createElement("p");
+        emptyMsg.textContent = "No groups loaded yet. Load a staff.json file or add a new group.";
+        staffContainer.appendChild(emptyMsg);
+        return;
+      }
+
+      staffData.groups.forEach((group, groupIndex) => {
+        const card = document.createElement("div");
+        card.className = "group-card";
+
+        // Group header (id, heading, description)
+        const headerGrid = document.createElement("div");
+        headerGrid.className = "group-header";
+
+        headerGrid.appendChild(makeLabeledInput("Group ID", group.id, (v) => updateGroupField(groupIndex, "id", v)));
+        headerGrid.appendChild(makeLabeledInput("Heading", group.heading, (v) => updateGroupField(groupIndex, "heading", v)));
+
+        const descWrapper = document.createElement("div");
+        descWrapper.className = "group-description";
+        const descLabel = document.createElement("label");
+        descLabel.textContent = "Description";
+        const descArea = document.createElement("textarea");
+        descArea.value = group.description ?? "";
+        descArea.addEventListener("input", () => {
+          updateGroupField(groupIndex, "description", descArea.value);
+        });
+        descWrapper.appendChild(descLabel);
+        descWrapper.appendChild(descArea);
+        headerGrid.appendChild(descWrapper);
+
+        card.appendChild(headerGrid);
+
+        const title = document.createElement("h3");
+        title.textContent = "Coaching Staff";
+        title.style.margin = "0.5rem 0 0.25rem";
+        card.appendChild(title);
+
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        thead.innerHTML = `
+          <tr>
+            <th style="width:40px;">⇅</th>
+            <th style="width:170px;">Name</th>
+            <th style="width:150px;">Role Pill</th>
+            <th style="width:200px;">Anchor (slug)</th>
+            <th style="width:120px;">showOnHome</th>
+            <th style="width:140px;">Actions</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        const coaches = Array.isArray(group.coaches) ? group.coaches : [];
+
+        coaches.forEach((coach, coachIndex) => {
+          const tr = document.createElement("tr");
+
+          // Drag handle
+          const tdDrag = document.createElement("td");
+          const handle = document.createElement("span");
+          handle.className = "drag-handle";
+          handle.textContent = "⋮⋮";
+          handle.draggable = true;
+          handle.addEventListener("dragstart", (e) => handleDragStart(e, groupIndex, coachIndex));
+          tdDrag.appendChild(handle);
+          tr.appendChild(tdDrag);
+
+          // Name
+          const tdName = document.createElement("td");
+          tdName.appendChild(makeSimpleInput(coach.name, (v) => updateCoachField(groupIndex, coachIndex, "name", v)));
+          tr.appendChild(tdName);
+
+          // RolePill
+          const tdRolePill = document.createElement("td");
+          tdRolePill.appendChild(makeSimpleInput(coach.rolePill, (v) => updateCoachField(groupIndex, coachIndex, "rolePill", v)));
+          tr.appendChild(tdRolePill);
+
+          // AnchorId with inline regen
+          const tdAnchor = document.createElement("td");
+          const anchorInner = document.createElement("div");
+          anchorInner.className = "slug-cell-inner";
+
+          const anchorInput = makeSimpleInput(coach.anchorId, (v) => updateCoachField(groupIndex, coachIndex, "anchorId", v));
+          const slugBtn = document.createElement("button");
+          slugBtn.type = "button";
+          slugBtn.className = "slug-regenerate-btn";
+          slugBtn.title = "Regenerate from name";
+          slugBtn.textContent = "↻";
+          slugBtn.addEventListener("click", () => {
+            const newSlug = computeAnchorFromCoach(staffData.groups[groupIndex].coaches[coachIndex]);
+            if (!newSlug) {
+              alert("Need a valid name to regenerate anchorId.");
+              return;
+            }
+            staffData.groups[groupIndex].coaches[coachIndex].anchorId = newSlug;
+            anchorInput.value = newSlug;
+            syncTextarea();
+          });
+
+          anchorInner.appendChild(anchorInput);
+          anchorInner.appendChild(slugBtn);
+          tdAnchor.appendChild(anchorInner);
+          tr.appendChild(tdAnchor);
+
+          // showOnHome checkbox
+          const tdShow = document.createElement("td");
+          tdShow.className = "boolean-cell";
+          const showCheckbox = document.createElement("input");
+          showCheckbox.type = "checkbox";
+          showCheckbox.checked = !!coach.showOnHome;
+          showCheckbox.addEventListener("change", () => {
+            updateCoachField(groupIndex, coachIndex, "showOnHome", showCheckbox.checked);
+          });
+          tdShow.appendChild(showCheckbox);
+          tr.appendChild(tdShow);
+
+          // Actions: Edit + Delete
+          const tdActions = document.createElement("td");
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "Edit";
+          editBtn.style.marginRight = "4px";
+          editBtn.addEventListener("click", () => openCoachModal(groupIndex, coachIndex));
+
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Delete";
+          delBtn.addEventListener("click", () => deleteCoach(groupIndex, coachIndex));
+
+          tdActions.appendChild(editBtn);
+          tdActions.appendChild(delBtn);
+          tr.appendChild(tdActions);
+
+          // Drag events on row
+          tr.addEventListener("dragover", (e) => handleDragOver(e, groupIndex, coachIndex));
+          tr.addEventListener("drop", (e) => handleDrop(e, groupIndex, coachIndex));
+          tr.addEventListener("dragleave", handleDragLeave);
+          tr.addEventListener("dragend", handleDragLeave);
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        card.appendChild(table);
+
+        // Footer actions for group
+        const footer = document.createElement("div");
+        footer.className = "group-actions";
+
+        const leftActions = document.createElement("div");
+        const addCoachBtn = document.createElement("button");
+        addCoachBtn.textContent = "Add Coach";
+        addCoachBtn.addEventListener("click", () => addCoach(groupIndex));
+        leftActions.appendChild(addCoachBtn);
+
+        footer.appendChild(leftActions);
+
+        const rightActions = document.createElement("div");
+        const deleteGroupBtn = document.createElement("button");
+        deleteGroupBtn.textContent = "Delete Group";
+        deleteGroupBtn.style.borderColor = "#b00020";
+        deleteGroupBtn.style.color = "#b00020";
+        deleteGroupBtn.addEventListener("click", () => {
+          if (confirm("Delete this entire group (and all its coaches)?")) {
+            deleteGroup(groupIndex);
+          }
+        });
+        rightActions.appendChild(deleteGroupBtn);
+
+        footer.appendChild(rightActions);
+        card.appendChild(footer);
+
+        staffContainer.appendChild(card);
+      });
+    }
+
+    // --- Helpers for basic inputs / updates ---
+
+    function makeLabeledInput(labelText, value, onChange) {
+      const wrapper = document.createElement("div");
+      const label = document.createElement("label");
+      label.textContent = labelText;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value ?? "";
+      input.addEventListener("input", () => onChange(input.value));
+      wrapper.appendChild(label);
+      wrapper.appendChild(input);
+      return wrapper;
+    }
+
+    function makeSimpleInput(value, onChange) {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value ?? "";
+      input.addEventListener("input", () => onChange(input.value));
+      return input;
+    }
+
+    function updateGroupField(groupIndex, field, value) {
+      staffData.groups[groupIndex][field] = value;
+      syncTextarea();
+    }
+
+    function updateCoachField(groupIndex, coachIndex, field, value) {
+      const group = staffData.groups[groupIndex];
+      if (!group.coaches) group.coaches = [];
+      group.coaches[coachIndex][field] = value;
+      syncTextarea();
+    }
+
+    function addCoach(groupIndex) {
+      const group = staffData.groups[groupIndex];
+      if (!group.coaches) group.coaches = [];
+      const idx = group.coaches.length + 1;
+
+      group.coaches.push({
+        id: "coach-" + idx,
+        anchorId: "",
+        name: "New Coach " + idx,
+        photo: "",
+        rolePill: "",
+        role: "",
+        meta: [],
+        bio: "",
+        highlights: [],
+        tags: [],
+        homeTitle: "",
+        homePills: [],
+        showOnHome: false
+      });
+
+      renderStaff();
+      syncTextarea();
+    }
+
+    function deleteCoach(groupIndex, coachIndex) {
+      const group = staffData.groups[groupIndex];
+      if (!group.coaches) return;
+      group.coaches.splice(coachIndex, 1);
+      renderStaff();
+      syncTextarea();
+    }
+
+    function addGroup() {
+      if (!staffData.groups) staffData.groups = [];
+      const idx = staffData.groups.length + 1;
+      staffData.groups.push({
+        id: "group-" + idx,
+        heading: "New Group " + idx,
+        description: "",
+        coaches: []
+      });
+      renderStaff();
+      syncTextarea();
+    }
+
+    function deleteGroup(groupIndex) {
+      staffData.groups.splice(groupIndex, 1);
+      renderStaff();
+      syncTextarea();
+    }
+
+    function downloadJson() {
+      const jsonStr = JSON.stringify(staffData, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "staff-updated.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // --- Slug (anchorId) generation helper ---
+    function computeAnchorFromCoach(coach) {
+      const name = (coach.name || "").trim().toLowerCase();
+      if (!name) return "";
+
+      const parts = name.split(/\s+/);
+      let slugBase = "coach";
+      parts.forEach(p => {
+        slugBase += "-" + p;
+      });
+
+      return slugBase
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9\-]/g, "");
+    }
+
+    // --- Drag and drop helpers for reordering coaches within a group ---
+
+    function handleDragStart(e, groupIndex, coachIndex) {
+      dragState.groupIndex = groupIndex;
+      dragState.fromIndex = coachIndex;
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", "dragging");
+      }
+    }
+
+    function handleDragOver(e, groupIndex, coachIndex) {
+      if (dragState.groupIndex === null || dragState.groupIndex !== groupIndex) return;
+      e.preventDefault();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = "move";
+      }
+      const tr = e.currentTarget;
+      tr.classList.add("drag-over");
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove("drag-over");
+    }
+
+    function handleDrop(e, groupIndex, coachIndex) {
+      e.preventDefault();
+      const tr = e.currentTarget;
+      tr.classList.remove("drag-over");
+
+      if (dragState.groupIndex === null || dragState.groupIndex !== groupIndex) {
+        dragState.groupIndex = null;
+        dragState.fromIndex = null;
+        return;
+      }
+
+      const from = dragState.fromIndex;
+      const to = coachIndex;
+
+      dragState.groupIndex = null;
+      dragState.fromIndex = null;
+
+      if (from === null || to === null || from === to) return;
+
+      const coaches = staffData.groups[groupIndex].coaches || [];
+      const [moved] = coaches.splice(from, 1);
+      coaches.splice(to, 0, moved);
+
+      renderStaff();
+      syncTextarea();
+    }
+
+    // --- Modal logic ---
+
+    function openCoachModal(groupIndex, coachIndex) {
+      modalGroupIndex = groupIndex;
+      modalCoachIndex = coachIndex;
+
+      const coach = staffData.groups[groupIndex].coaches[coachIndex];
+
+      // Populate basic fields
+      modalTitleEl.textContent = "Edit Coach – " + (coach.name || "");
+      modalName.value = coach.name ?? "";
+      modalRolePill.value = coach.rolePill ?? "";
+      modalRole.value = coach.role ?? "";
+      modalPhoto.value = coach.photo ?? "";
+      modalId.value = coach.id ?? "";
+      modalAnchorId.value = coach.anchorId ?? "";
+      modalShowOnHome.checked = !!coach.showOnHome;
+      modalHomeTitle.value = coach.homeTitle ?? "";
+      modalBio.value = coach.bio ?? "";
+
+      // Make sure arrays exist
+      if (!Array.isArray(coach.meta)) coach.meta = [];
+      if (!Array.isArray(coach.highlights)) coach.highlights = [];
+      if (!Array.isArray(coach.tags)) coach.tags = [];
+      if (!Array.isArray(coach.homePills)) coach.homePills = [];
+
+      // Build array editors
+      buildArrayEditorModal(modalMetaContainer, "meta", "Add meta");
+      buildArrayEditorModal(modalHighlightsContainer, "highlights", "Add highlight");
+      buildArrayEditorModal(modalTagsContainer, "tags", "Add tag");
+      buildArrayEditorModal(modalHomePillsContainer, "homePills", "Add pill");
+
+      // Attach listeners (basic fields update live)
+      modalName.oninput = () => {
+        coach.name = modalName.value;
+        syncTextarea();
+      };
+      modalRolePill.oninput = () => {
+        coach.rolePill = modalRolePill.value;
+        syncTextarea();
+      };
+      modalRole.oninput = () => {
+        coach.role = modalRole.value;
+        syncTextarea();
+      };
+      modalPhoto.oninput = () => {
+        coach.photo = modalPhoto.value;
+        syncTextarea();
+      };
+      modalId.oninput = () => {
+        coach.id = modalId.value;
+        syncTextarea();
+      };
+      modalAnchorId.oninput = () => {
+        coach.anchorId = modalAnchorId.value;
+        syncTextarea();
+      };
+      modalShowOnHome.onchange = () => {
+        coach.showOnHome = modalShowOnHome.checked;
+        syncTextarea();
+      };
+      modalHomeTitle.oninput = () => {
+        coach.homeTitle = modalHomeTitle.value;
+        syncTextarea();
+      };
+      modalBio.oninput = () => {
+        coach.bio = modalBio.value;
+        syncTextarea();
+      };
+
+      modalSlugBtn.onclick = () => {
+        const newSlug = computeAnchorFromCoach(coach);
+        if (!newSlug) {
+          alert("Need a valid name to regenerate anchorId.");
+          return;
+        }
+        coach.anchorId = newSlug;
+        modalAnchorId.value = newSlug;
+        syncTextarea();
+      };
+
+      modalOverlay.classList.add("active");
+    }
+
+    function closeCoachModal() {
+      modalOverlay.classList.remove("active");
+      modalGroupIndex = null;
+      modalCoachIndex = null;
+      // Re-render table to reflect any modal edits
+      renderStaff();
+    }
+
+    function buildArrayEditorModal(container, propName, addLabel) {
+      const groupIndex = modalGroupIndex;
+      const coachIndex = modalCoachIndex;
+      const coach = staffData.groups[groupIndex].coaches[coachIndex];
+
+      container.innerHTML = "";
+      const arr = coach[propName];
+
+      arr.forEach((val, idx) => {
+        const row = document.createElement("div");
+        row.className = "array-item-row";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = val ?? "";
+        input.addEventListener("input", () => {
+          coach[propName][idx] = input.value;
+          syncTextarea();
+        });
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.textContent = "✕";
+        delBtn.style.padding = "3px 6px";
+        delBtn.style.fontSize = "0.75rem";
+        delBtn.addEventListener("click", () => {
+          coach[propName].splice(idx, 1);
+          buildArrayEditorModal(container, propName, addLabel);
+          syncTextarea();
+        });
+
+        row.appendChild(input);
+        row.appendChild(delBtn);
+        container.appendChild(row);
+      });
+
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "array-add-btn";
+      addBtn.textContent = addLabel;
+      addBtn.addEventListener("click", () => {
+        coach[propName].push("");
+        buildArrayEditorModal(container, propName, addLabel);
+        syncTextarea();
+      });
+      container.appendChild(addBtn);
+    }
+
+    modalCloseBtn.addEventListener("click", closeCoachModal);
+    modalDoneBtn.addEventListener("click", closeCoachModal);
+
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) {
+        closeCoachModal();
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalOverlay.classList.contains("active")) {
+        closeCoachModal();
+      }
+    });
+  </script>
+</body>
+</html>
