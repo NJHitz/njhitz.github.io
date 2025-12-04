@@ -214,27 +214,6 @@
           "homeTitle": "14U Head Coach",
           "homePills": ["Player Development", "Effort", "Communication"],
           "showOnHome": true
-        },
-        {
-          "id": "14u-assistant",
-          "anchorId": "coach-14u-assistant",
-          "name": "14U Assistant Coach",
-          "photo": "images/IMG_9316.PNG",
-          "rolePill": "14U Staff",
-          "role": "14U Staff",
-          "meta": [
-            "Futures Program",
-            "Fundamentals & Fun"
-          ],
-          "bio": "Full profile coming soon.",
-          "highlights": [
-            "Teaches core mechanics and position basics.",
-            "Creates an engaging, positive training environment."
-          ],
-          "tags": ["14U", "Futures"],
-          "homeTitle": "14U Staff",
-          "homePills": ["Futures Program", "Fundamentals", "Positive Culture"],
-          "showOnHome": false
         }
       ]
     },
