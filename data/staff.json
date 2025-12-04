@@ -275,10 +275,10 @@
           "showOnHome": true
         },
         {
-          "id": "12u-head-coach",
-          "anchorId": "12u-head-coach",
-          "name": "Head Coach",
-          "photo": "images/IMG_9316.PNG",
+          "id": "stephanie-zaycek",
+          "anchorId": "coach-stephanie-zaycek",
+          "name": "Stephanie Zaycek",
+          "photo": "images/coaches/stephanie-zaycek.jpg",
           "rolePill": "12U Head Coach",
           "role": "12U Head Coach",
           "meta": [

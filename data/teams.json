@@ -444,6 +444,20 @@
           "slug": "leah-taylor-31"
         },
         {
+          "number": "33",
+          "name": "Ella Wijatyk",
+          "positions": ["C", "Util"],
+          "gradYear": 2033,
+          "slug": "ella-wijatyk-33"
+        },
+        {
+          "number": "37",
+          "name": "Ava Burgin",
+          "positions": ["Util"],
+          "gradYear": 2031,
+          "slug": "ava-burgin-37"
+        },
+        {
           "number": "39",
           "name": "Vanessa Gordon",
           "positions": [],
