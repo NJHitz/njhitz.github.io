@@ -203,6 +203,7 @@
           "rolePill": "14U Head Coach",
           "role": "14U Head Coach",
           "meta": [
+            "Futures Program",
             "Player Development"
           ],
           "bio": "Demm emphasizes effort, communication, and solid fundamentals, helping 14U players adjust to faster play and more advanced team concepts.",
@@ -210,9 +211,9 @@
             "Focus on mechanics, reps, and softball IQ.",
             "Builds confidence and leadership in young athletes."
           ],
-          "tags": ["14U", "Player Development"],
+          "tags": ["14U", "Futures", "Player Development"],
           "homeTitle": "14U Head Coach",
-          "homePills": ["Player Development", "Effort", "Communication"],
+          "homePills": ["Futures Program", "Player Development", "Effort"],
           "showOnHome": true
         }
       ]
