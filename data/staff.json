@@ -82,7 +82,7 @@
           "name": "Michael Borozan",
           "photo": "images/coaches/michael-borozan.jpg",
           "rolePill": "18U Staff",
-          "role": "18U Staff",
+          "role": "18U Assistant Coach",
           "meta": [
             "Years Coaching: 7+",
             "Showcase / Tournament Experience"
@@ -94,7 +94,7 @@
             "Helps players prepare for the expectations of the next level."
           ],
           "tags": ["18U", "Offense", "Game IQ"],
-          "homeTitle": "18U Staff",
+          "homeTitle": "18U Assistant",
           "homePills": ["Offense", "Baserunning", "Game IQ"],
           "showOnHome": true
         },
