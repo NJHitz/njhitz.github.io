@@ -93,7 +93,7 @@
     }
     .badge strong{font-weight:650}
     .actions{
-      display:flex;gap:10px;align-items:center;flex-wrap:wrap
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%;
     }
     .btn{
       appearance:none;
@@ -116,6 +116,7 @@
       align-items:center;
       gap:10px;
       width: min(520px, 100%);
+      margin:auto;
     }
     input[type="range"]{width:100%}
     .compareStage{
@@ -185,35 +186,30 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Portfolio Comparison: NJ Hitz “Old Site” → “New Site”</h1>
+      <h1>Transform Your Organization</h1>
       <p class="sub">
-        This page is a <strong>standalone</strong> interactive before/after comparison built to demonstrate how an outdated club website can be modernized.
-        Drag the center handle (or use the slider) to reveal more of either version.
+        A modern website isn’t “nice to have” — it’s how clubs <strong>earn trust</strong>, <strong>drive membership</strong>, and <strong>show up professionally</strong> on every device.
+        Use the vertical slider down the middle to compare a real <em>before</em> and <em>after</em> and see the difference instantly.
       </p>
       <div class="chips" role="list" aria-label="Highlights of improvements">
-        <span class="chip" role="listitem"><span class="dot p"></span>Modern, mobile‑friendly layout</span>
-        <span class="chip" role="listitem"><span class="dot g"></span>Cleaner navigation & clearer calls‑to‑action</span>
-        <span class="chip" role="listitem"><span class="dot p"></span>Better SEO + social sharing (Open Graph metadata)</span>
-        <span class="chip" role="listitem"><span class="dot g"></span>Structured content (teams, staff, schedules) ready for updates</span>
-        <span class="chip" role="listitem"><span class="dot p"></span>Stronger branding consistency & readability</span>
+        <span class="chip" role="listitem"><span class="dot p"></span>Mobile‑first design that looks great on phones</span>
+        <span class="chip" role="listitem"><span class="dot g"></span>Clear calls‑to‑action for registrations & tryouts</span>
+        <span class="chip" role="listitem"><span class="dot p"></span>Stronger branding + modern visuals</span>
+        <span class="chip" role="listitem"><span class="dot g"></span>Cleaner navigation so parents find info fast</span>
+        <span class="chip" role="listitem"><span class="dot p"></span>SEO + social sharing polish for credibility</span>
+        <span class="chip" role="listitem"><span class="dot g"></span>Content structured for easy season‑to‑season updates</span>
       </div>
     </header>
 
     <div class="grid">
       <section class="card" aria-label="Old vs New site comparison">
         <div class="compareHeader">
-          <div class="labels">
-            <span class="badge"><span class="dot g"></span><strong>Left:</strong> Old Site (<code>/old/home.html</code>)</span>
-            <span class="badge"><span class="dot p"></span><strong>Right:</strong> New Site (<code>/index.html</code>)</span>
-          </div>
           <div class="actions">
             <div class="sliderRow" aria-label="Split control">
               <span style="color:var(--muted);font-size:12px;min-width:68px">Old</span>
               <input id="split" type="range" min="10" max="90" value="50" aria-label="Comparison split percentage" />
               <span style="color:var(--muted);font-size:12px;min-width:68px;text-align:right">New</span>
             </div>
-            <a class="btn" href="https://njhitz.org/old/home.html" target="_blank" rel="noopener">Open Old</a>
-            <a class="btn" href="https://njhitz.org/index.html" target="_blank" rel="noopener">Open New</a>
           </div>
         </div>
 
@@ -241,13 +237,6 @@
               </svg>
             </div>
           </div>
-        </div>
-
-        <div class="note">
-          <strong>Note:</strong> This page embeds both URLs in iframes from <code>https://njhitz.org/</code>.
-          If you see a browser “refused to connect” message, it means the site is sending anti-iframe headers
-          (e.g., <code>X-Frame-Options</code> or CSP <code>frame-ancestors</code>). In that case, host this
-          comparison page alongside iframe-allowed copies, or use static screenshots/video instead.
         </div>
       </section>
     </div>
