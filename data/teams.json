@@ -26,6 +26,13 @@
           "slug": "alana-billich-4"
         },
         {
+          "number": "7",
+          "name": "Tianna Rauf",
+          "positions": [],
+          "gradYear": 2027,
+          "slug": "tianna-rauf-7"
+        },
+        {
           "number": "9",
           "name": "Jillian Alverez",
           "positions": [
@@ -71,13 +78,11 @@
           "slug": "aubrey-sawler-22"
         },
         {
-          "number": "24",
-          "name": "Madison Widzemok",
-          "positions": [
-            "OF"
-          ],
-          "gradYear": 2027,
-          "slug": "madison-widzemok-24"
+          "number": "22",
+          "name": "Makynlee Johnson",
+          "positions": [],
+          "gradYear": null,
+          "slug": "makynlee-johnson-22"
         },
         {
           "number": "25",
@@ -407,6 +412,13 @@
           "positions": [],
           "gradYear": 2031,
           "slug": "lexi-olic-7"
+        },
+        {
+          "number": "9",
+          "name": "Eva Kordell",
+          "positions": [],
+          "gradYear": 2032,
+          "slug": "eva-kordell-9"
         },
         {
           "number": "10",
