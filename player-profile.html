@@ -894,6 +894,7 @@
       const pos = (Array.isArray(p.positions) ? p.positions.join(', ') : (p.positionPrimary || '')).trim();
       subtitleEl.textContent = [jersey, team, pos].filter(Boolean).join(' • ');
 
+      /*
       const photoEl = document.getElementById('player-photo');
       if (p.photoMain) {
         photoEl.src = p.photoMain;
@@ -902,6 +903,28 @@
           ? 'images/player-profile-placeholder-sq-v2.png'
           : 'images/player-profile-placeholder-sq-v2-reverse.png';
       }
+      */
+     const photoEl = document.getElementById('player-photo');
+
+     if (p.photoMain) {
+        photoEl.src = p.photoMain;
+     } else {
+        const slugPhoto = `images/players/${p.slug}.png`;
+        const testImg = new Image();
+
+        testImg.onload = () => {
+        photoEl.src = slugPhoto;
+     };
+
+     testImg.onerror = () => {
+        photoEl.src =
+          p.batsThrows && p.batsThrows.charAt(0) === 'R'
+            ? 'images/player-profile-placeholder-sq-v2.png'
+            : 'images/player-profile-placeholder-sq-v2-reverse.png';
+     };
+
+      testImg.src = slugPhoto;
+    }
       photoEl.alt = p.name ? (p.name + ' — player photo') : 'Player photo';
 
       const badgeEl = document.getElementById('player-badge');

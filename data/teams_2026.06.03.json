@@ -13,8 +13,7 @@
           "name": "Carly Romano",
           "positions": [],
           "gradYear": 2027,
-          "slug": "carly-romano-3",
-          "defaultPhoto": "carly-romano-3.png"
+          "slug": "carly-romano-3"
         },
         {
           "number": "4",
@@ -24,16 +23,14 @@
             "Util"
           ],
           "gradYear": 2028,
-          "slug": "alana-billich-4",
-          "defaultPhoto": "alana-billich-4.png"
+          "slug": "alana-billich-4"
         },
         {
           "number": "7",
           "name": "Tianna Rauf",
           "positions": [],
           "gradYear": 2027,
-          "slug": "tianna-rauf-7",
-          "defaultPhoto": "tianna-rauf-7.png"
+          "slug": "tianna-rauf-7"
         },
         {
           "number": "9",
@@ -42,8 +39,7 @@
             "2B"
           ],
           "gradYear": 2027,
-          "slug": "jillian-alverez-9",
-          "defaultPhoto": "jillian-alverez-9.png"
+          "slug": "jillian-alverez-9"
         },
         {
           "number": "11",
@@ -53,8 +49,7 @@
             "Util"
           ],
           "gradYear": 2027,
-          "slug": "emma-mcneil-11",
-          "defaultPhoto": "emma-mcneil-11.png"
+          "slug": "emma-mcneil-11"
         },
         {
           "number": "12",
@@ -64,16 +59,14 @@
             "3B"
           ],
           "gradYear": 2028,
-          "slug": "angelina-cardona-12",
-          "defaultPhoto": "angelina-cardona-12.png"
+          "slug": "angelina-cardona-12"
         },
         {
           "number": "13",
           "name": "Chelsea Forte",
           "positions": [],
           "gradYear": 2027,
-          "slug": "chelsea-forte-13",
-          "defaultPhoto": "chelsea-forte-13.png"
+          "slug": "chelsea-forte-13"
         },
         {
           "number": "22",
@@ -82,16 +75,14 @@
             "OF"
           ],
           "gradYear": 2026,
-          "slug": "aubrey-sawler-22",
-          "defaultPhoto": "aubrey-sawler-22.png"
+          "slug": "aubrey-sawler-22"
         },
         {
           "number": "22",
           "name": "Makynlee Johnson",
           "positions": [],
           "gradYear": null,
-          "slug": "makynlee-johnson-22",
-          "defaultPhoto": "makynlee-johnson-22.png"
+          "slug": "makynlee-johnson-22"
         },
         {
           "number": "25",
@@ -100,8 +91,7 @@
             "3B"
           ],
           "gradYear": 2028,
-          "slug": "isabella-rubino-25",
-          "defaultPhoto": "isabella-rubino-25.png"
+          "slug": "isabella-rubino-25"
         },
         {
           "number": "26",
@@ -121,8 +111,7 @@
             "SS"
           ],
           "gradYear": 2028,
-          "slug": "olivia-heydorn-27",
-          "defaultPhoto": "olivia-heydorn-27.png"
+          "slug": "olivia-heydorn-27"
         },
         {
           "number": "32",
@@ -131,8 +120,7 @@
             "C"
           ],
           "gradYear": 2028,
-          "slug": "casey-dipaolo-32",
-          "defaultPhoto": "casey-dipaolo-32.png"
+          "slug": "casey-dipaolo-32"
         },
         {
           "number": "45",
@@ -141,8 +129,7 @@
             "OF"
           ],
           "gradYear": 2027,
-          "slug": "madison-dipaolo-45",
-          "defaultPhoto": "madison-dipaolo-45.png"
+          "slug": "madison-dipaolo-45"
         }
       ]
     },
@@ -162,8 +149,7 @@
             "Util"
           ],
           "gradYear": 2029,
-          "slug": "maya-olic-0",
-          "defaultPhoto": "maya-olic-0.png"
+          "slug": "maya-olic-0"
         },
         {
           "number": "00",
@@ -173,8 +159,7 @@
             "Util"
           ],
           "gradYear": 2029,
-          "slug": "leighton-mediterraneo-00",
-          "defaultPhoto": "leighton-mediterraneo-00.png"
+          "slug": "leighton-mediterraneo-00"
         },
         {
           "number": "2",
@@ -184,8 +169,7 @@
             "C"
           ],
           "gradYear": 2029,
-          "slug": "pranjal-sabharwal-2",
-          "defaultPhoto": "pranjal-sabharwal-2.png"
+          "slug": "pranjal-sabharwal-2"
         },
         {
           "number": "5",
@@ -194,8 +178,7 @@
             "OF"
           ],
           "gradYear": 2029,
-          "slug": "elena-stoytchev-5",
-          "defaultPhoto": "elena-stoytchev-5.png"
+          "slug": "elena-stoytchev-5"
         },
         {
           "number": "13",
@@ -205,8 +188,7 @@
             "Util"
           ],
           "gradYear": 2029,
-          "slug": "lillie-babai-13",
-          "defaultPhoto": "lillie-babai-13.png"
+          "slug": "lillie-babai-13"
         },
         {
           "number": "14",
@@ -216,8 +198,7 @@
             "Util"
           ],
           "gradYear": 2029,
-          "slug": "savanah-gentile-14",
-          "defaultPhoto": "savanah-gentile-14.png"
+          "slug": "savanah-gentile-14"
         },
         {
           "number": "16",
@@ -227,8 +208,7 @@
             "1B"
           ],
           "gradYear": 2029,
-          "slug": "ali-ysambart-16",
-          "defaultPhoto": "ali-ysambart-16.png"
+          "slug": "ali-ysambart-16"
         },
         {
           "number": "17",
@@ -237,8 +217,7 @@
             "1B"
           ],
           "gradYear": 2029,
-          "slug": "lena-stohrer-17",
-          "defaultPhoto": "lena-stohrer-17.png"
+          "slug": "lena-stohrer-17"
         },
         {
           "number": "21",
@@ -248,8 +227,7 @@
             "Util"
           ],
           "gradYear": 2029,
-          "slug": "noelle-mediterraneo-21",
-          "defaultPhoto": "noelle-mediterraneo-21.png"
+          "slug": "noelle-mediterraneo-21"
         },
         {
           "number": "22",
@@ -259,8 +237,7 @@
             "OF"
           ],
           "gradYear": 2029,
-          "slug": "mia-kraemer-22",
-          "defaultPhoto": "mia-kraemer-22.png"
+          "slug": "mia-kraemer-22"
         },
         {
           "number": "23",
@@ -269,8 +246,7 @@
             "Util"
           ],
           "gradYear": 2029,
-          "slug": "ashley-rigg-23",
-          "defaultPhoto": "ashley-rigg-23.png"
+          "slug": "ashley-rigg-23"
         },
         {
           "number": "24",
@@ -281,8 +257,7 @@
             "OF"
           ],
           "gradYear": 2029,
-          "slug": "ava-zaycek-24",
-          "defaultPhoto": "ava-zaycek-24.png"
+          "slug": "ava-zaycek-24"
         }
       ]
     },
@@ -302,8 +277,7 @@
             "Util"
           ],
           "gradYear": 2030,
-          "slug": "jules-johnson-1",
-          "defaultPhoto": "jules-johnson-1.png"
+          "slug": "jules-johnson-1"
         },
         {
           "number": "3",
@@ -313,19 +287,17 @@
             "Uitl"
           ],
           "gradYear": 2029,
-          "slug": "lailani-cabrera-3",
-          "defaultPhoto": "lailani-cabrera-3.png"
+          "slug": "lailani-cabrera-3"
         },
         {
           "number": "5",
           "name": "Adriana Martino",
-          "positions": [
+          "positions":[
             "P",
             "Util"
           ],
           "gradYear": "2030",
-          "slug": "adriana-martino-5",
-          "defaultPhoto": "adriana-martino-5.png"
+          "slug": "adriana-martino-5"
         },
         {
           "number": "6",
@@ -334,8 +306,7 @@
             "Util"
           ],
           "gradYear": 2030,
-          "slug": "briana-hudzik-6",
-          "defaultPhoto": "brianna-hudzik-6.png"
+          "slug": "briana-hudzik-6"
         },
         {
           "number": "7",
@@ -345,8 +316,7 @@
             "Util"
           ],
           "gradYear": 2030,
-          "slug": "lyndsey-dipaolo-7",
-          "defaultPhoto": "lindsey-dipaolo-7.png"
+          "slug": "lyndsey-dipaolo-7"
         },
         {
           "number": "9",
@@ -355,8 +325,7 @@
             "Util"
           ],
           "gradYear": 2030,
-          "slug": "alexa-hudzik-9",
-          "defaultPhoto": "alexa-hudzik-9.png"
+          "slug": "alexa-hudzik-9"
         },
         {
           "number": "12",
@@ -365,8 +334,7 @@
             "1B"
           ],
           "gradYear": 2030,
-          "slug": "natalie-carter-12",
-          "defaultPhoto": "natalie-carter-12.png"
+          "slug": "natalie-carter-12"
         },
         {
           "number": "15",
@@ -377,8 +345,7 @@
             "3rd"
           ],
           "gradYear": 2030,
-          "slug": "nalani-feliciano-15",
-          "defaultPhoto": "nalani-feliciano-15.png"
+          "slug": "nalani-feliciano-15"
         },
         {
           "number": "17",
@@ -387,8 +354,7 @@
             "Util"
           ],
           "gradYear": "2030",
-          "slug": "tessa-erlandson-17",
-          "defaultPhoto": "tessa-erlandson-17.png"
+          "slug": "tessa-erlandson-17"
         },
         {
           "number": "34",
@@ -398,8 +364,7 @@
             "Util"
           ],
           "gradYear": 2030,
-          "slug": "izzy-rodrigues-34",
-          "defaultPhoto": "izzy-rodrigues-34.png"
+          "slug": "izzy-rodrigues-34"
         },
         {
           "number": "99",
@@ -408,8 +373,7 @@
             "Util"
           ],
           "gradYear": 2030,
-          "slug": "payton-widzemok-99",
-          "defaultPhoto": "payton-widzemok-99.png"
+          "slug": "payton-widzemok-99"
         }
       ]
     },
@@ -426,34 +390,28 @@
           "name": "Seerat Sabharwal",
           "positions": [],
           "gradYear": 2032,
-          "slug": "seerat-sabharwal-2",
-          "defaultPhoto": "seerat-sabharwal-2.png"
+          "slug": "seerat-sabharwal-2"
         },
         {
           "number": "3",
           "name": "Olivia Boenitz",
           "positions": [],
           "gradYear": 2031,
-          "slug": "olivia-boenitz-3",
-          "defaultPhoto": "olivia-boenitz-3.png"
+          "slug": "olivia-boenitz-3"
         },
         {
           "number": "4",
           "name": "Caitlin Mahon",
-          "positions": [
-            "P"
-          ],
+          "positions": ["P"],
           "gradYear": 2031,
-          "slug": "caitlin-mahon-4",
-          "defaultPhoto": "caitlin-mahon-4.png"
+          "slug": "caitlin-mahon-4"
         },
         {
           "number": "7",
           "name": "Lexi Olic",
           "positions": [],
           "gradYear": 2031,
-          "slug": "lexi-olic-7",
-          "defaultPhoto": "lexi-olic-7.png"
+          "slug": "lexi-olic-7"
         },
         {
           "number": "9",
@@ -467,75 +425,56 @@
           "name": "Addie Perruna",
           "positions": [],
           "gradYear": 2031,
-          "slug": "addie-perruna-10",
-          "defaultPhoto": "addie-perruna-10.png"
+          "slug": "addie-perruna-10"
         },
         {
           "number": "11",
           "name": "Kaitlyn Wszolek",
           "positions": [],
           "gradYear": 2031,
-          "slug": "kaitlyn-wszolek-11",
-          "defaultPhoto": "kaitlyn-wszolek-11.png"
+          "slug": "kaitlyn-wszolek-11"
         },
         {
           "number": "20",
           "name": "Aubrey Schweizer",
-          "positions": [
-            "SS",
-            "Util"
-          ],
+          "positions": ["SS","Util"],
           "gradYear": 2032,
-          "slug": "aubrey-schweizer-20",
-          "defaultPhoto": "aubrey-schweizer-20.png"
+          "slug": "aubrey-schweizer-20"
         },
         {
           "number": "22",
           "name": "Jules Stohrer",
           "positions": [],
           "gradYear": 2031,
-          "slug": "jules-stohrer-22",
-          "defaultPhoto": "jules-stohrer-22.png"
+          "slug": "jules-stohrer-22"
         },
         {
           "number": "31",
           "name": "Leah Taylor",
-          "positions": [
-            "P",
-            "Util"
-          ],
+          "positions": ["P","Util"],
           "gradYear": 2032,
-          "slug": "leah-taylor-31",
-          "defaultPhoto": "leah-taylor-31.png"
+          "slug": "leah-taylor-31"
         },
         {
           "number": "33",
           "name": "Ella Wijatyk",
-          "positions": [
-            "C",
-            "Util"
-          ],
+          "positions": ["C", "Util"],
           "gradYear": 2033,
-          "slug": "ella-wijatyk-33",
-          "defaultPhoto": "ella-wijatyk-33.png"
+          "slug": "ella-wijatyk-33"
         },
         {
           "number": "37",
           "name": "Ava Burgin",
-          "positions": [
-            "Util"
-          ],
+          "positions": ["Util"],
           "gradYear": 2031,
-          "slug": "ava-burgin-37",
-          "defaultPhoto": "ava-burgin-37.png"
+          "slug": "ava-burgin-37"
         },
         {
           "number": "39",
           "name": "Vanessa Gordon",
           "positions": [],
           "gradYear": 2031,
-          "slug": "vanessa-gordon-39",
-          "defaultPhoto": "vanessa-gordon-39.png"
+          "slug": "vanessa-gordon-39"
         }
       ]
     }
