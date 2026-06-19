@@ -811,9 +811,17 @@
         return window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
       }
 
+      function parseLocalDate(dateStr){
+        const m = String(dateStr || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (m) {
+          return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        }
+        return new Date(dateStr);
+      }
+
       function formatDate(dateStr){
         if(!dateStr) return '';
-        const d = new Date(dateStr);
+        const d = parseLocalDate(dateStr);
         if(isNaN(d.getTime())) return dateStr;
         return d.toLocaleDateString(undefined, {month:'short', day:'numeric'});
       }
@@ -1253,8 +1261,8 @@
             }
 
             events.sort((a,b) => {
-              const da = new Date(a.date || a.start || a.startDate || 0).getTime();
-              const db = new Date(b.date || b.start || b.startDate || 0).getTime();
+              const da = parseLocalDate(a.date || a.start || a.startDate || 0).getTime();
+              const db = parseLocalDate(b.date || b.start || b.startDate || 0).getTime();
               return da - db;
             });
 
@@ -1269,7 +1277,7 @@
               const rawDate = evt.date || evt.startDate || evt.start;
               if (!rawDate) return;
 
-              const eventDate = new Date(rawDate);
+              const eventDate = parseLocalDate(rawDate);
               const isPast = !isNaN(eventDate.getTime()) && eventDate < now;
               const dateIso = !isNaN(eventDate.getTime()) ? eventDate.toISOString() : '';
 
