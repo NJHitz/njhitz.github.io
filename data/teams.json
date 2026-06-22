@@ -424,7 +424,9 @@
         {
           "number": "2",
           "name": "Seerat Sabharwal",
-          "positions": [],
+          "positions": [
+            "C"
+          ],
           "gradYear": 2032,
           "slug": "seerat-sabharwal-2",
           "defaultPhoto": "seerat-sabharwal-2.png"
@@ -432,7 +434,10 @@
         {
           "number": "3",
           "name": "Olivia Boenitz",
-          "positions": [],
+          "positions": [
+            "P",
+            "3B"
+          ],
           "gradYear": 2031,
           "slug": "olivia-boenitz-3",
           "defaultPhoto": "olivia-boenitz-3.png"
@@ -450,7 +455,9 @@
         {
           "number": "7",
           "name": "Lexi Olic",
-          "positions": [],
+          "positions": [
+            "1B"
+          ],
           "gradYear": 2031,
           "slug": "lexi-olic-7",
           "defaultPhoto": "lexi-olic-7.png"
@@ -458,14 +465,18 @@
         {
           "number": "9",
           "name": "Eva Kordell",
-          "positions": [],
+          "positions": [
+            "P"
+          ],
           "gradYear": 2032,
           "slug": "eva-kordell-9"
         },
         {
           "number": "10",
           "name": "Addie Perruna",
-          "positions": [],
+          "positions": [
+            "OF"
+          ],
           "gradYear": 2031,
           "slug": "addie-perruna-10",
           "defaultPhoto": "addie-perruna-10.png"
@@ -473,7 +484,9 @@
         {
           "number": "11",
           "name": "Kaitlyn Wszolek",
-          "positions": [],
+          "positions": [
+            "2B"
+          ],
           "gradYear": 2031,
           "slug": "kaitlyn-wszolek-11",
           "defaultPhoto": "kaitlyn-wszolek-11.png"
@@ -482,8 +495,7 @@
           "number": "20",
           "name": "Aubrey Schweizer",
           "positions": [
-            "SS",
-            "Util"
+            "SS"
           ],
           "gradYear": 2032,
           "slug": "aubrey-schweizer-20",
@@ -492,7 +504,9 @@
         {
           "number": "22",
           "name": "Jules Stohrer",
-          "positions": [],
+          "positions": [
+            "OF"
+          ],
           "gradYear": 2031,
           "slug": "jules-stohrer-22",
           "defaultPhoto": "jules-stohrer-22.png"
@@ -501,6 +515,7 @@
           "number": "31",
           "name": "Leah Taylor",
           "positions": [
+            "3B",
             "P",
             "Util"
           ],
@@ -523,6 +538,7 @@
           "number": "37",
           "name": "Ava Burgin",
           "positions": [
+            "OF",
             "Util"
           ],
           "gradYear": 2031,
@@ -532,7 +548,9 @@
         {
           "number": "39",
           "name": "Vanessa Gordon",
-          "positions": [],
+          "positions": [
+            "C"
+          ],
           "gradYear": 2031,
           "slug": "vanessa-gordon-39",
           "defaultPhoto": "vanessa-gordon-39.png"
