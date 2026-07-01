@@ -2,6 +2,7 @@
   "teams": [
     {
       "id": "hitz18u-summer2026",
+      "usaSoftballId": "",
       "name": "NJ Hitz 18U",
       "season": "Summer 2026",
       "level": "18U",
@@ -149,6 +150,7 @@
     {
       "id": "hitz16u-summer2026",
       "name": "NJ Hitz 16U",
+      "usaSoftballId": "4212616327",
       "season": "Summer 2026",
       "level": "16U",
       "classYears": "2029",
@@ -289,6 +291,7 @@
     {
       "id": "hitz14u-spring2026",
       "name": "NJ Hitz Futures 14U",
+      "usaSoftballId": "3736384319",
       "season": "Spring 2026",
       "level": "14U",
       "classYears": "2030-31",
@@ -416,6 +419,7 @@
     {
       "id": "hitz12u-spring2026",
       "name": "NJ Hitz Futures 12U",
+      "usaSoftballId": "4212612792",
       "season": "Spring 2026",
       "level": "12U",
       "classYears": "2031-32",

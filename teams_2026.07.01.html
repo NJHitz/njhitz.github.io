@@ -206,40 +206,6 @@
       font-style:italic;
       margin-top:6px;
     }
-
-    .team-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .usa-softball-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      height:34px;
-      padding:3px 8px;
-      /*
-      border-radius:8px;
-      background:#fff;
-      border:1px solid rgba(255,255,255,.18);
-      */
-      text-decoration:none;
-      transition:transform .15s ease, box-shadow .2s ease;
-    }
-
-    .usa-softball-link:hover{
-      transform:translateY(-1px);
-      box-shadow:0 4px 12px rgba(0,0,0,.35);
-    }
-
-    .usa-softball-link img{
-      display:block;
-      height:36px;
-      width:auto;
-      max-width:105px;
-    }
   </style>
 </head>
 
@@ -289,8 +255,6 @@
       const teamsContainer = document.getElementById('teams-container');
       const errorEl = document.getElementById('teams-error');
       const gradFilter = document.getElementById('grad-filter');
-      const USA_SOFTBALL_LOGO_URL = 'images/USA_Softball_logo.png';
-      const USA_SOFTBALL_TEAM_BASE_URL = 'https://nesb.registerplay.com/pages/team/detail/';
       let allTeams = [];
 
       const LEVEL_ORDER = {
@@ -356,33 +320,8 @@
           const level = team.level ? (season ? ` • Level: ${team.level}` : `Level: ${team.level}`) : '';
           meta.textContent = season + level;
 
-          //title.appendChild(titleSpan);
-          //title.appendChild(scheduleLink);
-          const actions = document.createElement('div');
-          actions.className = 'team-actions';
-
-          actions.appendChild(scheduleLink);
-
-          if (team.usaSoftballId) {
-            const usaLink = document.createElement('a');
-            usaLink.className = 'usa-softball-link';
-            usaLink.href = `${USA_SOFTBALL_TEAM_BASE_URL}${encodeURIComponent(team.usaSoftballId)}`;
-            usaLink.target = '_blank';
-            usaLink.rel = 'noopener noreferrer';
-            usaLink.title = `${team.name || 'NJ Hitz'} USA Softball page`;
-            usaLink.setAttribute('aria-label', `${team.name || 'NJ Hitz'} USA Softball page`);
-
-            const usaImg = document.createElement('img');
-            usaImg.src = USA_SOFTBALL_LOGO_URL;
-            usaImg.alt = 'USA Softball';
-
-            usaLink.appendChild(usaImg);
-            actions.appendChild(usaLink);
-          }
-
           title.appendChild(titleSpan);
-          title.appendChild(actions);
-
+          title.appendChild(scheduleLink);
           header.appendChild(title);
           header.appendChild(meta);
           card.appendChild(header);
