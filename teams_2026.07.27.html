@@ -36,90 +36,26 @@
   
   <link href="css/main.css" rel="stylesheet">
   <style>
-    .season-context{
-      display:flex;
-      align-items:center;
-      /*justify-content:center;*/
-      flex-wrap:wrap;
-      gap:8px;
-      margin:8px 0 0;
-      color:#d7d7e3;
-      font-size:.95rem;
-      font-weight:700;
-      letter-spacing:.04em;
-    }
-
-    .season-status{
-      display:inline-flex;
-      align-items:center;
-      padding:3px 8px;
-      border-radius:999px;
-      background:var(--hitz-gold);
-      color:var(--hitz-black);
-      font-size:.68rem;
-      letter-spacing:.08em;
-      font-weight:900;
-      text-transform:uppercase;
-    }
-
     .filters-row{
       display:flex;
       flex-wrap:wrap;
-      gap:10px 18px;
+      gap:10px;
       align-items:center;
       margin-bottom:18px;
-      padding:12px 14px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      background:#141418;
       font-size:.9rem;
     }
-
     .filters-row label{
       display:flex;
       align-items:center;
-      gap:7px;
-      color:#d9d9e8;
-      white-space:nowrap;
+      gap:6px;
     }
-
     .filters-row select{
-      padding:7px 32px 7px 11px;
+      padding:6px 10px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
-      background:#101016;
+      border:1px solid #333;
+      background:#14141a;
       color:var(--hitz-white);
       font-size:.9rem;
-    }
-
-    #season-filter{
-      min-width:220px;
-    }
-
-    #grad-filter{
-      min-width:120px;
-    }
-
-    .season-loading{
-      opacity:.65;
-      pointer-events:none;
-    }
-
-    @media (max-width:560px){
-      .filters-row{
-        align-items:stretch;
-      }
-
-      .filters-row label{
-        width:100%;
-        justify-content:space-between;
-      }
-
-      #season-filter,
-      #grad-filter{
-        min-width:0;
-        width:62%;
-      }
     }
 
     .teams-list{
@@ -316,12 +252,8 @@
       <div class="hero-inner">
         <div class="hero-eyebrow">NJ HITZ SOFTBALL</div>
         <h1>Program Teams & Rosters</h1>
-        <div class="season-context" aria-live="polite">
-          <span id="season-heading">Loading season…</span>
-          <span class="season-status" id="season-status">Current</span>
-        </div>
-        <p id="season-description">
-          Browse NJ HITZ teams, coaching staff, and full player rosters.
+        <p>
+          Browse current NJ HITZ teams, coaching staff, and full player rosters.
           Click a player’s name to view their full showcase profile with stats, academics, and contact info.
         </p>
       </div>
@@ -331,14 +263,9 @@
       <div class="content">
         <p class="page-intro"></p>
 
-        <div class="filters-row" id="roster-filters" aria-label="Roster filters">
-          <label for="season-filter">
-            Season:
-            <select id="season-filter" aria-label="Select roster season"></select>
-          </label>
-
-          <label for="grad-filter">
-            Grad Year:
+        <div class="filters-row">
+          <label>
+            Filter by Grad Year:
             <select id="grad-filter">
               <option value="">All</option>
             </select>
@@ -348,7 +275,7 @@
         <div id="teams-container" class="teams-list"></div>
 
         <div id="teams-error" class="empty-message" style="display:none;margin-top:16px;">
-          Unable to load the selected roster archive. Please verify the season data file and <code>data/seasons.json</code>.
+          Unable to load teams data. Please check that <code>data/teams.json</code> is uploaded and valid.
         </div>
       </div>
     </main>
@@ -362,11 +289,6 @@
       const teamsContainer = document.getElementById('teams-container');
       const errorEl = document.getElementById('teams-error');
       const gradFilter = document.getElementById('grad-filter');
-      const seasonFilter = document.getElementById('season-filter');
-      const rosterFilters = document.getElementById('roster-filters');
-      const seasonHeading = document.getElementById('season-heading');
-      const seasonStatus = document.getElementById('season-status');
-      const seasonDescription = document.getElementById('season-description');
       const USA_SOFTBALL_LOGO_URL = 'images/USA_Softball_logo.png';
       const USA_SOFTBALL_TEAM_BASE_URL = 'https://nesb.registerplay.com/pages/team/detail/';
       let allTeams = [];
@@ -560,115 +482,37 @@
       }
 
       function populateGradFilter(){
-        const selectedValue = gradFilter.value;
-        gradFilter.innerHTML = '<option value="">All</option>';
-
         const years = new Set();
         allTeams.forEach(team => {
           (team.roster || []).forEach(p => {
             if(p.gradYear) years.add(String(p.gradYear));
           });
         });
-
-        Array.from(years).sort().forEach(y => {
+        const sorted = Array.from(years).sort();
+        sorted.forEach(y => {
           const opt = document.createElement('option');
           opt.value = y;
           opt.textContent = y;
           gradFilter.appendChild(opt);
         });
-
-        if(Array.from(years).includes(selectedValue)){
-          gradFilter.value = selectedValue;
-        }
-      }
-
-      function setSeasonPresentation(season){
-        const isCurrent = Boolean(season.isCurrent);
-        seasonHeading.textContent = isCurrent ? `${season.label} Season` : `${season.label} Archive`;
-        seasonStatus.textContent = isCurrent ? 'Current' : 'Archive';
-        seasonStatus.style.background = isCurrent ? 'var(--hitz-gold)' : '#343442';
-        seasonStatus.style.color = isCurrent ? 'var(--hitz-black)' : 'var(--hitz-white)';
-        seasonDescription.textContent = season.description ||
-          (isCurrent
-            ? 'Browse current NJ HITZ teams, coaching staff, and full player rosters.'
-            : `Browse historical NJ HITZ teams and rosters from ${season.label}.`);
-      }
-
-      function loadSeason(season){
-        if(!season || !season.dataFile) return;
-
-        rosterFilters.classList.add('season-loading');
-        errorEl.style.display = 'none';
-        teamsContainer.innerHTML = '<div class="empty-message">Loading roster data…</div>';
-
-        fetch(season.dataFile, {cache:'no-cache'})
-          .then(resp => {
-            if(!resp.ok) throw new Error(`HTTP ${resp.status} loading ${season.dataFile}`);
-            return resp.json();
-          })
-          .then(data => {
-            allTeams = (data && data.teams) ? data.teams : [];
-            if(!allTeams.length) throw new Error('No teams found in selected season JSON');
-
-            gradFilter.value = '';
-            populateGradFilter();
-            setSeasonPresentation(season);
-            renderTeams('');
-
-            const url = new URL(window.location.href);
-            if(season.isCurrent){
-              url.searchParams.delete('season');
-            } else {
-              url.searchParams.set('season', season.id);
-            }
-            window.history.replaceState({}, '', url);
-          })
-          .catch(err => {
-            console.error('Error loading roster season:', err);
-            teamsContainer.innerHTML = '';
-            errorEl.style.display = 'block';
-          })
-          .finally(() => rosterFilters.classList.remove('season-loading'));
-      }
-
-      function initializeSeasons(seasons){
-        const validSeasons = (seasons || []).filter(s => s && s.id && s.label && s.dataFile);
-        if(!validSeasons.length) throw new Error('No valid seasons found in seasons.json');
-
-        seasonFilter.innerHTML = '';
-        validSeasons.forEach(season => {
-          const opt = document.createElement('option');
-          opt.value = season.id;
-          opt.textContent = season.isCurrent ? `${season.label} (Current)` : season.label;
-          seasonFilter.appendChild(opt);
-        });
-
-        const requestedSeasonId = new URLSearchParams(window.location.search).get('season');
-        const defaultSeason = validSeasons.find(s => s.id === requestedSeasonId)
-          || validSeasons.find(s => s.isCurrent)
-          || validSeasons[0];
-
-        seasonFilter.value = defaultSeason.id;
-        seasonFilter.addEventListener('change', () => {
-          const selected = validSeasons.find(s => s.id === seasonFilter.value);
-          loadSeason(selected);
-        });
-
-        loadSeason(defaultSeason);
       }
 
       gradFilter.addEventListener('change', () => {
         renderTeams(gradFilter.value || '');
       });
 
-      fetch('data/seasons.json', {cache:'no-cache'})
-        .then(resp => {
-          if(!resp.ok) throw new Error(`HTTP ${resp.status} loading data/seasons.json`);
-          return resp.json();
+      fetch('data/teams.json', {cache:'no-cache'})
+        .then(resp => resp.json())
+        .then(data => {
+          allTeams = (data && data.teams) ? data.teams : [];
+          if(!allTeams.length){
+            throw new Error('No teams found in JSON');
+          }
+          populateGradFilter();
+          renderTeams('');
         })
-        .then(data => initializeSeasons(data.seasons))
         .catch(err => {
-          console.error('Error loading seasons manifest:', err);
+          console.error('Error loading teams.json:', err);
           errorEl.style.display = 'block';
         });
     })();

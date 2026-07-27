@@ -1,0 +1,18 @@
+{
+  "seasons": [
+    {
+      "id": "current",
+      "label": "2026–2027",
+      "isCurrent": true,
+      "dataFile": "data/teams.json",
+      "description": "Our Official NJ HITZ teams and rosters for the current season."
+    },
+    {
+      "id": "spring-summer-2026",
+      "label": "Spring/Summer 2026",
+      "isCurrent": false,
+      "dataFile": "data/archive/teams-spring-summer-2026.json",
+      "description": "Our NJ HITZ teams and rosters from the Spring/Summer 2026 season."
+    }
+  ]
+}
