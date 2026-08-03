@@ -1,21 +1,24 @@
 {
   "teams": [
     {
-      "id": "hitz18u-summer2026",
+      "id": "hitz18u-fall2026",
       "usaSoftballId": "",
-      "name": "NJ Hitz 18U",
-      "season": "Summer 2026",
+      "name": "NJ Hitz 18U Showcase",
+      "season": "Fall 2026",
       "level": "18U",
-      "classYears": "2027-2029",
+      "classYears": "2026-2029",
       "coaches": [],
       "roster": [
         {
-          "number": "3",
-          "name": "Carly Romano",
-          "positions": [],
-          "gradYear": 2027,
-          "slug": "carly-romano-3",
-          "defaultPhoto": "carly-romano-3.png"
+          "number": "27",
+          "name": "Olivia Heydorn",
+          "positions": [
+            "P",
+            "SS"
+          ],
+          "gradYear": 2028,
+          "slug": "olivia-heydorn-27",
+          "defaultPhoto": "olivia-heydorn-27.png"
         },
         {
           "number": "4",
@@ -24,38 +27,17 @@
             "C",
             "Util"
           ],
-          "gradYear": 2028,
+          "gradYear": 2027,
           "slug": "alana-billich-4",
           "defaultPhoto": "alana-billich-4.png"
         },
         {
-          "number": "7",
-          "name": "Tianna Rauf",
+          "number": "21",
+          "name": "Angela Badini",
           "positions": [],
-          "gradYear": 2027,
-          "slug": "tianna-rauf-7",
-          "defaultPhoto": "tianna-rauf-7.png"
-        },
-        {
-          "number": "9",
-          "name": "Jillian Alverez",
-          "positions": [
-            "2B"
-          ],
-          "gradYear": 2027,
-          "slug": "jillian-alverez-9",
-          "defaultPhoto": "jillian-alverez-9.png"
-        },
-        {
-          "number": "11",
-          "name": "Emma McNeil",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": 2027,
-          "slug": "emma-mcneil-11",
-          "defaultPhoto": "emma-mcneil-11.png"
+          "gradYear": 2029,
+          "slug": "angela-badini-21",
+          "defaultPhoto": "angela-badini-21.png"
         },
         {
           "number": "12",
@@ -69,30 +51,25 @@
           "defaultPhoto": "angelina-cardona-12.png"
         },
         {
-          "number": "13",
-          "name": "Chelsea Forte",
-          "positions": [],
-          "gradYear": 2027,
-          "slug": "chelsea-forte-13",
-          "defaultPhoto": "chelsea-forte-13.png"
-        },
-        {
-          "number": "22",
-          "name": "Aubrey Sawler",
+          "number": "32",
+          "name": "Casey DiPaolo",
           "positions": [
-            "OF"
+            "C"
           ],
-          "gradYear": 2026,
-          "slug": "aubrey-sawler-22",
-          "defaultPhoto": "aubrey-sawler-22.png"
+          "gradYear": 2028,
+          "slug": "casey-dipaolo-32",
+          "defaultPhoto": "casey-dipaolo-32.png"
         },
         {
-          "number": "22",
-          "name": "Makynlee Johnson",
-          "positions": [],
-          "gradYear": null,
-          "slug": "makynlee-johnson-22",
-          "defaultPhoto": "makynlee-johnson-22.png"
+          "number": "11",
+          "name": "Emma McNeil",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2027,
+          "slug": "emma-mcneil-11",
+          "defaultPhoto": "emma-mcneil-11.png"
         },
         {
           "number": "25",
@@ -105,89 +82,77 @@
           "defaultPhoto": "isabella-rubino-25.png"
         },
         {
-          "number": "26",
-          "name": "Megan Smulewicz",
+          "number": "9",
+          "name": "Jillian Alverez",
           "positions": [
-            "P",
-            "Util"
+            "C",
+            "2B"
           ],
-          "gradYear": 2029,
-          "slug": "megan-smulewicz-26"
+          "gradYear": 2026,
+          "slug": "jillian-alverez-9",
+          "defaultPhoto": "jillian-alverez-9.png"
         },
         {
-          "number": "27",
-          "name": "Olivia Heydorn",
-          "positions": [
-            "P",
-            "SS"
-          ],
-          "gradYear": 2028,
-          "slug": "olivia-heydorn-27",
-          "defaultPhoto": "olivia-heydorn-27.png"
+          "number": "15",
+          "name": "Olivia Jenkins",
+          "positions": [],
+          "gradYear": 2027,
+          "slug": "olivia-jenkins-15",
+          "defaultPhoto": "olivia-jenkins-15.png"
         },
         {
-          "number": "32",
-          "name": "Casey DiPaolo",
+          "number": "7",
+          "name": "Tianna Rauf",
           "positions": [
-            "C"
-          ],
-          "gradYear": 2028,
-          "slug": "casey-dipaolo-32",
-          "defaultPhoto": "casey-dipaolo-32.png"
-        },
-        {
-          "number": "45",
-          "name": "Madison DiPaolo",
-          "positions": [
-            "OF"
+            "P"
           ],
           "gradYear": 2027,
-          "slug": "madison-dipaolo-45",
-          "defaultPhoto": "madison-dipaolo-45.png"
+          "slug": "tianna-rauf-7",
+          "defaultPhoto": "tianna-rauf-7.png"
         }
       ]
     },
     {
-      "id": "hitz16u-summer2026",
-      "name": "NJ Hitz 16U",
-      "usaSoftballId": "4212616327",
-      "season": "Summer 2026",
+      "id": "hitz16u-gold-fall2026",
+      "name": "NJ Hitz 16U Gold",
+      "usaSoftballId": "6958452615",
+      "season": "Fall 2026",
       "level": "16U",
       "classYears": "2029",
       "coaches": [],
       "roster": [
         {
-          "number": "0",
-          "name": "Maya Olic",
+          "number": "16",
+          "name": "Ali Ysambart",
           "positions": [
             "P",
-            "Util"
+            "1B"
           ],
           "gradYear": 2029,
-          "slug": "maya-olic-0",
-          "defaultPhoto": "maya-olic-0.png"
+          "slug": "ali-ysambart-16",
+          "defaultPhoto": "ali-ysambart-16.png"
         },
         {
-          "number": "00",
-          "name": "Leighton Mediterraneo",
+          "number": "24",
+          "name": "Ava Zaycek",
           "positions": [
             "P",
-            "Util"
+            "1B",
+            "OF"
           ],
           "gradYear": 2029,
-          "slug": "leighton-mediterraneo-00",
-          "defaultPhoto": "leighton-mediterraneo-00.png"
+          "slug": "ava-zaycek-24",
+          "defaultPhoto": "ava-zaycek-24.png"
         },
         {
-          "number": "2",
-          "name": "Pranjal Sabharwal",
+          "number": "8",
+          "name": "CeCe Viola",
           "positions": [
-            "OF",
             "C"
           ],
           "gradYear": 2029,
-          "slug": "pranjal-sabharwal-2",
-          "defaultPhoto": "pranjal-sabharwal-2.png"
+          "slug": "cece-viola-8",
+          "defaultPhoto": "cece-viola-8.png"
         },
         {
           "number": "5",
@@ -198,6 +163,16 @@
           "gradYear": 2029,
           "slug": "elena-stoytchev-5",
           "defaultPhoto": "elena-stoytchev-5.png"
+        },
+        {
+          "number": "17",
+          "name": "Lena Stohrer",
+          "positions": [
+            "1B"
+          ],
+          "gradYear": 2029,
+          "slug": "lena-stohrer-17",
+          "defaultPhoto": "lena-stohrer-17.png"
         },
         {
           "number": "13",
@@ -211,6 +186,17 @@
           "defaultPhoto": "lillie-babai-13.png"
         },
         {
+          "number": "0",
+          "name": "Maya Olic",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2029,
+          "slug": "maya-olic-0",
+          "defaultPhoto": "maya-olic-0.png"
+        },
+        {
           "number": "14",
           "name": "Savanah Gentile",
           "positions": [
@@ -222,79 +208,25 @@
           "defaultPhoto": "savanah-gentile-14.png"
         },
         {
-          "number": "16",
-          "name": "Ali Ysambart",
+          "number": "2",
+          "name": "Pranjal Sabharwal",
           "positions": [
-            "P",
-            "1B"
-          ],
-          "gradYear": 2029,
-          "slug": "ali-ysambart-16",
-          "defaultPhoto": "ali-ysambart-16.png"
-        },
-        {
-          "number": "17",
-          "name": "Lena Stohrer",
-          "positions": [
-            "1B"
-          ],
-          "gradYear": 2029,
-          "slug": "lena-stohrer-17",
-          "defaultPhoto": "lena-stohrer-17.png"
-        },
-        {
-          "number": "21",
-          "name": "Noelle Mediterraneo",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "noelle-mediterraneo-21",
-          "defaultPhoto": "noelle-mediterraneo-21.png"
-        },
-        {
-          "number": "22",
-          "name": "Mia Kraemer",
-          "positions": [
-            "2B",
+            "C",
             "OF"
           ],
           "gradYear": 2029,
-          "slug": "mia-kraemer-22",
-          "defaultPhoto": "mia-kraemer-22.png"
-        },
-        {
-          "number": "23",
-          "name": "Ashley Rigg",
-          "positions": [
-            "Util"
-          ],
-          "gradYear": 2029,
-          "slug": "ashley-rigg-23",
-          "defaultPhoto": "ashley-rigg-23.png"
-        },
-        {
-          "number": "24",
-          "name": "Ava Zaycek",
-          "positions": [
-            "P",
-            "1B",
-            "OF"
-          ],
-          "gradYear": 2029,
-          "slug": "ava-zaycek-24",
-          "defaultPhoto": "ava-zaycek-24.png"
+          "slug": "pranjal-sabharwal-2",
+          "defaultPhoto": "pranjal-sabharwal-2.png"
         }
       ]
     },
     {
-      "id": "hitz14u-spring2026",
-      "name": "NJ Hitz Futures 14U",
-      "usaSoftballId": "3736384319",
-      "season": "Spring 2026",
-      "level": "14U",
-      "classYears": "2030-31",
+      "id": "hitz16u-purple-fall2026",
+      "name": "NJ Hitz 16U Purple",
+      "usaSoftballId": "6573890944",
+      "season": "Fall 2026",
+      "level": "16U",
+      "classYears": "2028-2030",
       "coaches": [],
       "roster": [
         {
@@ -320,46 +252,64 @@
           "defaultPhoto": "lailani-cabrera-3.png"
         },
         {
-          "number": "5",
-          "name": "Adriana Martino",
-          "positions": [
-            "P",
-            "Util"
-          ],
-          "gradYear": "2030",
-          "slug": "adriana-martino-5",
-          "defaultPhoto": "adriana-martino-5.png"
-        },
-        {
-          "number": "6",
-          "name": "Brianna Hudzik",
-          "positions": [
-            "Util"
-          ],
-          "gradYear": 2030,
-          "slug": "briana-hudzik-6",
-          "defaultPhoto": "brianna-hudzik-6.png"
-        },
-        {
           "number": "7",
-          "name": "Lindsey Dipaolo",
+          "name": "Lyndsey Dipaolo",
           "positions": [
             "C",
             "Util"
           ],
           "gradYear": 2030,
           "slug": "lyndsey-dipaolo-7",
-          "defaultPhoto": "lindsey-dipaolo-7.png"
+          "defaultPhoto": "lyndsey-dipaolo-7.png"
         },
         {
-          "number": "9",
-          "name": "Alexa Hudzik",
-          "positions": [
-            "Util"
-          ],
+          "number": "11",
+          "name": "Mia Sartan",
+          "positions": [],
+          "gradYear": 2029,
+          "slug": "mia-sartan-11",
+          "defaultPhoto": "mia-sartan-11.png"
+        },
+        {
+          "number": "23",
+          "name": "Victoria Quick",
+          "positions": [],
           "gradYear": 2030,
-          "slug": "alexa-hudzik-9",
-          "defaultPhoto": "alexa-hudzik-9.png"
+          "slug": "victoria-quick-23",
+          "defaultPhoto": "victoria-quick-23.png"
+        },
+        {
+          "number": "20",
+          "name": "Adrienne Geary",
+          "positions": [
+            "P"
+          ],
+          "gradYear": 2029,
+          "slug": "adrienne-geary-20",
+          "defaultPhoto": "adrienne-geary-20.png"
+        },
+        {
+          "number": "22",
+          "name": "Mia Kraemer",
+          "positions": [
+            "2B",
+            "OF"
+          ],
+          "gradYear": 2029,
+          "slug": "mia-kraemer-22",
+          "defaultPhoto": "mia-kraemer-22.png"
+        },
+        {
+          "number": "15",
+          "name": "Nalani Feliciano",
+          "positions": [
+            "P",
+            "SS",
+            "3rd"
+          ],
+          "gradYear": 2029,
+          "slug": "nalani-feliciano-15",
+          "defaultPhoto": "nalani-feliciano-15.png"
         },
         {
           "number": "12",
@@ -372,68 +322,33 @@
           "defaultPhoto": "natalie-carter-12.png"
         },
         {
-          "number": "15",
-          "name": "Nalani Feliciano",
-          "positions": [
-            "P",
-            "SS",
-            "3rd"
-          ],
-          "gradYear": 2030,
-          "slug": "nalani-feliciano-15",
-          "defaultPhoto": "nalani-feliciano-15.png"
-        },
-        {
-          "number": "17",
-          "name": "Tessa Erlandson",
-          "positions": [
-            "Util"
-          ],
-          "gradYear": "2030",
-          "slug": "tessa-erlandson-17",
-          "defaultPhoto": "tessa-erlandson-17.png"
-        },
-        {
-          "number": "34",
-          "name": "Izzy Rodrigues",
-          "positions": [
-            "C",
-            "Util"
-          ],
-          "gradYear": 2030,
-          "slug": "izzy-rodrigues-34",
-          "defaultPhoto": "izzy-rodrigues-34.png"
-        },
-        {
-          "number": "99",
-          "name": "Payton Widzemok",
-          "positions": [
-            "Util"
-          ],
-          "gradYear": 2030,
-          "slug": "payton-widzemok-99",
-          "defaultPhoto": "payton-widzemok-99.png"
+          "number": "22",
+          "name": "Makynlee Johnson",
+          "positions": [],
+          "gradYear": 2028,
+          "slug": "makynlee-johnson-22",
+          "defaultPhoto": "makynlee-johnson-22.png"
         }
       ]
     },
     {
-      "id": "hitz12u-spring2026",
-      "name": "NJ Hitz Futures 12U",
-      "usaSoftballId": "4212612792",
-      "season": "Spring 2026",
-      "level": "12U",
-      "classYears": "2031-32",
+      "id": "hitz14u-fall2026",
+      "name": "NJ Hitz 14U",
+      "usaSoftballId": "6573943990",
+      "season": "Fall 2026",
+      "level": "14U",
+      "classYears": "2030-2032",
       "coaches": [],
       "roster": [
         {
-          "number": "2",
-          "name": "Seerat Sabharwal",
+          "number": "39",
+          "name": "Vanessa Gordon",
           "positions": [
             "C"
           ],
-          "gradYear": 2032,
-          "slug": "seerat-sabharwal-2",
-          "defaultPhoto": "seerat-sabharwal-2.png"
+          "gradYear": 2031,
+          "slug": "vanessa-gordon-39",
+          "defaultPhoto": "vanessa-gordon-39.png"
         },
         {
           "number": "3",
@@ -447,33 +362,24 @@
           "defaultPhoto": "olivia-boenitz-3.png"
         },
         {
-          "number": "4",
-          "name": "Caitlin Mahon",
+          "number": "22",
+          "name": "Jules Stohrer",
           "positions": [
-            "P"
+            "OF"
           ],
           "gradYear": 2031,
-          "slug": "caitlin-mahon-4",
-          "defaultPhoto": "caitlin-mahon-4.png"
+          "slug": "jules-stohrer-22",
+          "defaultPhoto": "jules-stohrer-22.png"
         },
         {
-          "number": "7",
-          "name": "Lexi Olic",
+          "number": "11",
+          "name": "Katie Wszolek",
           "positions": [
-            "1B"
+            "2B"
           ],
           "gradYear": 2031,
-          "slug": "lexi-olic-7",
-          "defaultPhoto": "lexi-olic-7.png"
-        },
-        {
-          "number": "9",
-          "name": "Eva Kordell",
-          "positions": [
-            "P"
-          ],
-          "gradYear": 2032,
-          "slug": "eva-kordell-9"
+          "slug": "katie-wszolek-11",
+          "defaultPhoto": "katie-wszolek-11.png"
         },
         {
           "number": "10",
@@ -486,14 +392,45 @@
           "defaultPhoto": "addie-perruna-10.png"
         },
         {
-          "number": "11",
-          "name": "Kaitlyn Wszolek",
+          "number": "7",
+          "name": "Lexi Olic",
           "positions": [
-            "2B"
+            "1B"
           ],
           "gradYear": 2031,
-          "slug": "kaitlyn-wszolek-11",
-          "defaultPhoto": "kaitlyn-wszolek-11.png"
+          "slug": "lexi-olic-7",
+          "defaultPhoto": "lexi-olic-7.png"
+        },
+        {
+          "number": "5",
+          "name": "Adriana Martino",
+          "positions": [
+            "P",
+            "Util"
+          ],
+          "gradYear": 2030,
+          "slug": "adriana-martino-5",
+          "defaultPhoto": "adriana-martino-5.png"
+        },
+        {
+          "number": "6",
+          "name": "Brianna Hudzik",
+          "positions": [
+            "Util"
+          ],
+          "gradYear": 2030,
+          "slug": "brianna-hudzik-6",
+          "defaultPhoto": "brianna-hudzik-6.png"
+        },
+        {
+          "number": "9",
+          "name": "Alexa Hudzik",
+          "positions": [
+            "Util"
+          ],
+          "gradYear": 2030,
+          "slug": "alexa-hudzik-9",
+          "defaultPhoto": "alexa-hudzik-9.png"
         },
         {
           "number": "20",
@@ -506,27 +443,48 @@
           "defaultPhoto": "aubrey-schweizer-20.png"
         },
         {
-          "number": "22",
-          "name": "Jules Stohrer",
-          "positions": [
-            "OF"
-          ],
-          "gradYear": 2031,
-          "slug": "jules-stohrer-22",
-          "defaultPhoto": "jules-stohrer-22.png"
-        },
-        {
           "number": "31",
           "name": "Leah Taylor",
           "positions": [
-            "3B",
             "P",
+            "3B",
             "Util"
           ],
           "gradYear": 2032,
           "slug": "leah-taylor-31",
           "defaultPhoto": "leah-taylor-31.png"
         },
+        {
+          "number": "17",
+          "name": "Lexi Schafffer",
+          "positions": [
+            "P"
+          ],
+          "gradYear": 2032,
+          "slug": "lexi-schafffer-17",
+          "defaultPhoto": "lexi-schafffer-17.png"
+        },
+        {
+          "number": "16",
+          "name": "Adri Sanguino",
+          "positions": [
+            "C"
+          ],
+          "gradYear": 2031,
+          "slug": "adri-sanguino-16",
+          "defaultPhoto": "adri-sanguino-16.png"
+        }
+      ]
+    },
+    {
+      "id": "hitz12u-fall2026",
+      "name": "NJ Hitz 12U",
+      "usaSoftballId": "6574034496",
+      "season": "Fall 2026",
+      "level": "12U",
+      "classYears": "2031-2033",
+      "coaches": [],
+      "roster": [
         {
           "number": "33",
           "name": "Ella Wijatyk",
@@ -537,6 +495,26 @@
           "gradYear": 2033,
           "slug": "ella-wijatyk-33",
           "defaultPhoto": "ella-wijatyk-33.png"
+        },
+        {
+          "number": "9",
+          "name": "Eva Kordell",
+          "positions": [
+            "P"
+          ],
+          "gradYear": 2032,
+          "slug": "eva-kordell-9",
+          "defaultPhoto": "eva-kordell-9.png"
+        },
+        {
+          "number": "4",
+          "name": "Caitlyn Mahon",
+          "positions": [
+            "P"
+          ],
+          "gradYear": 2031,
+          "slug": "caitlyn-mahon-4",
+          "defaultPhoto": "caitlyn-mahon-4.png"
         },
         {
           "number": "37",
@@ -550,14 +528,72 @@
           "defaultPhoto": "ava-burgin-37.png"
         },
         {
-          "number": "39",
-          "name": "Vanessa Gordon",
+          "number": "17",
+          "name": "Ellie Sprague",
+          "positions": [
+            "P"
+          ],
+          "gradYear": 2033,
+          "slug": "ellie-sprague-17",
+          "defaultPhoto": "ellie-sprague-17.png"
+        },
+        {
+          "number": "2",
+          "name": "Seerat Sabharwal",
           "positions": [
             "C"
           ],
-          "gradYear": 2031,
-          "slug": "vanessa-gordon-39",
-          "defaultPhoto": "vanessa-gordon-39.png"
+          "gradYear": 2032,
+          "slug": "seerat-sabharwal-2",
+          "defaultPhoto": "seerat-sabharwal-2.png"
+        },
+        {
+          "number": "18",
+          "name": "Isabella Fessman",
+          "positions": [],
+          "gradYear": 2033,
+          "slug": "isabella-fessman-18",
+          "defaultPhoto": "isabella-fessman-18.png"
+        },
+        {
+          "number": "5",
+          "name": "Kayleigh Ott",
+          "positions": [],
+          "gradYear": 2032,
+          "slug": "kayleigh-ott-5",
+          "defaultPhoto": "kayleigh-ott-5.png"
+        },
+        {
+          "number": "3",
+          "name": "Zoe Cameron",
+          "positions": [],
+          "gradYear": 2033,
+          "slug": "zoe-cameron-3",
+          "defaultPhoto": "zoe-cameron-3.png"
+        },
+        {
+          "number": "12",
+          "name": "Olivia Castro",
+          "positions": [],
+          "gradYear": 2033,
+          "slug": "olivia-castro-12",
+          "defaultPhoto": "olivia-castro-12.png"
+        },
+        {
+          "number": "24",
+          "name": "Callie Sisca",
+          "positions": [],
+          "gradYear": 2033,
+          "slug": "callie-sisca-24",
+          "defaultPhoto": "callie-sisca-24.png"
+        },
+        {
+          "number": "16",
+          "name": "Addison Vaneekhoven",
+          "positions": [],
+          "gradYear": 2033,
+          "slug": "addison-vaneekhoven-16",
+          "defaultPhoto": "addison-vaneekhoven-16.png"
         }
       ]
     }
