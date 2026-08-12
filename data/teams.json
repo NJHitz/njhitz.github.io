@@ -341,16 +341,6 @@
       "coaches": [],
       "roster": [
         {
-          "number": "19",
-          "name": "Shiloh Moy",
-          "positions": [
-            "C"
-          ],
-          "gradYear": 2030,
-          "slug": "shiloh-moy-19",
-          "defaultPhoto": "shiloh-moy-19.png"
-        },
-        {
           "number": "3",
           "name": "Olivia Boenitz",
           "positions": [
@@ -473,6 +463,16 @@
           "gradYear": 2031,
           "slug": "adriana-sanguino-16",
           "defaultPhoto": "adriana-sanguino-16.png"
+        },
+        {
+          "number": "19",
+          "name": "Shiloh Moy",
+          "positions": [
+            "C"
+          ],
+          "gradYear": 2030,
+          "slug": "shiloh-moy-19",
+          "defaultPhoto": "shiloh-moy-19.png"
         }
       ]
     },
