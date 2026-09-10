@@ -150,13 +150,13 @@
       ]
     },
     {
-      "id": "16u",
-      "heading": "16U Coaching Staff",
+      "id": "16u-gold",
+      "heading": "16U-Gold Coaching Staff",
       "description": "Coaches building the foundation — core mechanics, confidence, and softball IQ for players preparing to move into upper-level competition.",
       "coaches": [
         {
-          "id": "16u-head-coach",
-          "anchorId": "16u-head-coach",
+          "id": "16u-gold-head-coach",
+          "anchorId": "16u-gold-head-coach",
           "name": "Coming Soon",
           "photo": "images/coaches/generic-coach-profile.png",
           "rolePill": "16U Head Coach",
@@ -166,8 +166,8 @@
           ],
           "bio": "Full profile coming soon.",
           "highlights": [],
-          "tags": ["16U"],
-          "homeTitle": "16U Head Coach",
+          "tags": ["16U-Gold"],
+          "homeTitle": "16U-Gold Head Coach",
           "homePills": ["Mentor","Offense","Defense"],
           "showOnHome": true
         },
