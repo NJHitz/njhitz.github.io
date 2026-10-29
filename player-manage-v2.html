@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive"><meta name="referrer" content="no-referrer">
+  <title>Manage player profile | NJ Hitz</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body{margin:0;background:#09070f;color:#f4effa;font-family:Inter,system-ui,sans-serif}
+    main{max-width:1000px;margin:30px auto;padding:0 20px 60px}a{color:#ddbc69}
+    h1{font-size:clamp(28px,4vw,44px);margin:12px 0}h2{font-size:1.25rem;color:#ddbc69}
+    .eyebrow{letter-spacing:.16em;text-transform:uppercase;color:#ddbc69;font-size:.75rem}
+    .card{border:1px solid #3b3049;border-radius:16px;background:#15101e;padding:24px;margin-top:22px}
+    p{line-height:1.6;color:#d8cfdf}.muted{font-size:.9rem;color:#b9acc7}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    label{display:block;font-size:.88rem;margin:14px 0 6px}input,textarea,select{box-sizing:border-box;width:100%;border-radius:8px;border:1px solid #584565;background:#0b0910;color:#fff;padding:11px;font:inherit}
+    textarea{min-height:100px;resize:vertical}button{padding:12px 18px;border-radius:24px;border:1px solid #806330;background:#d4b25f;color:#17101d;font-weight:800;cursor:pointer}
+    button.secondary{background:#291b39;color:#efdaaa}button:disabled{opacity:.45;cursor:default}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+    [hidden]{display:none!important}#message{white-space:pre-wrap;padding:12px 0;line-height:1.5}#message.error{color:#ffb7b7}#message.success{color:#a8e4bd}
+    .review{border-top:1px solid #40324d;margin-top:20px;padding-top:18px}.diff{display:grid;grid-template-columns:1fr 1fr;gap:12px}.diff p{white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;background:#0b0910;border-radius:8px}
+    input[type=checkbox]{width:auto;margin-right:8px}summary{cursor:pointer;color:#e5cc90}.state{color:#e5cc90;font-weight:700}
+    :focus-visible{outline:3px solid #ddbc69;outline-offset:3px}@media(max-width:650px){.grid,.diff{grid-template-columns:1fr}.card{padding:18px}}
+  </style>
+</head>
+<body>
+  <header class="site-header" id="header"></header>
+  <main>
+    <a id="back-profile" href="player-profile-v2">← Back to player profile</a>
+    <p class="eyebrow">NJ Hitz · Family portal preview</p>
+    <h1>Manage player profile</h1>
+    <p>Edit your player’s recruiting information. Staff review submissions before they appear on the v2 profile. The current public profile stays live while changes are reviewed.</p>
+    <div id="setup" class="card"><h2>Profile management is being connected</h2><p>The portal is not accepting claims or edits yet. Your existing profile remains available.</p></div>
+    <div id="message" role="status" aria-live="polite"></div>
+    <section id="auth-card" class="card" hidden>
+      <h2>Sign in to continue</h2><p>Use your own account. Staff will confirm which player profiles you can manage.</p>
+      <button id="google-signin" type="button">Continue with Google</button>
+      <details><summary style="margin-top:20px">Use an email and password</summary>
+        <form id="auth-form">
+          <label for="email">Email</label><input id="email" type="email" required autocomplete="username">
+          <label for="password">Password</label><input id="password" type="password" required minlength="12" autocomplete="current-password">
+          <div class="actions"><button type="submit">Sign in</button><button id="create-account" type="button" class="secondary">Create account</button></div>
+          <button id="reset-password" type="button" class="secondary" style="margin-top:12px">Reset password</button>
+        </form>
+      </details>
+    </section>
+    <section id="account-card" class="card" hidden>
+      <p id="account-label"></p><div class="actions"><button id="signout" type="button" class="secondary">Sign out</button><button id="refresh-profile" type="button" class="secondary">Reload profile</button><button id="verify-email" type="button" hidden>Send verification email</button></div>
+    </section>
+    <section id="claim-card" class="card" hidden>
+      <h2>Request access to this player</h2><p id="claim-status"></p>
+      <form id="claim-form"><label for="claim-note">Relationship to the player</label><textarea id="claim-note" maxlength="1000" required placeholder="For example: parent or guardian. Do not enter private documents or identity numbers."></textarea><button style="margin-top:16px" type="submit">Submit access request</button></form>
+    </section>
+    <section id="editor-card" class="card" hidden>
+      <p class="eyebrow" id="player-label"></p><h2>Edit recruiting profile</h2><p id="draft-status" class="state"></p>
+      <p class="muted">Saved drafts are private. Submit the saved draft when it is ready for staff review. Statistics, team assignments, and jersey numbers are maintained by staff.</p>
+      <form id="profile-form"><div class="grid" id="profile-fields"></div>
+        <div class="actions"><button type="submit">Save draft</button><button id="submit-review" type="button" class="secondary">Submit saved draft for review</button></div>
+      </form>
+      <h3>Your submissions</h3><div id="submission-history"></div>
+    </section>
+    <section id="staff-card" class="card" hidden><p class="eyebrow">Staff only</p><h2>Review access and profile changes</h2><p>Confirm family relationships against your roster before granting access. Review the exact saved submission before publishing.</p><div id="staff-claims"></div><div id="staff-reviews"></div></section>
+  </main>
+  <div id="footer"></div>
+  <script src="scripts/profile-v2-config.js"></script>
+  <script src="scripts/template-loader.js"></script>
+  <script type="module" src="scripts/player-manage-v2.js"></script>
+</body>
+</html>

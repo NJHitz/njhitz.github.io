@@ -140,6 +140,7 @@
   <!-- QRCode.js library (lightweight, no dependencies) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="scripts/preload.js"></script>
+  <script src="scripts/profile-v2-config.js"></script>
 
   <link href="css/main.css" rel="stylesheet">
   <style>
@@ -579,6 +580,7 @@
     <main>
       <div class="content">
         <a href="teams" class="back-link" id="back-link"><span>←</span> Back to Teams</a>
+        <a class="back-link" id="manage-profile" href="player-manage-v2" style="float:right">Manage profile →</a>
 
 
         <section id="player-hero" class="recruit-hero" style="display:none;">
@@ -698,7 +700,11 @@
   <script>
   (function () {
     // 🔗 Apps Script Web App endpoint (same project as gas_NewRecruitIntake.js)
-    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
+    const LEGACY_GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
+    const portalConfig = window.NJHitzProfileV2 || {};
+    const portalEnabled = portalConfig.enabled === true &&
+      /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(portalConfig.endpoint || '');
+    const GAS_ENDPOINT = portalEnabled ? portalConfig.endpoint : LEGACY_GAS_ENDPOINT;
     const loadingOverlay = document.getElementById('loading-overlay');
     loadingOverlay.classList.remove('hidden'); // show immediately
 
@@ -751,6 +757,7 @@
 
     // 🔎 Get slug from ?player=leah-taylor-31
     const slug = getParam('player');
+    if (slug) document.getElementById('manage-profile').href = 'player-manage-v2?player=' + encodeURIComponent(slug);
     if (!slug) {
       document.getElementById('player-error').style.display = 'block';
       hideOverlay();
@@ -1006,6 +1013,17 @@
     }
 
     // ⬇ renderPlayer(p) is identical to your existing implementation
+    function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, c => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+      })[c]);
+    }
+    function safeWebLink(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === 'https:' ? url.href : '';
+      } catch (_) { return ''; }
+    }
     function renderPlayer(p) {
       document.getElementById('player-hero').style.display = '';
       document.getElementById('player-layout').style.display = '';
@@ -1112,28 +1130,28 @@
       contactList.innerHTML = '';
       if (p.contactEmail) {
         const li = document.createElement('li');
-        li.innerHTML = `<strong>Email:</strong> <a href="mailto:${p.contactEmail}">${p.contactEmail}</a>`;
+        li.innerHTML = `<strong>Email:</strong> <a href="mailto:${escapeHtml(p.contactEmail)}">${escapeHtml(p.contactEmail)}</a>`;
         contactList.appendChild(li);
       }
       if (p.contactPhone) {
         const li = document.createElement('li');
-        li.innerHTML = `<strong>Phone:</strong> <a href="tel:${p.contactPhone}">${formatPhoneNumber(p.contactPhone)}</a>`;
+        li.innerHTML = `<strong>Phone:</strong> <a href="tel:${escapeHtml(p.contactPhone)}">${escapeHtml(formatPhoneNumber(p.contactPhone))}</a>`;
         contactList.appendChild(li);
       }
       if (p.guardian1Name || p.guardian1Email || p.guardian1Phone) {
         const li = document.createElement('li');
         li.innerHTML =
-          `<strong>Guardian:</strong> ${p.guardian1Name || ''}` +
-          `${p.guardian1Email ? ' • ' + p.guardian1Email : ''}` +
-          `${p.guardian1Phone ? ' • ' + formatPhoneNumber(p.guardian1Phone) : ''}`;
+          `<strong>Guardian:</strong> ${escapeHtml(p.guardian1Name || '')}` +
+          `${escapeHtml(p.guardian1Email ? ' • ' + p.guardian1Email : '')}` +
+          `${escapeHtml(p.guardian1Phone ? ' • ' + formatPhoneNumber(p.guardian1Phone) : '')}`;
         contactList.appendChild(li);
       }
       if (p.guardian2Name || p.guardian2Email || p.guardian2Phone) {
         const li = document.createElement('li');
         li.innerHTML =
-          `<strong>Guardian:</strong> ${p.guardian2Name || ''}` +
-          `${p.guardian2Email ? ' • ' + p.guardian2Email : ''}` +
-          `${p.guardian2Phone ? ' • ' + formatPhoneNumber(p.guardian2Phone) : ''}`;
+          `<strong>Guardian:</strong> ${escapeHtml(p.guardian2Name || '')}` +
+          `${escapeHtml(p.guardian2Email ? ' • ' + p.guardian2Email : '')}` +
+          `${escapeHtml(p.guardian2Phone ? ' • ' + formatPhoneNumber(p.guardian2Phone) : '')}`;
         contactList.appendChild(li);
       }
 
@@ -1145,8 +1163,8 @@
         const div = document.createElement('div');
         div.className = 'measure-card';
         div.innerHTML =
-          `<div class="measure-label">${m.label || ''}</div>` +
-          `<div class="measure-value">${m.value || ''}</div>`;
+          `<div class="measure-label">${escapeHtml(m.label || '')}</div>` +
+          `<div class="measure-value">${escapeHtml(m.value || '')}</div>`;
         measWrap.appendChild(div);
       });
 
@@ -1174,13 +1192,13 @@
               .map(
                 r => `
               <tr>
-                <td>${r.season || ''}</td>
-                <td>${r.avg || ''}</td>
-                <td>${r.obp || ''}</td>
-                <td>${r.slg || ''}</td>
-                <td>${r.ops || ''}</td>
-                <td>${r.hr != null ? r.hr : ''}</td>
-                <td>${r.rbi != null ? r.rbi : ''}</td>
+                <td>${escapeHtml(r.season || '')}</td>
+                <td>${escapeHtml(r.avg || '')}</td>
+                <td>${escapeHtml(r.obp || '')}</td>
+                <td>${escapeHtml(r.slg || '')}</td>
+                <td>${escapeHtml(r.ops || '')}</td>
+                <td>${escapeHtml(r.hr != null ? r.hr : '')}</td>
+                <td>${escapeHtml(r.rbi != null ? r.rbi : '')}</td>
               </tr>
             `
               )
@@ -1214,12 +1232,12 @@
               .map(
                 r => `
               <tr>
-                <td>${r.season || ''}</td>
-                <td>${r.era || ''}</td>
-                <td>${r.ip || ''}</td>
-                <td>${r.k != null ? r.k : ''}</td>
-                <td>${r.bb != null ? r.bb : ''}</td>
-                <td>${r.whip || ''}</td>
+                <td>${escapeHtml(r.season || '')}</td>
+                <td>${escapeHtml(r.era || '')}</td>
+                <td>${escapeHtml(r.ip || '')}</td>
+                <td>${escapeHtml(r.k != null ? r.k : '')}</td>
+                <td>${escapeHtml(r.bb != null ? r.bb : '')}</td>
+                <td>${escapeHtml(r.whip || '')}</td>
               </tr>
             `
               )
@@ -1233,14 +1251,14 @@
       const linksList = document.getElementById('links-list');
       linksList.innerHTML = '';
       const links = [];
-      if (p.highlightVideoUrl) {
+      if (safeWebLink(p.highlightVideoUrl)) {
         links.push({ label: 'Highlight Video', url: p.highlightVideoUrl });
       }
-      if (p.recruitingProfileUrl) {
+      if (safeWebLink(p.recruitingProfileUrl)) {
         links.push({ label: 'Recruiting Profile', url: p.recruitingProfileUrl });
       }
       (p.additionalLinks || []).forEach(x => {
-        if (x && x.url) {
+        if (x && safeWebLink(x.url)) {
           links.push({ label: x.label || x.url, url: x.url });
         }
       });
@@ -1248,7 +1266,7 @@
         linksCard.style.display = '';
         links.forEach(l => {
           const li = document.createElement('li');
-          li.innerHTML = `<a href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`;
+          li.innerHTML = `<a href="${escapeHtml(safeWebLink(l.url))}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`;
           linksList.appendChild(li);
         });
       }
@@ -1256,7 +1274,7 @@
       // QR code + share
       const shareCard = document.getElementById('share-card');
       shareCard.style.display = '';
-      document.getElementById('qr-share-title').innerHTML = p.name;
+      document.getElementById('qr-share-title').textContent = p.name;
       const qrContainer = document.getElementById('qr-share-code');
       qrContainer.innerHTML = '';
       new QRCode(qrContainer, {
