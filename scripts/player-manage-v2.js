@@ -30,13 +30,14 @@ async function request(action, data = {}) {
   const identity = generation;
   const token = await user.getIdToken();
   const response = await fetch(config.endpoint, {method:'POST', credentials:'omit', redirect:'follow',
-    headers:{'Content-Type':'text/plain;charset=UTF-8'}, cache:'no-store', signal:AbortSignal.timeout(25000),
+    headers:{'Content-Type':'text/plain;charset=UTF-8'}, cache:'no-store', signal:AbortSignal.timeout(action === 'uploadVideo' ? 120000 : 25000),
     body:JSON.stringify({...data, action, slug, idToken:token})});
   const result = await response.json();
   if (!result.ok) throw new Error(result.error || 'Request failed.');
   if (identity !== generation) throw new Error('Account changed. Reload the profile.');
   model = result.profile;
   render();
+  return result;
 }
 function fields() {
   const out = {};
@@ -73,7 +74,17 @@ function render() {
     $('player-label').textContent = model.published.playerName || 'Player profile';
     $('draft-status').textContent = model.draft ? 'Saved draft · ' + model.draft.savedAt : 'Showing published information';
     if (model.draft && model.draft.base !== model.publishedVersion) $('draft-status').textContent = 'Published information changed. Showing current published values; the older draft has not been applied. Reapply your intended changes and save a new draft.';
+    $('media-tools').hidden = !Array.isArray(model.videos);
     renderFields();
+    $('video-list').replaceChildren();
+    (model.videos || []).forEach(video=>{
+      const row=text('div','','review');row.append(text('h4',video.title),text('p',video.category+' · '+video.status));
+      if (model.isAdmin || video.status === 'approved') {
+        const link=text('a','Preview in Google Drive');link.href='https://drive.google.com/file/d/'+encodeURIComponent(video.driveFileId)+'/view';link.target='_blank';link.rel='noopener noreferrer';row.append(link);
+      }
+      if ((model.isAdmin || video.uid === auth.currentUser.uid) && ['draft','rejected'].includes(video.status)) row.append(actionButton('Remove clip',()=>request('removeVideo',{version:model.version,id:video.id})));
+      $('video-list').append(row);
+    });
     $('submission-history').replaceChildren();
     if (!model.submissions.length) $('submission-history').append(text('p','No submissions yet.'));
     model.submissions.forEach(r => $('submission-history').append(text('p',r.at + ' · ' + r.status + (r.note ? ' · Staff note: ' + r.note : ''))));
@@ -98,6 +109,12 @@ function render() {
     Object.keys(revision.fields).filter(key=>String(model.published[key] || '') !== revision.fields[key]).forEach(key=>{
       item.append(text('h4',fieldSpecs.find(f=>f[0] === key)?.[1] || key));
       const diff = text('div','','diff');diff.append(text('p','Published\n' + (model.published[key] || '(empty)')),text('p','Proposed\n' + (revision.fields[key] || '(empty)')));item.append(diff);
+    });
+    (revision.videoIds || []).forEach(id=>{
+      const video=(model.videos || []).find(v=>v.id===id);
+      if (!video) return;
+      item.append(text('h4','Video: '+video.title),text('p',video.category+(video.caption?' · '+video.caption:'')));
+      const preview=text('a','Review video in Google Drive');preview.href='https://drive.google.com/file/d/'+encodeURIComponent(video.driveFileId)+'/view';preview.target='_blank';preview.rel='noopener noreferrer';item.append(preview);
     });
     const note = document.createElement('textarea');note.maxLength=2000;note.setAttribute('aria-label','Review note for ' + revision.id);note.placeholder='Review note. Required when requesting corrections.';item.append(note);
     const approve = actionButton('Approve and publish',()=>request('review',{version:model.version,id:revision.id,decision:'approved',note:note.value}));
@@ -127,12 +144,27 @@ async function start() {
     if (!$('profile-form').reportValidity()) return;
     await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
     try {
-      await request('submit',{version:model.version});
+      const result = await request('submit',{version:model.version});
+      if (result.notificationPending) { message('Submitted for review. The staff email is queued for retry. Your public profile has not changed.'); return; }
     } catch (error) {
       throw new Error('Your draft was saved, but submission failed. ' + (error.message || 'Please try again.'));
     }
     message('Changes saved and submitted for review. Your public profile will change after staff approval.');
   }));
+  $('video-form').addEventListener('submit',event=>{event.preventDefault();run(async()=>{
+    const file=$('video-file').files[0];
+    if (!file || file.size > 20*1024*1024 || !file.size) throw new Error('Choose a video up to 20 MB.');
+    const extension=file.name.split('.').pop().toLowerCase();
+    const mimeType={mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm'}[extension];
+    if (!mimeType) throw new Error('Use an MP4, MOV, or WebM video.');
+    const title=$('video-title').value.trim(),category=$('video-category').value,caption=$('video-caption').value;
+    if(!title)throw new Error('Enter a clip title.');
+    const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('The video could not be read.'));reader.readAsDataURL(file);});
+    message('Saving profile draft and uploading private clip. Keep this page open.');
+    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    await request('uploadVideo',{version:model.version,title,category,caption,mimeType,base64});
+    $('video-form').reset();message('Private clip uploaded. Choose Submit for review when your changes and clips are ready.');
+  });});
   sdk.onAuthStateChanged(auth,async user=>{
     generation++;model=null;['claim-card','editor-card','staff-card'].forEach(id=>$(id).hidden=true);
     $('profile-fields').replaceChildren();$('submission-history').replaceChildren();$('staff-claims').replaceChildren();$('staff-reviews').replaceChildren();$('password').value='';

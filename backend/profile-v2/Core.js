@@ -30,7 +30,7 @@ var ProfileV2Core = (function () {
   }
   function empty(playerId, slug, published) {
     return {playerId:playerId, slug:slug, version:0, publishedVersion:0,
-      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}};
+      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}, videos:{}};
   }
   function apply(state, event) {
     var s = copy(state), p = event.payload, uid = event.actorUid;
@@ -43,13 +43,17 @@ var ProfileV2Core = (function () {
     if (event.type === 'denyClaim') s.claims[p.uid].status = 'rejected';
     if (event.type === 'revoke') delete s.access[p.uid];
     if (event.type === 'save') s.drafts[uid] = {fields:p.fields, base:p.base, savedAt:event.at};
+    if (event.type === 'addVideo') s.videos[p.id] = Object.assign(copy(p), {uid:uid,status:'draft',at:event.at});
+    if (event.type === 'removeVideo') s.videos[p.id].status = 'removed';
     if (event.type === 'submit') {
-      s.submissions[p.id] = {id:p.id, uid:uid, fields:p.fields, base:p.base, status:'pending', at:event.at};
+      (p.videoIds || []).forEach(function(id){s.videos[id].status = 'pending';});
+      s.submissions[p.id] = {id:p.id, uid:uid, fields:p.fields, base:p.base, videoIds:p.videoIds || [], status:'pending', at:event.at};
       delete s.drafts[uid];
     }
     if (event.type === 'review') {
       var revision = s.submissions[p.id];
       revision.status = p.decision;
+      (revision.videoIds || []).forEach(function(id){s.videos[id].status = p.decision;});
       revision.reviewedBy = uid; revision.reviewedAt = event.at; revision.note = p.note;
       if (p.decision === 'approved') {
         Object.keys(revision.fields).forEach(function (key) { s.published[key] = revision.fields[key]; });
@@ -77,6 +81,21 @@ var ProfileV2Core = (function () {
       if (!admin) fail('Staff access required.');
       if (!own(state.access, cmd.uid)) fail('No active access grant.');
       payload = {uid:cmd.uid};
+    } else if (type === 'addVideo') {
+      if (!access && !admin) fail('Profile access required.');
+      if (Object.keys(state.videos).filter(function(id){return state.videos[id].status !== 'removed';}).length >= 50) fail('This profile has reached its 50 clip limit. Contact staff.');
+      // This command is only constructed by the upload adapter after creating a private Drive file.
+      if (!/^[a-zA-Z0-9_-]{10,200}$/.test(cmd.driveFileId || '')) fail('Invalid video file.');
+      var title = String(cmd.title || '').trim();
+      if (!title || title.length > 120) fail('Enter a clip title of up to 120 characters.');
+      if (['Skills','Game footage','Highlights'].indexOf(cmd.category) < 0) fail('Choose a video category.');
+      if (String(cmd.caption || '').length > 1000) fail('Video caption is too long.');
+      payload = {id:eventId,driveFileId:cmd.driveFileId,title:title,category:cmd.category,caption:String(cmd.caption || ''),sortOrder:state.version};
+    } else if (type === 'removeVideo') {
+      if (!own(state.videos,cmd.id)) fail('Clip not found.');
+      var video = state.videos[cmd.id];
+      if ((!admin && (!access || video.uid !== actor.uid)) || ['draft','rejected'].indexOf(video.status) < 0) fail('Only an unsubmitted or rejected clip can be removed here.');
+      payload = {id:cmd.id};
     } else if (type === 'save') {
       if (!access && !admin) fail('Profile access required.');
       if (cmd.base !== state.publishedVersion) fail('Published profile changed. Reload and reapply your draft.');
@@ -87,7 +106,7 @@ var ProfileV2Core = (function () {
       var draft = state.drafts[actor.uid];
       if (draft.base !== state.publishedVersion) fail('Published profile changed. Reload and reapply your draft.');
       if (Object.keys(state.submissions).some(function (id) { return state.submissions[id].uid === actor.uid && state.submissions[id].status === 'pending'; })) fail('A submission is already awaiting review.');
-      payload = {id:eventId, fields:copy(draft.fields), base:draft.base};
+      payload = {id:eventId, fields:copy(draft.fields), base:draft.base, videoIds:Object.keys(state.videos).filter(function(id){var v=state.videos[id];return v.uid === actor.uid && (v.status === 'draft' || v.status === 'rejected');})};
     } else if (type === 'review') {
       if (!admin) fail('Staff access required.');
       if (!own(state.submissions, cmd.id) || state.submissions[cmd.id].status !== 'pending') fail('Submission is not pending.');
@@ -105,6 +124,7 @@ var ProfileV2Core = (function () {
       publishedVersion:s.publishedVersion, canEdit:!!allowed, isAdmin:actor.admin === true,
       claim:own(s.claims,actor.uid) ? s.claims[actor.uid] : null};
     if (allowed) {
+      result.videos = Object.keys(s.videos).map(function(id){return copy(s.videos[id]);}).filter(function(v){return v.status !== 'removed' && (actor.admin || v.uid === actor.uid || v.status === 'approved');});
       result.published = copy(s.published);
       result.draft = own(s.drafts,actor.uid) ? copy(s.drafts[actor.uid]) : null;
       result.submissions = Object.keys(s.submissions).map(function (id) { return s.submissions[id]; })
@@ -115,6 +135,7 @@ var ProfileV2Core = (function () {
   }
   function publicProfile(s) {
     var p = copy(s.published);
+    p.videos = Object.keys(s.videos).map(function(id){return s.videos[id];}).filter(function(v){return v.status === 'approved';}).map(function(v){return {driveFileId:v.driveFileId,title:v.title,category:v.category,caption:v.caption,sortOrder:v.sortOrder,status:'approved'};});
     // Private family information is never part of this model.
     if (p.contactDisplayOptIn !== 'Yes') { delete p.playerEmail; delete p.playerPhone; }
     return p;

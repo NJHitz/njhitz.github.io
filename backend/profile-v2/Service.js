@@ -77,14 +77,24 @@ function doGet(e) {
 function doPost(e) {
   var lock;
   try {
-    if (!e.postData || e.postData.contents.length > 45000) throw new Error('Invalid request size.');
+    if (!e.postData || e.postData.contents.length > 28500000) throw new Error('Invalid request size.');
     var req = JSON.parse(e.postData.contents), c = configV2_();
+    if (req.action !== 'uploadVideo' && e.postData.contents.length > 45000) throw new Error('Invalid request size.');
+    if (req.action === 'addVideo') throw new Error('Use the video upload form.');
     var actor = actorV2_(req.idToken,c), slug = slugV2_(req.slug);
     lock = LockService.getScriptLock();
     if (!lock.tryLock(15000)) throw new Error('Service busy. Please retry.');
     var loaded = loadV2_(SpreadsheetApp.openById(c.sheetId),slug), state = loaded.state;
     if (req.action === 'read') return jsonV2_({ok:true, profile:ProfileV2Core.view(state,actor)});
+    var createdFile;
+    if (req.action === 'uploadVideo') {
+      if (!actor.admin && !Object.prototype.hasOwnProperty.call(state.access,actor.uid)) throw new Error('Profile access required.');
+      if (req.version !== state.version) throw new Error('This profile changed. Reload before uploading.');
+      createdFile = createVideoV2_(req,slug);
+      req.action = 'addVideo'; req.driveFileId = createdFile.getId();
+    }
     var event = ProfileV2Core.command(state,actor,req,new Date().toISOString(),Utilities.getUuid());
+    event.actorEmail = actor.email;
     var rows = [];
     if (!loaded.seeded) {
       state.playerId = Utilities.getUuid(); event.playerId = state.playerId;
@@ -92,12 +102,34 @@ function doPost(e) {
     }
     rows.push([JSON.stringify(event)]);
     if (rows.some(function(r){return r[0].length > 45000;})) throw new Error('Profile record is too large.');
+    var newlyShared = [];
+    if (event.type === 'review' && event.payload.decision === 'approved') {
+      try {
+        (state.submissions[event.payload.id].videoIds || []).forEach(function(id){
+          var file = DriveApp.getFileById(state.videos[id].driveFileId);
+          file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
+          newlyShared.push(file);
+        });
+      } catch (shareError) {
+        newlyShared.forEach(function(file){file.setSharing(DriveApp.Access.PRIVATE,DriveApp.Permission.VIEW);});
+        throw new Error('The videos could not be made viewable. Check Workspace sharing restrictions; the submission has not been approved.');
+      }
+    }
     // A single write persists the seed + authorized event. Existing sheets are never written.
-    loaded.log.getRange(loaded.log.getLastRow()+1,1,rows.length,1).setValues(rows);
+    try { loaded.log.getRange(loaded.log.getLastRow()+1,1,rows.length,1).setValues(rows); }
+    catch (writeError) {
+      newlyShared.forEach(function(file){file.setSharing(DriveApp.Access.PRIVATE,DriveApp.Permission.VIEW);});
+      throw writeError;
+    }
     SpreadsheetApp.flush();
     state = ProfileV2Core.apply(state,event);
-    return jsonV2_({ok:true, profile:ProfileV2Core.view(state,actor)});
+    var notificationPending = false;
+    if (event.type === 'submit') {
+      try { notifySubmissionV2_(state,event); } catch (mailError) { notificationPending = true; }
+    }
+    return jsonV2_({ok:true, profile:ProfileV2Core.view(state,actor),notificationPending:notificationPending});
   } catch (error) {
+    if (createdFile) { try { createdFile.setTrashed(true); } catch (cleanupError) {} }
     // Do not log requests, tokens or profile data.
     return jsonV2_({ok:false,error:error.message || 'Request failed.'});
   } finally { if (lock && lock.hasLock()) lock.releaseLock(); }
@@ -111,5 +143,59 @@ function setupProfileV2() {
       var sheet = book.insertSheet('ProfileV2Events');
       sheet.getRange(1,1).setValue('Event JSON'); sheet.setFrozenRows(1);
     }
+  } finally { lock.releaseLock(); }
+}
+
+// Setup is run by the project owner once after granting Drive + email permissions.
+function setupMediaAndNotificationsV2() {
+  setupProfileV2();
+  var props = PropertiesService.getScriptProperties();
+  if (!props.getProperty('VIDEO_FOLDER_ID')) props.setProperty('VIDEO_FOLDER_ID',DriveApp.createFolder('NJ Hitz Profile Videos V2').getId());
+  if (!props.getProperty('NOTIFICATIONS_FROM')) props.setProperty('NOTIFICATIONS_FROM',new Date().toISOString());
+  if (!ScriptApp.getProjectTriggers().some(function(t){return t.getHandlerFunction() === 'retryProfileNotificationsV2';}))
+    ScriptApp.newTrigger('retryProfileNotificationsV2').timeBased().everyMinutes(10).create();
+}
+function createVideoV2_(req,slug) {
+  var max = 20*1024*1024, encoded = req.base64;
+  if (typeof encoded !== 'string' || !encoded.length || encoded.length > Math.ceil(max/3)*4 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) throw new Error('Choose a video up to 20 MB.');
+  if (['video/mp4','video/quicktime','video/webm'].indexOf(req.mimeType) < 0) throw new Error('Use an MP4, MOV, or WebM video.');
+  if (!String(req.title || '').trim() || String(req.title).length > 120) throw new Error('Enter a clip title of up to 120 characters.');
+  var bytes = Utilities.base64Decode(encoded);
+  if (!bytes.length || bytes.length > max) throw new Error('Choose a video up to 20 MB.');
+  var signature = bytes.slice(4,8).map(function(b){return String.fromCharCode(b & 255);}).join('');
+  var webm = [26,69,223,163].every(function(b,i){return (bytes[i] & 255) === b;});
+  if (req.mimeType === 'video/webm' ? !webm : signature !== 'ftyp') throw new Error('The file does not appear to be a supported video.');
+  var folder = PropertiesService.getScriptProperties().getProperty('VIDEO_FOLDER_ID');
+  if (!folder) throw new Error('Video storage is not configured yet.');
+  var extension = req.mimeType === 'video/webm' ? '.webm' : req.mimeType === 'video/quicktime' ? '.mov' : '.mp4';
+  return DriveApp.getFolderById(folder).createFile(Utilities.newBlob(bytes,req.mimeType,slug+'-'+Utilities.getUuid()+extension));
+}
+function notifySubmissionV2_(state,event) {
+  var props = PropertiesService.getScriptProperties(), key = 'MAIL_SENT_'+event.payload.id;
+  if (props.getProperty(key)) return;
+  var p = state.published, revision = state.submissions[event.payload.id];
+  var changed = Object.keys(revision.fields).filter(function(k){return String(p[k] || '') !== revision.fields[k];});
+  var name = String(p.playerName || state.slug).replace(/[\r\n]/g,' ');
+  var submitter = event.actorEmail || (state.claims[event.actorUid] ? state.claims[event.actorUid].email : 'Authorized staff account');
+  var link = 'https://njhitz.org/player-manage-v2?player='+encodeURIComponent(state.slug);
+  MailApp.sendEmail({to:'info@njhitz.org',name:'NJ Hitz Player Profiles',
+    subject:'Profile review needed: '+name+' #'+String(p.jerseyNumber || '').replace(/[\r\n]/g,' '),
+    body:'A player profile update is awaiting staff approval.\n\nPlayer: '+name+'\nJersey: '+(p.jerseyNumber || 'Not listed')+'\nTeam: '+(p.teamName || 'Not listed')+'\nClass of: '+(p.gradYear || 'Not listed')+'\nSubmitted by: '+submitter+'\nSubmitted at: '+event.at+'\nChanged fields: '+(changed.join(', ') || 'No text changes')+'\nVideo clips for review: '+(revision.videoIds || []).length+'\n\nReview this profile (staff sign-in required):\n'+link+'\n\nNothing is published until staff approves the submission.'});
+  props.setProperty(key,new Date().toISOString());
+}
+function retryProfileNotificationsV2() {
+  var lock = LockService.getScriptLock(); if (!lock.tryLock(1000)) return;
+  try {
+    var c = configV2_(), props = PropertiesService.getScriptProperties(), since = props.getProperty('NOTIFICATIONS_FROM');
+    if (!since) return;
+    var book = SpreadsheetApp.openById(c.sheetId), log = book.getSheetByName('ProfileV2Events');
+    if (!log || log.getLastRow() < 2) return;
+    var events = log.getRange(2,1,log.getLastRow()-1,1).getValues().map(function(r){return JSON.parse(r[0]);});
+    var pending = events.filter(function(e){return e.type === 'submit' && e.at >= since && !props.getProperty('MAIL_SENT_'+e.payload.id);}).slice(0,10);
+    pending.forEach(function(e){
+      var state = loadV2_(book,e.slug).state;
+      if (state.submissions[e.payload.id].status === 'pending') notifySubmissionV2_(state,e);
+      else props.setProperty('MAIL_SENT_'+e.payload.id,'No longer pending');
+    });
   } finally { lock.releaseLock(); }
 }

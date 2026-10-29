@@ -104,7 +104,7 @@ test('Submit saves current edits before submitting and uses the returned version
   for(const failure of [null,'save','submit']) {
     const calls=[],messages=[];
     const context={model:{version:3,publishedVersion:0},$ :()=>({reportValidity:()=>true}),fields:()=>({bio:'Latest unsaved edits'}),message:s=>messages.push(s),
-      request:async(action,data)=>{calls.push({action,data});if(action===failure)throw Error('Service unavailable');context.model.version++;}};
+      request:async(action,data)=>{calls.push({action,data});if(action===failure)throw Error('Service unavailable');context.model.version++;return {ok:true};}};
     vm.createContext(context);
     const work=vm.runInContext('(async()=>{'+handler+'})',context);
     if(failure)await assert.rejects(work(),failure==='submit'?/draft was saved, but submission failed/:/Service unavailable/);
@@ -114,4 +114,54 @@ test('Submit saves current edits before submitting and uses the returned version
     if(calls.length===2){assert.equal(calls[1].action,'submit');assert.equal(calls[1].data.version,4);}
     assert.equal(messages.length,failure?0:1);
   }
+});
+
+function addClip(s,actor=parent,title='Skills') {return act(s,actor,'addVideo',{driveFileId:'safe_drive_file_id_123',title,category:'Skills',caption:'Game clip'});}
+test('clips stay private until their frozen submission is approved',()=>{
+  let s=addClip(owned());const first=Object.keys(s.videos)[0];
+  assert.equal(core.publicProfile(s).videos.length,0);
+  assert.equal(core.view(s,stranger).videos,undefined);
+  s=act(s,parent,'save',{base:0,fields:{bio:'New bio'}});s=act(s,parent,'submit');const revision=Object.keys(s.submissions)[0];
+  assert.equal(s.videos[first].status,'pending');assert.equal(core.publicProfile(s).videos.length,0);
+  s=addClip(s,parent,'A later upload');
+  s=act(s,staff,'review',{id:revision,decision:'approved'});
+  assert.equal(core.publicProfile(s).videos.length,1);
+  assert.equal(core.publicProfile(s).videos[0].title,'Skills');
+  assert.equal(core.publicProfile(s).videos[0].uid,undefined);
+  assert.equal(Object.values(s.videos).filter(v=>v.status==='draft').length,1);
+});
+test('clip permission checks and review rejection preserve privacy',()=>{
+  assert.throws(()=>addClip(owned(),stranger),/access required/);
+  let s=addClip(owned());const id=Object.keys(s.videos)[0];
+  assert.throws(()=>act(s,stranger,'removeVideo',{id}),/unsubmitted/);
+  s=act(s,parent,'save',{base:0,fields:{bio:'New'}});s=act(s,parent,'submit');const revision=Object.keys(s.submissions)[0];
+  assert.throws(()=>act(s,parent,'removeVideo',{id}),/unsubmitted/);
+  s=act(s,staff,'review',{id:revision,decision:'rejected',note:'Please trim the clip.'});
+  assert.equal(s.videos[id].status,'rejected');assert.equal(core.publicProfile(s).videos.length,0);
+  s=act(s,parent,'removeVideo',{id});assert.equal(core.view(s,parent).videos.length,0);
+});
+test('staff email identifies player, recipient and exact management link without copying the draft',()=>{
+  let s=owned();s=act(s,parent,'save',{base:0,fields:{bio:'Private proposed content'}});s=act(s,parent,'submit');
+  const id=Object.keys(s.submissions)[0],sent=[],props=new Map();
+  const context={ProfileV2Core:core,Date,JSON,encodeURIComponent,
+    PropertiesService:{getScriptProperties:()=>({getProperty:k=>props.get(k),setProperty:(k,v)=>props.set(k,v)})},
+    MailApp:{sendEmail:m=>sent.push(m)}};
+  vm.createContext(context);vm.runInContext(fs.readFileSync(require.resolve('../backend/profile-v2/Service.js'),'utf8'),context);
+  const event={actorUid:parent.uid,at:'now',payload:{id}};
+  context.notifySubmissionV2_(s,event);context.notifySubmissionV2_(s,event);
+  assert.equal(sent.length,1);assert.equal(sent[0].to,'info@njhitz.org');
+  assert.match(sent[0].subject,/Casey/);assert.match(sent[0].body,/player-manage-v2\?player=casey-dipaolo-32/);
+  assert.match(sent[0].body,/parent@example.test/);assert.doesNotMatch(sent[0].body,/Private proposed content/);
+});
+test('upload adapter rejects disguised and oversized files before creating Drive files',()=>{
+  let created=0;
+  const context={ProfileV2Core:core,Date,JSON,encodeURIComponent,
+    Utilities:{base64Decode:s=>Array.from(Buffer.from(s,'base64')),newBlob:()=>({}),getUuid:()=> 'uuid'},
+    PropertiesService:{getScriptProperties:()=>({getProperty:()=> 'folder'})},
+    DriveApp:{getFolderById:()=>({createFile:()=>{created++;return {};}})}};
+  vm.createContext(context);vm.runInContext(fs.readFileSync(require.resolve('../backend/profile-v2/Service.js'),'utf8'),context);
+  assert.throws(()=>context.createVideoV2_({base64:Buffer.from('not video').toString('base64'),mimeType:'video/mp4',title:'Clip'},'player'),/does not appear/);
+  assert.throws(()=>context.createVideoV2_({base64:'a'.repeat(28000000),mimeType:'video/mp4',title:'Clip'},'player'),/20 MB/);
+  assert.equal(created,0);
+  context.createVideoV2_({base64:Buffer.from([0,0,0,16,102,116,121,112,109,112,52,50]).toString('base64'),mimeType:'video/mp4',title:'Clip'},'player');assert.equal(created,1);
 });

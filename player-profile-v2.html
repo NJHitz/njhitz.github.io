@@ -569,6 +569,19 @@
       .player-photo-wrap { min-height:0; }
     }
 
+    .academic-school{font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:18px}
+    .academic-gpa{display:flex;align-items:center;gap:18px;padding:20px 0;border-block:1px solid rgba(179,139,53,.25)}
+    .academic-gpa strong{font-size:3.8rem;line-height:1;color:#ddbc69;letter-spacing:-.05em}
+    .academic-gpa span,.stat-summary span{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:#c4b8cc}
+    #academics-grid{grid-template-columns:1fr;gap:18px;margin-top:24px}#academics-grid .info-value{white-space:pre-line}
+    .stat-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 24px}
+    .stat-summary>div{padding:18px 12px;border:1px solid rgba(179,139,53,.25);border-radius:12px;background:linear-gradient(140deg,#251b31,#100d17)}
+    .stat-summary strong{display:block;font-size:clamp(1.3rem,3vw,2.2rem);color:#e0bf6b;letter-spacing:-.04em;margin-bottom:8px}
+    #statistics-section h3{text-transform:uppercase;font-size:.8rem;letter-spacing:.15em;color:#d5c5df}
+    #video-gallery>section{border:1px solid #46364f;border-radius:14px;overflow:hidden;padding:14px;background:#100c18}
+    #video-gallery h4{margin:0 0 12px;font-size:1.1rem}#video-gallery iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:9px}
+    @media(max-width:480px){.stat-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media print{.academic-school,.academic-gpa strong,.academic-gpa span,.stat-summary strong,.stat-summary span{color:#111}.stat-summary>div{background:#fff;border:1px solid #aaa}}
   </style>
 </head>
 <body>
@@ -637,11 +650,11 @@
                 <div class="section-eyebrow">Performance</div><h2>Season statistics</h2>
                 <p id="stats-empty">No season statistics have been published for this profile yet.</p>
                 <div id="offense-card" style="display:none;"><h3>Batting</h3>
-                  <div class="table-scroll"><table class="stats" id="offense-table"></table></div>
+                  <div id="batting-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="offense-table"></table></div>
                   <p class="note" id="stats-note"></p>
                 </div>
                 <div id="pitching-card" style="display:none;"><h3>Pitching</h3>
-                  <div class="table-scroll"><table class="stats" id="pitching-table"></table></div>
+                  <div id="pitching-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="pitching-table"></table></div>
                 </div>
               </section>
               <article class="card" id="card-bio">
@@ -652,6 +665,9 @@
             <aside class="recruit-sidebar">
               <article class="card" id="card-academics">
                 <div class="section-eyebrow">Student first</div><h2>Academic profile</h2>
+                <p id="academic-school" class="academic-school"></p>
+                <div class="academic-gpa"><strong id="academic-gpa">—</strong><span>Reported GPA</span></div>
+                <p class="note">GPA scale and weighted/unweighted designation have not been confirmed.</p>
                 <div class="info-grid" id="academics-grid"></div>
                 <p id="academics-notes" class="muted" style="margin-top:8px;"></p>
               </article>
@@ -860,7 +876,7 @@
 
       // Offense stats – single season row
       const statsOffense = [];
-      if (!!a.offSeason || !!a.avg || !!a.obp || !!a.slg || !!a.ops || !!a.hrl || !!a.rbi) {
+      if (!!a.offSeason || !!a.avg || !!a.obp || !!a.slg || !!a.ops || !!a.hr || !!a.rbi) {
         statsOffense.push({
           season: a.offSeason || '',
           avg: a.avg != null ? a.avg : '',
@@ -1113,12 +1129,9 @@
       // Academics
       const acadGrid = document.getElementById('academics-grid');
       acadGrid.innerHTML = '';
-      const acadRows = [
-        ['School', p.schoolName],
-        ['GPA', p.gpa],
-        ['Honors / Programs', p.honors],
-        ['Intended Major', p.intendedMajor]
-      ];
+      setText('academic-school',p.schoolName || 'School not provided');
+      setText('academic-gpa',p.gpa || '—');
+      const acadRows = [['Coursework & honors',p.honors],['Academic interests',p.intendedMajor]];
       acadRows.forEach(([label, value]) => {
         const rowEl = createInfoRow(label, value);
         if (rowEl) acadGrid.appendChild(rowEl);
@@ -1168,6 +1181,13 @@
         measWrap.appendChild(div);
       });
 
+      function statSummary(id, values) {
+        const target=document.getElementById(id);target.replaceChildren();
+        values.forEach(([label,value])=>{const tile=document.createElement('div'),number=document.createElement('strong'),caption=document.createElement('span');number.textContent=value || '—';caption.textContent=label;tile.append(number,caption);target.append(tile);});
+      }
+      const batting=p.statsOffense[0] || {},pitching=p.statsPitching[0] || {};
+      statSummary('batting-summary',[['AVG',batting.avg],['OBP',batting.obp],['SLG',batting.slg],['OPS',batting.ops]]);
+      statSummary('pitching-summary',[['ERA',pitching.era],['IP',pitching.ip],['K',pitching.k],['WHIP',pitching.whip]]);
       // Offensive stats
       const offCard = document.getElementById('offense-card');
       const offTable = document.getElementById('offense-table');

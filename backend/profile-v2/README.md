@@ -60,3 +60,40 @@ Run `node --test tests/profile-v2.test.cjs` from the repository root. The tests 
 - `review`: staff only, `version`, submission `id`, `decision` (approved/rejected), `note` (required for rejection).
 
 Adding or accepting a new player slug is a staff migration, not a family edit. Preserve the event's permanent playerId and add an explicit alias migration before changing names/jerseys in the source sheet; this first phase does not infer identity from similar names.
+
+
+## Moderation email and Drive clips
+
+After replacing Code.gs with Core.js + Service.js and updating appsscript.json,
+run `setupMediaAndNotificationsV2` as the project owner. It creates a private
+`NJ Hitz Profile Videos V2` folder, stores VIDEO_FOLDER_ID, and creates a
+10-minute retry trigger. NOTIFICATIONS_FROM prevents retroactive alerts for
+old submissions. Keep the trigger owned by the same account as the deployment.
+Deploy a new version on the existing deployment; preserve its URL and access.
+
+New permissions: Google Drive management, sending email through MailApp, and
+managing Apps Script triggers. DriveApp requires the full Drive scope even
+though this service operates only on its configured folder and recorded files.
+No Gmail read permission is used.
+
+Each successful submission sends info@njhitz.org an email with player name,
+jersey, team, graduation year, authenticated submitter, timestamp, changed field
+names, clip count, and a direct staff management link. Draft saves do not email.
+Mail failures do not undo a submission; the event log is the retry outbox.
+MAIL_SENT_<revision> markers prevent normal duplicate deliveries. An interruption
+between sending and marking may cause a duplicate notification.
+
+Uploads: MP4/MOV/WebM, up to 20 MiB per clip, 50 active clips per player.
+The adapter checks authorization, version, size, MIME and container signature.
+Files are created privately. A clip belongs to its uploader, appears only in
+that user's/staff's private view, and enters moderation with their next profile
+submission. Staff reviews the immutable text + clip revision together.
+Only approval grants view-by-link Drive access and includes the clip in the
+public JSON. Rejected clips remain private and can be removed or resubmitted.
+Removal here applies only to unsubmitted/rejected clips; it hides their record
+without permanently deleting the Drive file. Public clip removal and large-file
+resumable uploads are future work. Approved clips may need Drive processing time;
+Workspace policies must permit external view-by-link access for embeds.
+
+The upload section remains hidden when the deployed backend does not yet expose
+its media model. Existing profile data and the legacy intake service are unchanged.
