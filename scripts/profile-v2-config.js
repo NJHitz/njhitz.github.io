@@ -1,7 +1,7 @@
 // Public web-app configuration only. Never put service-account keys or tokens here.
 window.NJHitzProfileV2 = Object.freeze({
-  enabled: false,
-  endpoint: '',
+  enabled: true,
+  endpoint: 'https://script.google.com/macros/s/AKfycbz3eGOVLqW8lEYYfpn4jvDnoARyQr6C_9MdNmtawZN5trsi1zefQa_9fVAs0u6JoAmE/exec',
   firebase: {
     apiKey: 'AIzaSyAlQPCrwEOIhRfy1-Gs7g5hNl2O8mFWq6E',
     authDomain: 'nj-hitz-org.firebaseapp.com',
