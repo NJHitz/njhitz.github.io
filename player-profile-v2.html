@@ -498,123 +498,177 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    /* Recruiting layout: equal columns reserve half of the hero for the graphic. */
+    html { scroll-behavior:smooth; scroll-padding-top:24px; }
+    .preview-strip { padding:8px 20px; text-align:center; background:#241e12; color:#dbc184; border-bottom:1px solid #6a5326; font-size:.76rem; letter-spacing:.12em; text-transform:uppercase; }
+    .content { max-width:1280px; margin:auto; }
+    .recruit-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:0; row-gap:28px; padding:26px 0 32px; }
+    .recruit-intro { align-self:center; padding:18px 32px 18px 0; min-width:0; }
+    .player-tagline,.section-eyebrow { color:var(--hitz-gold); text-transform:uppercase; letter-spacing:.16em; font-size:.74rem; font-weight:800; }
+    .section-eyebrow { margin-bottom:8px; }
+    .player-name { font-size:clamp(32px,4.4vw,62px); line-height:1.05; font-weight:900; letter-spacing:-.025em; overflow-wrap:anywhere; }
+    .player-name-wrapper > img { flex-shrink:0; }
+    .player-subtitle { font-size:1.05rem; margin:16px 0; color:#dedce5; }
+    .pill { background:#211b2b; padding:5px 11px; }
+    .player-photo-wrap { width:100%; min-height:420px; max-height:none; height:auto; border:1px solid rgba(179,139,53,.3); border-radius:18px; align-self:start; background:#0a0810; }
+    .player-photo { display:block; width:100%; height:auto; object-fit:contain; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+    .recruit-button { appearance:none; display:inline-flex; align-items:center; justify-content:center; border:1px solid #514333; border-radius:999px; background:#211927; color:#e1c780; padding:13px 18px; font:800 .77rem Inter,system-ui,sans-serif; text-transform:uppercase; letter-spacing:.03em; cursor:pointer; text-align:center; }
+    .recruit-button.primary { background:#d5b760; color:#17131b; border-color:#a98b38; }
+    [hidden] { display:none !important; }
+    .recruit-button:hover { filter:brightness(1.15); }
+    a:focus-visible,button:focus-visible,summary:focus-visible { outline:3px solid #e6c773; outline-offset:4px; }
+    dl.recruit-facts { grid-column:1/-1; grid-template-columns:repeat(6,minmax(0,1fr)); border-top:1px solid #39313b; padding-top:22px; gap:18px; }
+    .recruit-facts dt { color:#b8b3c2; text-transform:uppercase; letter-spacing:.1em; font-size:.68rem; font-weight:400; margin-bottom:6px; }
+    .recruit-facts dd { font-weight:800; font-size:.92rem; overflow-wrap:anywhere; }
+    .profile-sections { display:flex; flex-wrap:wrap; gap:12px 26px; padding:17px 0; border-top:2px solid #a78b40; border-bottom:1px solid #332b3c; margin-bottom:28px; }
+    .profile-sections a { color:#eeeaf4; font-size:.84rem; font-weight:800; }
+    .profile-sections a:hover { color:#dcc277; }
+    .recruit-content { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:22px; align-items:start; }
+    .recruit-main,.recruit-sidebar { min-width:0; display:grid; gap:20px; }
+    .card { padding:24px; border:1px solid #302a3b; border-radius:16px; background:linear-gradient(135deg,#15131c,#100e16); box-shadow:none; margin:0 !important; }
+    #video-section { display:grid; gap:20px; }
+    .card h2 { font-size:1rem; line-height:1.4; margin-bottom:18px; letter-spacing:.1em; }
+    .card h3 { margin:20px 0 10px; color:#e5dfec; font-size:.82rem; }
+    .info-grid { grid-template-columns:1fr; gap:14px; }
+    .info-label { color:#a9a2b6; font-size:.76rem; margin-bottom:3px; }
+    .info-value { color:#f3eef7; font-weight:600; }
+    .table-scroll { overflow-x:auto; }
+    table.stats th,table.stats td { padding:10px 7px; white-space:nowrap; }
+    .list { overflow-wrap:anywhere; }
+    #qr-share-widget { border:1px solid #76589e; cursor:pointer; color:#fff; max-width:100%; }
+    #qr-share-code { display:block; }
+    #qr-share-code img,#qr-share-code canvas { max-width:100%; height:auto; }
+    .qr-caption { margin-top:12px; font-size:.8rem; }
+    @media(max-width:900px) {
+      dl.recruit-facts { grid-template-columns:repeat(3,minmax(0,1fr)); }
+      .recruit-content { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); }
+      .card { padding:20px; }
+    }
+    @media(max-width:680px) {
+      .recruit-hero { grid-template-columns:1fr; padding-top:12px; gap:22px; }
+      .recruit-intro { padding:0; }
+      .player-photo-wrap { min-height:0; }
+      .recruit-content { grid-template-columns:1fr; }
+      dl.recruit-facts { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .profile-sections { gap:14px 20px; }
+      .recruit-button { padding:12px 14px; }
+    }
+    @media print {
+      .site-header,#footer,.back-link,.preview-strip,.profile-sections,.hero-actions,#loading-overlay { display:none !important; }
+      body { background:white; color:#111; }
+      .card,.recruit-hero { background:white; color:#111; box-shadow:none; }
+      .card p,.card h2,.card h3,.info-value,.recruit-facts dd,.player-subtitle,.player-name { color:#111; }
+      .card { break-inside:avoid; border-color:#ccc; }
+      .recruit-content { display:block; }
+      .recruit-sidebar { margin-top:20px; }
+      .player-photo-wrap { min-height:0; }
+    }
+
   </style>
 </head>
 <body>
   <!-- Shared site header -->
   <header class="site-header" id="header"></header>
 
+  <div class="preview-strip">Player profile preview</div>
   <div class="page-container">
     <main>
       <div class="content">
         <a href="teams" class="back-link" id="back-link"><span>←</span> Back to Teams</a>
 
-        <section id="player-hero" class="player-hero" style="display:none;">
-          <!--<div class="player-tagline">Player Showcase</div>-->
-          <div class="player-name-wrapper">
-              <h1 class="player-name" id="player-name"></h1>
-              <img id="player-verified-badge" style="display:none;" src="images/verified-badge-purple.png" />
+
+        <section id="player-hero" class="recruit-hero" style="display:none;">
+          <div class="recruit-intro">
+            <div class="player-tagline">NJ Hitz · Recruiting Profile</div>
+            <div class="player-name-wrapper"><h1 class="player-name" id="player-name"></h1>
+              <img id="player-verified-badge" style="display:none;" src="images/verified-badge-purple.png" alt="Profile on file" /></div>
+            <p class="player-subtitle" id="player-subtitle"></p>
+            <div class="pill-row" id="pos-pills"></div>
+            <div class="hero-actions">
+              <a class="recruit-button primary" href="#video-gallery-card" id="watch-video-link" hidden>Watch video ↓</a>
+              <a class="recruit-button" href="#recruiting-contact">Recruiting contact</a>
+              <button class="recruit-button" type="button" id="print-profile">Print / Save PDF</button>
+            </div>
           </div>
-          <p class="player-subtitle" id="player-subtitle"></p>
+          <div class="player-photo-wrap">
+            <img id="player-photo" class="player-photo" src="" alt="Player photo">
+            <div class="player-badge" id="player-badge"></div>
+          </div>
+          <dl class="meta recruit-facts">
+            <div><dt>Graduation</dt><dd id="meta-grad"></dd></div>
+            <div><dt>School</dt><dd id="meta-school"></dd></div>
+            <div><dt>Reported GPA</dt><dd id="meta-gpa"></dd></div>
+            <div><dt>Height</dt><dd id="meta-size"></dd></div>
+            <div><dt>Bats / Throws</dt><dd id="meta-batsthrows"></dd></div>
+            <div><dt>Team</dt><dd id="meta-team"></dd></div>
+          </dl>
         </section>
 
-        <div id="player-layout" class="layout" style="display:none;">
-          <div>
-            <article class="card">
-              <!--<h2><span>Profile</span></h2>-->
-              <div class="player-photo-wrap">
-                <img id="player-photo" class="player-photo" src="" alt="Player photo">
-                <div class="player-badge" id="player-badge"></div>
-              </div>
-
-              <dl class="meta">
-                <div>
-                  <dt>Team</dt>
-                  <dd id="meta-team"></dd>
+        <div id="player-layout" style="display:none;">
+          <nav class="profile-sections" aria-label="Player profile sections">
+            <a href="#video-section">Video</a><a href="#card-academics">Academics</a>
+            <a href="#statistics-section">Statistics</a><a href="#measurables-card" id="measurables-nav" hidden>Measurables</a>
+            <a href="#card-bio">Player bio</a><a href="#share-card">Share profile</a>
+          </nav>
+          <div class="recruit-content">
+            <div class="recruit-main">
+              <section id="video-section">
+                <article class="card" id="video-gallery-card" style="display:none;">
+                  <div class="section-eyebrow">See the player</div><h2>Video highlights</h2>
+                  <div id="video-gallery" class="video-grid"></div>
+                  <p class="note">If playback is unavailable, use Open video to watch in Google Drive.</p>
+                </article>
+                <article class="card" id="links-card" style="display:none;">
+                  <div class="section-eyebrow">See the player</div><h2>Video &amp; recruiting links</h2>
+                  <ul class="list links-list" id="links-list"></ul>
+                </article>
+                <article class="card" id="video-empty">
+                  <div class="section-eyebrow">See the player</div><h2>Video highlights</h2>
+                  <p>Published player videos will appear here when available.</p>
+                </article>
+              </section>
+              <section class="card" id="statistics-section">
+                <div class="section-eyebrow">Performance</div><h2>Season statistics</h2>
+                <p id="stats-empty">No season statistics have been published for this profile yet.</p>
+                <div id="offense-card" style="display:none;"><h3>Batting</h3>
+                  <div class="table-scroll"><table class="stats" id="offense-table"></table></div>
+                  <p class="note" id="stats-note"></p>
                 </div>
-                <div>
-                  <dt>Grad Year</dt>
-                  <dd id="meta-grad"></dd>
+                <div id="pitching-card" style="display:none;"><h3>Pitching</h3>
+                  <div class="table-scroll"><table class="stats" id="pitching-table"></table></div>
                 </div>
-                <div>
-                  <dt>School</dt>
-                  <dd id="meta-school"></dd>
-                </div>
-                <div>
-                  <dt>GPA</dt>
-                  <dd id="meta-gpa"></dd>
-                </div>
-                <div>
-                  <dt>Height</dt>
-                  <dd id="meta-size"></dd>
-                </div>
-                <div>
-                  <dt>Bats / Throws</dt>
-                  <dd id="meta-batsthrows"></dd>
-                </div>
-              </dl>
-
-              <div class="pill-row" id="pos-pills"></div>
-            </article>
-
-            <article class="card" id="card-bio">
-            <h2>Player Bio</h2>
-            <p id="player-bio" class="muted">
-              Bio coming soon.
-            </p>
-          </article>
-
-          <article class="card" id="card-academics" style="margin-top:14px;">
-            <h2>Academics & Scholastic</h2>
-            <div class="info-grid" id="academics-grid">
-              <!-- Filled by JS -->
+              </section>
+              <article class="card" id="card-bio">
+                <div class="section-eyebrow">Meet the player</div><h2>Player bio</h2>
+                <p id="player-bio" class="muted">Bio coming soon.</p>
+              </article>
             </div>
-            <p id="academics-notes" class="muted" style="margin-top:8px;"></p>
-          </article>
-          </div>
-
-          <div>
-            <article class="card">
-              <h3><span>Recruiting Contact</span></h3>
-              <ul class="list" id="contact-list"></ul>
-            </article>
-
-            <article class="card" id="measurables-card" style="display:none;">
-              <h3><span>Measurables</span></h3>
-              <div class="measurables-grid" id="measurables-grid"></div>
-            </article>
-
-            <article class="card" id="offense-card" style="display:none;">
-              <h3><span>Offensive Stats</span></h3>
-              <table class="stats" id="offense-table"></table>
-              <p class="note" id="stats-note"></p>
-            </article>
-
-            <article class="card" id="pitching-card" style="display:none;">
-              <h3><span>Pitching Stats</span></h3>
-              <table class="stats" id="pitching-table"></table>
-            </article>
-
-            <article class="card" id="video-gallery-card" style="display:none;">
-              <h3><span>Player Videos</span></h3>
-              <div id="video-gallery" class="video-grid"></div>
-              <p class="note">If playback is unavailable, use Open video to watch in Google Drive.</p>
-            </article>
-            <article class="card" id="links-card" style="display:none;">
-              <h3><span>Video & Links</span></h3>
-              <ul class="list links-list" id="links-list"></ul>
-            </article>
-
-            <article class="card" id="share-card" style="display:none;">
-              <h3><span>Share This Profile</span></h3>
-              <div class="card-center-content">
-                <div id="qr-share-widget">
-                  <div id="qr-share-title"></div>
-                  <div id="qr-share-code"></div>
-                  <p><span>Click to Share</span></p>
+            <aside class="recruit-sidebar">
+              <article class="card" id="card-academics">
+                <div class="section-eyebrow">Student first</div><h2>Academic profile</h2>
+                <div class="info-grid" id="academics-grid"></div>
+                <p id="academics-notes" class="muted" style="margin-top:8px;"></p>
+              </article>
+              <article class="card" id="measurables-card" style="display:none;">
+                <div class="section-eyebrow">Athletic development</div><h2>Measurables</h2>
+                <div class="measurables-grid" id="measurables-grid"></div>
+              </article>
+              <article class="card" id="recruiting-contact">
+                <div class="section-eyebrow">Start a conversation</div><h2>Recruiting contact</h2>
+                <ul class="list" id="contact-list"></ul>
+              </article>
+              <article class="card" id="share-card" style="display:none;">
+                <div class="section-eyebrow">Keep in touch</div><h2>Share this profile</h2>
+                <div class="card-center-content">
+                  <button type="button" id="qr-share-widget" aria-label="Share player profile">
+                    <span id="qr-share-title"></span><span id="qr-share-code"></span>
+                    <span class="qr-caption">Scan or tap to share</span>
+                  </button>
                 </div>
-              </div>
-            </article>
+              </article>
+            </aside>
           </div>
         </div>
 
@@ -632,13 +686,7 @@
     -->
   </div>
 
-  <section class="v2-note card" aria-label="Profile preview">
-    <strong>Player Profile Preview</strong>
-    <p>This preview uses the current profile service. Profile claiming, editing, and uploads are not available yet.</p>
-    <details><summary>How profile management will work</summary>
-      <p>Families will sign in and accept an invitation for their player. Saved changes and videos will go to staff for review before publication. The current public profile stays live during review.</p>
-    </details>
-  </section>
+
   <!-- Loading overlay -->
   <div id="loading-overlay">
     <div class="spinner"></div>
@@ -742,6 +790,7 @@
         const player = transformApiPlayerToViewPlayer(apiPlayer);
         renderPlayer(player);
         renderApprovedVideos(apiPlayer);
+        updateRecruitingNavigation(player);
       })
       .catch(err => {
         hideOverlay(); // hide even on error
@@ -900,6 +949,24 @@
 
         photoMain: ( a.photoUrl ? `images/players/${a.photoUrl}` : '' )
       };
+    }
+
+    document.getElementById('print-profile').addEventListener('click', () => window.print());
+
+    function updateRecruitingNavigation(player) {
+      const hasGallery = document.getElementById('video-gallery').childElementCount > 0;
+      const hasLinks = document.getElementById('links-card').style.display !== 'none';
+      document.getElementById('video-empty').hidden = hasGallery || hasLinks;
+      const watch = document.getElementById('watch-video-link');
+      watch.hidden = !(hasGallery || hasLinks);
+      watch.href = hasGallery ? '#video-gallery-card' : '#links-card';
+      document.getElementById('measurables-nav').hidden = !player.measurables.length;
+      document.getElementById('stats-empty').hidden = !!(player.statsOffense.length || player.statsPitching.length);
+      if (!player.contactEmail && !player.contactPhone && !player.guardian1Name && !player.guardian2Name) {
+        const item = document.createElement('li');
+        item.textContent = 'Recruiting contact information has not been published.';
+        document.getElementById('contact-list').append(item);
+      }
     }
 
     // V2 contract: only backend-approved media may be returned here.
