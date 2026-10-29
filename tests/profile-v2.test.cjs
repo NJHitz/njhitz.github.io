@@ -97,3 +97,21 @@ test('v2 page keeps legacy endpoint fallback and safe rendering',()=>{
   assert.match(s,/portalEnabled \? portalConfig.endpoint : LEGACY_GAS_ENDPOINT/);
   assert.match(s,/new QRCode\(qrContainer/);assert.match(s,/escapeHtml\(m.value/);assert.match(s,/safeWebLink\(l.url\)/);
 });
+
+test('Submit saves current edits before submitting and uses the returned version',async()=>{
+  const source=fs.readFileSync(require.resolve('../scripts/player-manage-v2.js'),'utf8');
+  const handler=source.split("$('submit-review').addEventListener('click',()=>run(async()=>{")[1].split('\n  }));')[0];
+  for(const failure of [null,'save','submit']) {
+    const calls=[],messages=[];
+    const context={model:{version:3,publishedVersion:0},$ :()=>({reportValidity:()=>true}),fields:()=>({bio:'Latest unsaved edits'}),message:s=>messages.push(s),
+      request:async(action,data)=>{calls.push({action,data});if(action===failure)throw Error('Service unavailable');context.model.version++;}};
+    vm.createContext(context);
+    const work=vm.runInContext('(async()=>{'+handler+'})',context);
+    if(failure)await assert.rejects(work(),failure==='submit'?/draft was saved, but submission failed/:/Service unavailable/);
+    else await work();
+    assert.equal(calls[0].action,'save');assert.equal(calls[0].data.fields.bio,'Latest unsaved edits');
+    assert.equal(calls.length,failure==='save'?1:2);
+    if(calls.length===2){assert.equal(calls[1].action,'submit');assert.equal(calls[1].data.version,4);}
+    assert.equal(messages.length,failure?0:1);
+  }
+});

@@ -124,9 +124,14 @@ async function start() {
   $('claim-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{await request('claim',{version:model.version,note:$('claim-note').value});message('Access request submitted for staff review.');});});
   $('profile-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});message('Draft saved. Your public profile has not changed.');});});
   $('submit-review').addEventListener('click',()=>run(async()=>{
-    if(!model.draft)throw new Error('Save a draft first.');
-    if(JSON.stringify(fields()) !== JSON.stringify({...fields(),...model.draft.fields}))throw new Error('You have unsaved changes. Save the draft first.');
-    await request('submit',{version:model.version});message('Saved draft submitted for review.');
+    if (!$('profile-form').reportValidity()) return;
+    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    try {
+      await request('submit',{version:model.version});
+    } catch (error) {
+      throw new Error('Your draft was saved, but submission failed. ' + (error.message || 'Please try again.'));
+    }
+    message('Changes saved and submitted for review. Your public profile will change after staff approval.');
   }));
   sdk.onAuthStateChanged(auth,async user=>{
     generation++;model=null;['claim-card','editor-card','staff-card'].forEach(id=>$(id).hidden=true);
