@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>{{playerName}} | NJ Hitz Softball Player #{{playerNumber}}</title>
+  
+  <meta name="description" content="Player Profile. View player stats, highlights, and team profile.">
+  <meta name="image" content="https://njhitz.org/images/player-profile-placeholder.png">
+
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://njhitz.org/player-profile-v2">
+  <meta property="og:title" content="NJ Hitz Softball Player">
+  <meta property="og:description" content="Player profile, stats, highlights, and achievements.">
+  <meta property="og:image" content="https://njhitz.org/images/player-profile-placeholder.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NJ Hitz Softball Player">
+  <meta name="twitter:description" content="J Hitz player profile and accomplishments.">
+  <meta name="twitter:image" content="https://njhitz.org/images/player-profile-placeholder.png">
+
+  <!---
+  <meta name="description" content="{{playerName}} (#{playerNumber}) — a standout player for NJ Hitz Softball. View player stats, highlights, and team profile.">
+  <meta name="image" content="https://njhitz.org/images/players/{{slug}}-meta.png">
+
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://njhitz.org/player/{{slug}}">
+  <meta property="og:title" content="{{playerName}} | NJ Hitz Softball Player #{{playerNumber}}">
+  <meta property="og:description" content="{{playerName}}’s player profile, stats, highlights, and achievements.">
+  <meta property="og:image" content="https://njhitz.org/images/players/{{slug}}-meta.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{playerName}} | NJ Hitz Softball Player #{{playerNumber}}">
+  <meta name="twitter:description" content="{{playerName}}’s NJ Hitz player profile and accomplishments.">
+  <meta name="twitter:image" content="https://njhitz.org/images/players/{{slug}}-meta.png">
+  --->
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{playerName}}",
+    "url": "https://njhitz.org/player/{{slug}}",
+    "memberOf": {
+      "@type": "SportsTeam",
+      "name": "NJ Hitz Softball",
+      "url": "https://njhitz.org/teams"
+    },
+    "image": "https://njhitz.org/images/players/{{slug}}-meta.png",
+    "jobTitle": "Softball Player",
+    "identifier": "{{playerNumber}}"
+  }
+  </script>
+
+  <script>
+    (function() {
+      // Get ?player=<slug> from the query string
+      const urlParams = new URLSearchParams(window.location.search);
+      const slug = urlParams.get('player');
+      if (!slug) return; // No player param → skip
+
+      const parts = slug.split('-');
+      const playerNumber = parts.pop();
+      const playerName = parts.join(' ').replace(/\b\w/g, c => c.toUpperCase());
+      const formats = ['png', 'jpg', 'webp'];
+      const fallbackImage = 'images/players/player-profile-placeholder-sq-meta.webp';
+
+      // Try multiple formats until one exists, else fallback
+      async function getExistingImage() {
+        for (const ext of formats) {
+          const url = `https://njhitz.org/images/players/${slug}-meta.${ext}`;
+          const exists = await checkImage(url);
+          if (exists) return url;
+        }
+        return fallbackImage;
+      }
+
+      // Image existence check
+      function checkImage(url) {
+        return new Promise(resolve => {
+          const img = new Image();
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = url + '?v=' + Date.now(); // prevent caching
+        });
+      }
+
+      // Helper: set or update a meta tag
+      function setMeta(property, content, isProperty = false) {
+        const selector = isProperty
+          ? `meta[property="${property}"]`
+          : `meta[name="${property}"]`;
+        let el = document.querySelector(selector);
+        if (!el) {
+          el = document.createElement('meta');
+          if (isProperty) el.setAttribute('property', property);
+          else el.setAttribute('name', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
+
+      // Build the meta tags dynamically
+      getExistingImage().then(imageURL => {
+        const formattedName = playerName || 'NJ Hitz Player';
+        const formattedNumber = playerNumber || '';
+        const fullTitle = formattedNumber
+          ? `${formattedName} | NJ Hitz Softball Player #${formattedNumber}`
+          : `${formattedName} | NJ Hitz Softball Player`;
+
+        document.title = fullTitle;
+
+        const metaContent = {
+          description: `${formattedName} (#${formattedNumber}) — NJ Hitz Softball player profile, stats, and highlights.`,
+          'og:type': 'profile',
+          'og:title': fullTitle,
+          'og:description': `${formattedName} — NJ Hitz Softball standout player.`,
+          'og:image': imageURL,
+          'og:url': `https://njhitz.org/player-profile-v2?player=${slug}`,
+          'twitter:card': 'summary_large_image',
+          'twitter:title': fullTitle,
+          'twitter:description': `${formattedName} — NJ Hitz player profile and highlights.`,
+          'twitter:image': imageURL
+        };
+
+        Object.entries(metaContent).forEach(([key, value]) => {
+          const isProperty = key.startsWith('og:') || key.startsWith('twitter:');
+          setMeta(key, value, isProperty);
+        });
+      });
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- QRCode.js library (lightweight, no dependencies) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="scripts/preload.js"></script>
+
+  <link href="css/main.css" rel="stylesheet">
+  <style>
+    .v2-note { max-width:1000px; margin:20px auto; }
+    .video-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); }
+    .video-grid iframe { width:100%; aspect-ratio:16/9; border:0; border-radius:10px; }
+    .video-grid h4 { margin:0 0 6px; }
+    .video-grid a { color:var(--hitz-gold); text-decoration:underline; }
+    .video-grid p { overflow-wrap:anywhere; }
+    summary { cursor:pointer; }
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+      background:radial-gradient(1200px 800px at 70% -10%,rgba(179,139,53,.15),#050509);
+      color:var(--hitz-white);
+      line-height:1.5;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    /*a:hover{ text-decoration:underline; }*/
+    .player-hero{
+      margin-bottom:18px;
+    }
+    .player-tagline{
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-size:.8rem;
+      color:var(--hitz-gold);
+      margin-bottom:6px;
+      font-weight:800;
+    }
+    .player-name-wrapper {
+      display:flex;
+    }
+    .player-name-wrapper > img {
+      width:25px;
+      margin:auto 10px;
+    }
+    .player-name{
+      margin:0 0 6px;
+      font-size:clamp(26px,4vw,36px);
+      letter-spacing:.02em;
+    }
+    .player-subtitle{
+      margin:0;
+      color:#d7d7e2;
+      font-size:.96rem;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
+      gap:18px;
+    }
+    @media (max-width:768px){
+      .layout{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .card{
+      background:rgba(13,13,22,.96);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      padding:16px 14px 16px;
+      box-shadow:0 18px 36px rgba(0,0,0,.65);
+    }
+    .card + .card{
+      margin-top:14px;
+    }
+    .card h2,
+    .card h3{
+      margin:0 0 8px;
+      font-size:1rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#eaeaf5;
+    }
+    .card h2 span,
+    .card h3 span{
+      color:var(--hitz-gold);
+    }
+    .card{
+      background:#14141c;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      padding:16px 14px 14px;
+      box-shadow:0 12px 32px rgba(0,0,0,.55);
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:1rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--hitz-gold);
+    }
+    .card p{
+      margin:0 0 8px;
+      font-size:.9rem;
+      color:#d3d3e2;
+    }
+    .card-center-content {
+      display:flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .player-photo-wrap{
+      position:relative;
+      border-radius:16px;
+      overflow:hidden;
+      background:#050509;
+      min-height:260px;
+      max-height:420px;
+      line-height: 0;
+    }
+    .player-photo{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .player-badge{
+      position:absolute;
+      left:12px;
+      bottom:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(5,5,10,.9);
+      border:1px solid rgba(255,255,255,.25);
+      font-size:.8rem;
+      line-height:1.5;
+    }
+
+    dl.meta{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:6px 14px;
+      margin:10px 0 0;
+      font-size:.9rem;
+    }
+    dl.meta dt{
+      font-weight:600;
+      color:var(--hitz-gold); /* #d7d7ea; */
+    }
+    dl.meta dd{
+      margin:0;
+      color:#f5f5ff;
+    }
+
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin:6px 0 0;
+    }
+    .pill{
+      padding:3px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(20,20,30,.9);
+      font-size:.8rem;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      gap:16px;
+    }
+    @media (max-width:640px){
+      .two-col{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .list{
+      margin:6px 0 0;
+      padding-left:18px;
+      font-size:.9rem;
+      color:#e1e1f3;
+    }
+    .list li{
+      margin-bottom:4px;
+    }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px 18px;
+      font-size:.9rem;
+    }
+    @media (max-width:520px){
+      .info-grid{
+        grid-template-columns:minmax(0,1fr);
+      }
+    }
+    .info-label{
+      font-weight:600;
+      color:#f1f1fb;
+    }
+    .info-value{
+      color:#d0d0e2;
+    }
+
+    .measurables-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+      gap:10px;
+      margin-top:6px;
+      font-size:.9rem;
+    }
+    .measure-card{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.15);
+      background:#151520;
+    }
+    .measure-label{
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:#c8c8dd;
+      margin-bottom:2px;
+    }
+    .measure-value{
+      font-size:.98rem;
+      font-weight:600;
+      color:#ffffff;
+    }
+
+    table.stats{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.88rem;
+      margin-top:4px;
+    }
+    table.stats th,
+    table.stats td{
+      padding:4px 6px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+      text-align:left;
+    }
+    table.stats th{
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:.72rem;
+      color:#dcdcf0;
+    }
+    table.stats tr:nth-child(even){
+      background:rgba(255,255,255,.03);
+    }
+
+    .note{
+      margin-top:6px;
+      font-size:.82rem;
+      color:#bcbcd6;
+      font-style:italic;
+    }
+
+    .links-list{
+      list-style:none;
+      padding-left:16px;
+      margin:4px 0 0;
+      font-size:.9rem;
+    }
+    .links-list li{
+      margin-bottom:4px;
+    }
+    .links-list a {
+      color:var(--hitz-gold);
+      text-decoration:none;
+    }
+    .links-list a:hover{
+      text-decoration:underline;
+    }
+
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:.86rem;
+      text-decoration:none;
+      color:#e1e1ff;
+      margin-bottom:10px;
+    }
+    .back-link span{
+      font-size:1.1rem;
+      line-height:1;
+    }
+
+    .error-message{
+      margin-top:20px;
+      font-size:.98rem;
+      color:#ff9c9c;
+    }
+
+    #qr-share-widget {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #4c2a85; /* Hitz Purple */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #qr-share-title {
+      color: #f5f2ff;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    #qr-share-code canvas {
+      border-radius: 8px;
+    }
+
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(76, 42, 133, 0.9); /* Hitz Purple overlay */
+      color: #b38b35; /* Hitz Gold text */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+    }
+    #loading-overlay .spinner {
+      border: 6px solid rgba(255,255,255,0.2);
+      border-top: 6px solid #b38b35;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #loading-overlay.hidden {
+      display: none;
+    }
+    #loading-overlay {
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Shared site header -->
+  <header class="site-header" id="header"></header>
+
+  <div class="page-container">
+    <main>
+      <div class="content">
+        <a href="teams" class="back-link" id="back-link"><span>←</span> Back to Teams</a>
+
+        <section id="player-hero" class="player-hero" style="display:none;">
+          <!--<div class="player-tagline">Player Showcase</div>-->
+          <div class="player-name-wrapper">
+              <h1 class="player-name" id="player-name"></h1>
+              <img id="player-verified-badge" style="display:none;" src="images/verified-badge-purple.png" />
+          </div>
+          <p class="player-subtitle" id="player-subtitle"></p>
+        </section>
+
+        <div id="player-layout" class="layout" style="display:none;">
+          <div>
+            <article class="card">
+              <!--<h2><span>Profile</span></h2>-->
+              <div class="player-photo-wrap">
+                <img id="player-photo" class="player-photo" src="" alt="Player photo">
+                <div class="player-badge" id="player-badge"></div>
+              </div>
+
+              <dl class="meta">
+                <div>
+                  <dt>Team</dt>
+                  <dd id="meta-team"></dd>
+                </div>
+                <div>
+                  <dt>Grad Year</dt>
+                  <dd id="meta-grad"></dd>
+                </div>
+                <div>
+                  <dt>School</dt>
+                  <dd id="meta-school"></dd>
+                </div>
+                <div>
+                  <dt>GPA</dt>
+                  <dd id="meta-gpa"></dd>
+                </div>
+                <div>
+                  <dt>Height</dt>
+                  <dd id="meta-size"></dd>
+                </div>
+                <div>
+                  <dt>Bats / Throws</dt>
+                  <dd id="meta-batsthrows"></dd>
+                </div>
+              </dl>
+
+              <div class="pill-row" id="pos-pills"></div>
+            </article>
+
+            <article class="card" id="card-bio">
+            <h2>Player Bio</h2>
+            <p id="player-bio" class="muted">
+              Bio coming soon.
+            </p>
+          </article>
+
+          <article class="card" id="card-academics" style="margin-top:14px;">
+            <h2>Academics & Scholastic</h2>
+            <div class="info-grid" id="academics-grid">
+              <!-- Filled by JS -->
+            </div>
+            <p id="academics-notes" class="muted" style="margin-top:8px;"></p>
+          </article>
+          </div>
+
+          <div>
+            <article class="card">
+              <h3><span>Recruiting Contact</span></h3>
+              <ul class="list" id="contact-list"></ul>
+            </article>
+
+            <article class="card" id="measurables-card" style="display:none;">
+              <h3><span>Measurables</span></h3>
+              <div class="measurables-grid" id="measurables-grid"></div>
+            </article>
+
+            <article class="card" id="offense-card" style="display:none;">
+              <h3><span>Offensive Stats</span></h3>
+              <table class="stats" id="offense-table"></table>
+              <p class="note" id="stats-note"></p>
+            </article>
+
+            <article class="card" id="pitching-card" style="display:none;">
+              <h3><span>Pitching Stats</span></h3>
+              <table class="stats" id="pitching-table"></table>
+            </article>
+
+            <article class="card" id="video-gallery-card" style="display:none;">
+              <h3><span>Player Videos</span></h3>
+              <div id="video-gallery" class="video-grid"></div>
+              <p class="note">If playback is unavailable, use Open video to watch in Google Drive.</p>
+            </article>
+            <article class="card" id="links-card" style="display:none;">
+              <h3><span>Video & Links</span></h3>
+              <ul class="list links-list" id="links-list"></ul>
+            </article>
+
+            <article class="card" id="share-card" style="display:none;">
+              <h3><span>Share This Profile</span></h3>
+              <div class="card-center-content">
+                <div id="qr-share-widget">
+                  <div id="qr-share-title"></div>
+                  <div id="qr-share-code"></div>
+                  <p><span>Click to Share</span></p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <p id="player-error" class="error-message" style="display:none;">
+          Player not found. Please return to the <a href="teams.html">Teams</a> page and choose a player from the roster.
+        </p>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+    <!--
+    <footer>
+      © <span id="year"></span> NJ HITZ Softball — Player Showcase
+    </footer>
+    -->
+  </div>
+
+  <section class="v2-note card" aria-label="Profile preview">
+    <strong>Player Profile Preview</strong>
+    <p>This preview uses the current profile service. Profile claiming, editing, and uploads are not available yet.</p>
+    <details><summary>How profile management will work</summary>
+      <p>Families will sign in and accept an invitation for their player. Saved changes and videos will go to staff for review before publication. The current public profile stays live during review.</p>
+    </details>
+  </section>
+  <!-- Loading overlay -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading player information...</p>
+  </div>
+
+  <script>
+  (function () {
+    // 🔗 Apps Script Web App endpoint (same project as gas_NewRecruitIntake.js)
+    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.classList.remove('hidden'); // show immediately
+
+    function hideOverlay() {
+      loadingOverlay.classList.add('hidden');
+      setTimeout(() => (loadingOverlay.style.display = 'none'), 500);
+    }
+
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    function setText(id, text, fallback) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text || fallback || '';
+    }
+
+    function formatPhoneNumber(input) {
+      if (!input) return '';
+
+      // Remove all non-digit characters
+      const digits = input.toString().replace(/\D/g, '');
+
+      // If fewer than 10 digits, return as-is
+      if (digits.length < 10) return digits;
+
+      // If more than 10 digits (like +1 country codes), trim to last 10
+      const clean = digits.length > 10 ? digits.slice(-10) : digits;
+
+      // Format as ###-###-####
+      return `${clean.slice(0, 3)}-${clean.slice(3, 6)}-${clean.slice(6, 10)}`;
+    }
+
+
+    function createInfoRow(label, value) {
+      if (!value) return null;
+      const wrap = document.createElement('div');
+      const lab = document.createElement('div');
+      lab.className = 'info-label';
+      lab.textContent = label;
+      const val = document.createElement('div');
+      val.className = 'info-value';
+      val.textContent = value;
+      wrap.appendChild(lab);
+      wrap.appendChild(val);
+      return wrap;
+    }
+
+    // 🔎 Get slug from ?player=leah-taylor-31
+    const slug = getParam('player');
+    if (!slug) {
+      document.getElementById('player-error').style.display = 'block';
+      hideOverlay();
+      return;
+    }
+
+    // 🚀 Fetch player from GAS doGet instead of data/players.json
+    fetch(`${GAS_ENDPOINT}?slug=${encodeURIComponent(slug)}`, { cache: 'no-cache', signal: AbortSignal.timeout(20000) })
+      .then(resp => {
+        if (!resp.ok) throw new Error('Network error ' + resp.status);
+        return resp.json();
+      })
+      .then(data => {
+        hideOverlay(); // hide when done
+
+        if (!data || !data.ok || !data.player) {
+          //throw new Error('Player not found');
+          //TEMPORARY - Instead of throwing an error, redirect the static example page
+          const urlParams = new URLSearchParams(window.location.search);
+          const slug = urlParams.get('player');
+          const teamName = urlParams.get('team');
+          const gradYear = urlParams.get('gradYear');
+          //window.location.href = 'player-example.html?player=' + slug;
+          const slugArray = slug.split("-");
+          const playerName = `${slugArray[0].charAt(0).toUpperCase() + slugArray[0].slice(1)} ${slugArray[1].charAt(0).toUpperCase() + slugArray[1].slice(1)}`;
+          const playerNumber = slugArray[2];
+          data = {
+            player: {
+              playerName: playerName,
+              jerseyNumber: playerNumber,
+              teamName: teamName,
+              gradYear: gradYear
+            }
+          }
+        } else {
+          document.getElementById("player-verified-badge").style.display = "";
+        }
+        const apiPlayer = data.player;
+        const player = transformApiPlayerToViewPlayer(apiPlayer);
+        renderPlayer(player);
+        renderApprovedVideos(apiPlayer);
+      })
+      .catch(err => {
+        hideOverlay(); // hide even on error
+        console.error('Error loading player from GAS', err);
+        document.getElementById('player-error').style.display = 'block';
+      });
+
+    /**
+     * Turn the GAS doGet player object (fields mapped from Sheet)
+     * into the view model that renderPlayer() expects.
+     *
+     * api = {
+     *   playerName, teamName, jerseyNumber, primaryPosition, positions,
+     *   batsThrows, gradYear, height, weight, cityState,
+     *   schoolName, gpa, honors, intendedMajor, academics,
+     *   playerEmail, playerPhone, guardian1Name, guardian1Email, guardian1Phone, ...
+     *   homeToFirst, firstToThird, overhandVelo, exitVelo,
+     *   offSeason, avg, obp, slg, ops, hr, rbi, statsNote,
+     *   pitSeason, era, ip, k, bb, whip,
+     *   highlightVideoUrl, recruitingProfileUrl, additionalLinks,
+     *   slug, etc.
+     * }
+     */
+    function transformApiPlayerToViewPlayer(api) {
+      const a = api || {};
+
+      // Name + jersey → slug
+      const name = (a.playerName || '').toString().trim();
+      const number = (a.jerseyNumber || '').toString().trim();
+
+      // Positions: include primary + others (comma or newline separated)
+      const positions = [];
+      if (a.primaryPosition) positions.push(String(a.primaryPosition).trim());
+      if (a.positions) {
+        String(a.positions)
+          .split(/[,\n]/)
+          .map(v => v.trim())
+          .filter(Boolean)
+          .forEach(pos => {
+            if (!positions.includes(pos)) positions.push(pos);
+          });
+      }
+
+      // Measurables
+      const measurables = [];
+      if (a.homeToFirst) {
+        measurables.push({ label: 'Home to 1st', value: a.homeToFirst });
+      }
+      if (a.firstToThird) {
+        measurables.push({ label: '1st to 3rd', value: a.firstToThird });
+      }
+      if (a.overhandVelo) {
+        measurables.push({ label: 'Overhand Velo', value: a.overhandVelo + ' mph' });
+      }
+      if (a.exitVelo) {
+        measurables.push({ label: 'Exit Velo', value: a.exitVelo + ' mph' });
+      }
+
+      // Offense stats – single season row
+      const statsOffense = [];
+      if (!!a.offSeason || !!a.avg || !!a.obp || !!a.slg || !!a.ops || !!a.hrl || !!a.rbi) {
+        statsOffense.push({
+          season: a.offSeason || '',
+          avg: a.avg != null ? a.avg : '',
+          obp: a.obp != null ? a.obp : '',
+          slg: a.slg != null ? a.slg : '',
+          ops: a.ops != null ? a.ops : '',
+          hr: a.hr != null ? a.hr : '',
+          rbi: a.rbi != null ? a.rbi : ''
+        });
+      }
+
+      // Pitching stats – single season row
+      const statsPitching = [];
+      if (!!a.pitSeason || !!a.era || !!a.ip || !!a.k || !!a.bb || !!a.whip ) {
+        statsPitching.push({
+          season: a.pitSeason || '',
+          era: a.era != null ? a.era : '',
+          ip: a.ip != null ? a.ip : '',
+          k: a.k != null ? a.k : '',
+          bb: a.bb != null ? a.bb : '',
+          whip: a.whip != null ? a.whip : ''
+        });
+      }
+
+      // Additional links (text area – could be "Label - URL" per line or just URLs)
+      const additionalLinks = [];
+      if (a.additionalLinks) {
+        String(a.additionalLinks)
+          .split('\n')
+          .map(line => line.trim())
+          .filter(Boolean)
+          .forEach(line => {
+            const parts = line.split(' - ');
+            if (parts.length === 2) {
+              additionalLinks.push({ label: parts[0].trim(), url: parts[1].trim() });
+            } else {
+              additionalLinks.push({ label: line, url: line });
+            }
+          });
+      }
+
+      // Contact logic: for now, always expose player email/phone if present
+      if(a.contactDisplayOptIn === 'No'){
+        a.playerEmail = '';
+        a.playerPhone = '';
+        a.guardian1Email = '';
+        a.guardian1Phone = '';
+        a.guardian2Email = '';
+        a.guardian2Phone = '';
+      }
+      var contactEmail = a.playerEmail || a.guardian1Email || '';
+      var contactPhone = a.playerPhone || a.guardian1Phone || '';
+
+      return {
+        slug: a.slug || (name && number
+          ? name.toLowerCase().replace(/\s+/g, '-') + '-' + number
+          : ''),
+
+        name: name,
+        number: number,
+        teamName: a.teamName || '',
+        positions: positions,
+        positionPrimary: a.primaryPosition || '',
+        batsThrows: a.batsThrows || '',
+        gradYear: a.gradYear || '',
+        schoolName: a.schoolName || '',
+        gpa: a.gpa != null ? a.gpa : '',
+        height: a.height || '',
+        weight: a.weight || '',
+        cityState: a.cityState || '',
+
+        bio: a.bio || '',
+        honors: a.honors || '',
+        intendedMajor: a.intendedMajor || '',
+        academics: a.academics || '',
+        family: a.family || '',
+
+        contactEmail: contactEmail,
+        contactPhone: contactPhone,
+        guardian1Name: a.guardian1Name || '',
+        guardian1Email: a.guardian1Email || '',
+        guardian1Phone: a.guardian1Phone || '',
+        guardian2Name: a.guardian2Name || '',
+        guardian2Email: a.guardian2Email || '',
+        guardian2Phone: a.guardian2Phone || '',
+
+        measurables: measurables,
+        statsOffense: statsOffense,
+        statsPitching: statsPitching,
+        statsNote: a.statsNote || a['Stats Notes (where stats are from, any clarifications)'] || '',
+
+        highlightVideoUrl: a.highlightVideoUrl || '',
+        recruitingProfileUrl: a.recruitingProfileUrl || '',
+        additionalLinks: additionalLinks,
+
+        photoMain: ( a.photoUrl ? `images/players/${a.photoUrl}` : '' )
+      };
+    }
+
+    // V2 contract: only backend-approved media may be returned here.
+    // Frontend filtering is defense in depth, never an authorization boundary.
+    function renderApprovedVideos(api) {
+      const gallery = document.getElementById('video-gallery');
+      const card = document.getElementById('video-gallery-card');
+      const videos = Array.isArray(api.videos) ? api.videos : [];
+      gallery.replaceChildren();
+      const approved = videos.filter(v => v && v.status === 'approved')
+        .sort((a,b) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0));
+      for (const video of approved) {
+        const id = String(video.driveFileId || '');
+        if (!/^[a-zA-Z0-9_-]{10,200}$/.test(id)) continue;
+        const item = document.createElement('section');
+        const heading = document.createElement('h4');
+        heading.textContent = String(video.title || 'Player video');
+        const frame = document.createElement('iframe');
+        frame.src = 'https://drive.google.com/file/d/' + id + '/preview';
+        frame.title = heading.textContent;
+        frame.loading = 'lazy';
+        frame.allow = 'fullscreen';
+        frame.referrerPolicy = 'no-referrer';
+        const caption = document.createElement('p');
+        caption.textContent = [video.category, video.recordedDate, video.caption].filter(Boolean).join(' • ');
+        const link = document.createElement('a');
+        link.href = 'https://drive.google.com/file/d/' + id + '/view';
+        link.textContent = 'Open video';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        item.append(heading, frame, caption, link);
+        gallery.append(item);
+      }
+      card.style.display = gallery.childElementCount ? '' : 'none';
+    }
+
+    // ⬇ renderPlayer(p) is identical to your existing implementation
+    function renderPlayer(p) {
+      document.getElementById('player-hero').style.display = '';
+      document.getElementById('player-layout').style.display = '';
+
+      const nameEl = document.getElementById('player-name');
+      const subtitleEl = document.getElementById('player-subtitle');
+
+      nameEl.textContent = p.name || 'Player Name';
+      const jersey = p.number ? '#' + p.number : '';
+      const team = p.teamName || '';
+      const pos = (Array.isArray(p.positions) ? p.positions.join(', ') : (p.positionPrimary || '')).trim();
+      subtitleEl.textContent = [jersey, team, pos].filter(Boolean).join(' • ');
+
+      /*
+      const photoEl = document.getElementById('player-photo');
+      if (p.photoMain) {
+        photoEl.src = p.photoMain;
+      } else {
+        photoEl.src = p.batsThrows && p.batsThrows.charAt(0) === 'R'
+          ? 'images/player-profile-placeholder-sq-v2.png'
+          : 'images/player-profile-placeholder-sq-v2-reverse.png';
+      }
+      */
+     const photoEl = document.getElementById('player-photo');
+
+     if (p.photoMain) {
+        photoEl.src = p.photoMain;
+     } else {
+        const slugPhoto = `images/players/${p.slug}.png`;
+        const testImg = new Image();
+
+        testImg.onload = () => {
+        photoEl.src = slugPhoto;
+     };
+
+     testImg.onerror = () => {
+        photoEl.src =
+          p.batsThrows && p.batsThrows.charAt(0) === 'R'
+            ? 'images/player-profile-placeholder-sq-v2.png'
+            : 'images/player-profile-placeholder-sq-v2-reverse.png';
+     };
+
+      testImg.src = slugPhoto;
+    }
+      photoEl.alt = p.name ? (p.name + ' — player photo') : 'Player photo';
+
+      const badgeEl = document.getElementById('player-badge');
+      badgeEl.textContent = jersey || 'NJ HITZ';
+
+      document.getElementById('meta-team').textContent = p.teamName || '';
+      document.getElementById('meta-grad').textContent = p.gradYear || '';
+      document.getElementById('meta-school').textContent = p.schoolName || '—';
+      document.getElementById('meta-gpa').textContent = p.gpa || '—';
+      document.getElementById('meta-size').textContent =
+        //(p.height && p.weight) ? `${p.height} / ${p.weight}` : (p.height || p.weight || '—');
+        (p.height) ? `${p.height}` : '—';
+      document.getElementById('meta-batsthrows').textContent = p.batsThrows || '—';
+
+      const posWrap = document.getElementById('pos-pills');
+      posWrap.innerHTML = '';
+      const positions = Array.isArray(p.positions) ? p.positions : (p.positionPrimary ? [p.positionPrimary] : []);
+      positions.forEach(pos => {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        span.textContent = pos;
+        posWrap.appendChild(span);
+      });
+
+      // Bio
+      setText('player-bio', p.bio || 'Player bio coming soon.');
+
+      // Academics
+      const acadGrid = document.getElementById('academics-grid');
+      acadGrid.innerHTML = '';
+      const acadRows = [
+        ['School', p.schoolName],
+        ['GPA', p.gpa],
+        ['Honors / Programs', p.honors],
+        ['Intended Major', p.intendedMajor]
+      ];
+      acadRows.forEach(([label, value]) => {
+        const rowEl = createInfoRow(label, value);
+        if (rowEl) acadGrid.appendChild(rowEl);
+      });
+      setText('academics-notes', p.academics || '');
+
+      // Recruiting contact
+      const contactList = document.getElementById('contact-list');
+      contactList.innerHTML = '';
+      if (p.contactEmail) {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>Email:</strong> <a href="mailto:${p.contactEmail}">${p.contactEmail}</a>`;
+        contactList.appendChild(li);
+      }
+      if (p.contactPhone) {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>Phone:</strong> <a href="tel:${p.contactPhone}">${formatPhoneNumber(p.contactPhone)}</a>`;
+        contactList.appendChild(li);
+      }
+      if (p.guardian1Name || p.guardian1Email || p.guardian1Phone) {
+        const li = document.createElement('li');
+        li.innerHTML =
+          `<strong>Guardian:</strong> ${p.guardian1Name || ''}` +
+          `${p.guardian1Email ? ' • ' + p.guardian1Email : ''}` +
+          `${p.guardian1Phone ? ' • ' + formatPhoneNumber(p.guardian1Phone) : ''}`;
+        contactList.appendChild(li);
+      }
+      if (p.guardian2Name || p.guardian2Email || p.guardian2Phone) {
+        const li = document.createElement('li');
+        li.innerHTML =
+          `<strong>Guardian:</strong> ${p.guardian2Name || ''}` +
+          `${p.guardian2Email ? ' • ' + p.guardian2Email : ''}` +
+          `${p.guardian2Phone ? ' • ' + formatPhoneNumber(p.guardian2Phone) : ''}`;
+        contactList.appendChild(li);
+      }
+
+      // Measurables
+      const measWrap = document.getElementById('measurables-grid');
+      measWrap.innerHTML = '';
+      if(p.measurables.length){ document.getElementById('measurables-card').style.display = ''; }
+      (p.measurables || []).forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'measure-card';
+        div.innerHTML =
+          `<div class="measure-label">${m.label || ''}</div>` +
+          `<div class="measure-value">${m.value || ''}</div>`;
+        measWrap.appendChild(div);
+      });
+
+      // Offensive stats
+      const offCard = document.getElementById('offense-card');
+      const offTable = document.getElementById('offense-table');
+      offTable.innerHTML = '';
+      if (p.statsOffense && p.statsOffense.length) {
+        offCard.style.display = '';
+        const rows = p.statsOffense;
+        offTable.innerHTML = `
+          <thead>
+            <tr>
+              <th>Season</th>
+              <th>AVG</th>
+              <th>OBP</th>
+              <th>SLG</th>
+              <th>OPS</th>
+              <th>HR</th>
+              <th>RBI</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows
+              .map(
+                r => `
+              <tr>
+                <td>${r.season || ''}</td>
+                <td>${r.avg || ''}</td>
+                <td>${r.obp || ''}</td>
+                <td>${r.slg || ''}</td>
+                <td>${r.ops || ''}</td>
+                <td>${r.hr != null ? r.hr : ''}</td>
+                <td>${r.rbi != null ? r.rbi : ''}</td>
+              </tr>
+            `
+              )
+              .join('')}
+          </tbody>
+        `;
+        document.getElementById('stats-note').textContent =
+          p.statsNote || '';
+      }
+
+      // Pitching stats
+      const pitchCard = document.getElementById('pitching-card');
+      const pitchTable = document.getElementById('pitching-table');
+      pitchTable.innerHTML = '';
+      if (p.statsPitching && p.statsPitching.length) {
+        pitchCard.style.display = '';
+        const rowsP = p.statsPitching;
+        pitchTable.innerHTML = `
+          <thead>
+            <tr>
+              <th>Season</th>
+              <th>ERA</th>
+              <th>IP</th>
+              <th>K</th>
+              <th>BB</th>
+              <th>WHIP</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsP
+              .map(
+                r => `
+              <tr>
+                <td>${r.season || ''}</td>
+                <td>${r.era || ''}</td>
+                <td>${r.ip || ''}</td>
+                <td>${r.k != null ? r.k : ''}</td>
+                <td>${r.bb != null ? r.bb : ''}</td>
+                <td>${r.whip || ''}</td>
+              </tr>
+            `
+              )
+              .join('')}
+          </tbody>
+        `;
+      }
+
+      // Links
+      const linksCard = document.getElementById('links-card');
+      const linksList = document.getElementById('links-list');
+      linksList.innerHTML = '';
+      const links = [];
+      if (p.highlightVideoUrl) {
+        links.push({ label: 'Highlight Video', url: p.highlightVideoUrl });
+      }
+      if (p.recruitingProfileUrl) {
+        links.push({ label: 'Recruiting Profile', url: p.recruitingProfileUrl });
+      }
+      (p.additionalLinks || []).forEach(x => {
+        if (x && x.url) {
+          links.push({ label: x.label || x.url, url: x.url });
+        }
+      });
+      if (links.length) {
+        linksCard.style.display = '';
+        links.forEach(l => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`;
+          linksList.appendChild(li);
+        });
+      }
+
+      // QR code + share
+      const shareCard = document.getElementById('share-card');
+      shareCard.style.display = '';
+      document.getElementById('qr-share-title').innerHTML = p.name;
+      const qrContainer = document.getElementById('qr-share-code');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: window.location.href,
+        width: 200,
+        height: 200,
+        colorDark: '#b38b35',
+        colorLight: '#4c2a85',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      const qrWidget = document.getElementById('qr-share-widget');
+      const pageUrl = window.location.href;
+      const pageTitle = 'Player Showcase - ' + p.name;
+      qrWidget.addEventListener('click', function () {
+        if (navigator.share) {
+          navigator.share({
+            title: pageTitle,
+            text: 'Check this out:',
+            url: pageUrl
+          }).catch(err => console.warn('Share cancelled or failed:', err));
+        } else {
+          const mailto = `mailto:?subject=${encodeURIComponent(
+            pageTitle
+          )}&body=${encodeURIComponent('Check this out: ' + pageUrl)}`;
+          window.location.href = mailto;
+        }
+      });
+    }
+  })();
+</script>
+
+<script src="scripts/template-loader.js"></script>
+<script>if(localExtTag){ document.getElementById("back-link").href = "teams.html"; }</script>
+</body>
+</html>
+
