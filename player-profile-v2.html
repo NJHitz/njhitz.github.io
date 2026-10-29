@@ -509,10 +509,12 @@
     .section-eyebrow { margin-bottom:8px; }
     .player-name { font-size:clamp(32px,4.4vw,62px); line-height:1.05; font-weight:900; letter-spacing:-.025em; overflow-wrap:anywhere; }
     .player-name-wrapper > img { flex-shrink:0; }
-    .player-subtitle { font-size:1.05rem; margin:16px 0; color:#dedce5; }
+    .player-subtitle { font-size:1.05rem; margin:16px 0 5px; color:#dedce5; }
+    .player-team { font-size:.98rem; color:#dedce5; margin:0 0 12px; }
+    .player-jersey { color:var(--hitz-gold); white-space:nowrap; }
     .pill { background:#211b2b; padding:5px 11px; }
-    .player-photo-wrap { width:100%; min-height:420px; max-height:none; height:auto; border:1px solid rgba(179,139,53,.3); border-radius:18px; align-self:start; background:#0a0810; }
-    .player-photo { display:block; width:100%; height:auto; object-fit:contain; }
+    .player-photo-wrap { width:100%; min-height:0; max-height:420px; height:420px; border:1px solid rgba(179,139,53,.3); border-radius:18px; align-self:start; background:#0a0810; }
+    .player-photo { display:block; width:100%; height:100%; max-height:420px; object-fit:cover; object-position:center 30%; }
     .hero-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
     .recruit-button { appearance:none; display:inline-flex; align-items:center; justify-content:center; border:1px solid #514333; border-radius:999px; background:#211927; color:#e1c780; padding:13px 18px; font:800 .77rem Inter,system-ui,sans-serif; text-transform:uppercase; letter-spacing:.03em; cursor:pointer; text-align:center; }
     .recruit-button.primary { background:#d5b760; color:#17131b; border-color:#a98b38; }
@@ -549,7 +551,7 @@
     @media(max-width:680px) {
       .recruit-hero { grid-template-columns:1fr; padding-top:12px; gap:22px; }
       .recruit-intro { padding:0; }
-      .player-photo-wrap { min-height:0; }
+      .player-photo-wrap { min-height:0; height:min(420px,100vw); }
       .recruit-content { grid-template-columns:1fr; }
       dl.recruit-facts { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .profile-sections { gap:14px 20px; }
@@ -581,10 +583,10 @@
 
         <section id="player-hero" class="recruit-hero" style="display:none;">
           <div class="recruit-intro">
-            <div class="player-tagline">NJ Hitz · Recruiting Profile</div>
-            <div class="player-name-wrapper"><h1 class="player-name" id="player-name"></h1>
-              <img id="player-verified-badge" style="display:none;" src="images/verified-badge-purple.png" alt="Profile on file" /></div>
+            <div class="player-tagline" id="recruiting-class">Recruiting Profile</div>
+            <div class="player-name-wrapper"><h1 class="player-name" id="player-name"></h1></div>
             <p class="player-subtitle" id="player-subtitle"></p>
+            <p class="player-team" id="player-team"></p>
             <div class="pill-row" id="pos-pills"></div>
             <div class="hero-actions">
               <a class="recruit-button primary" href="#video-gallery-card" id="watch-video-link" hidden>Watch video ↓</a>
@@ -784,7 +786,7 @@
             }
           }
         } else {
-          document.getElementById("player-verified-badge").style.display = "";
+          // V2 uses a recruiting header without the legacy verification badge.
         }
         const apiPlayer = data.player;
         const player = transformApiPlayerToViewPlayer(apiPlayer);
@@ -1015,7 +1017,18 @@
       const jersey = p.number ? '#' + p.number : '';
       const team = p.teamName || '';
       const pos = (Array.isArray(p.positions) ? p.positions.join(', ') : (p.positionPrimary || '')).trim();
-      subtitleEl.textContent = [jersey, team, pos].filter(Boolean).join(' • ');
+      const numberEl = document.createElement('span');
+      numberEl.className = 'player-jersey';
+      numberEl.textContent = jersey ? ' ' + jersey : '';
+      nameEl.append(numberEl);
+      document.getElementById('recruiting-class').textContent = p.gradYear
+        ? 'Class of ' + p.gradYear + ' · Recruiting Profile' : 'Recruiting Profile';
+      const positionNames = {P:'Pitcher', C:'Catcher', OF:'Outfield', UTIL:'Utility',
+        '1B':'First Base', '2B':'Second Base', '3B':'Third Base', SS:'Shortstop'};
+      const positionText = (Array.isArray(p.positions) ? p.positions : [])
+        .map(position => positionNames[position] || position).join(' / ');
+      subtitleEl.textContent = [positionText || pos, p.cityState].filter(Boolean).join(' · ');
+      document.getElementById('player-team').textContent = team;
 
       /*
       const photoEl = document.getElementById('player-photo');
@@ -1065,7 +1078,11 @@
       const posWrap = document.getElementById('pos-pills');
       posWrap.innerHTML = '';
       const positions = Array.isArray(p.positions) ? p.positions : (p.positionPrimary ? [p.positionPrimary] : []);
-      positions.forEach(pos => {
+      const handedness = String(p.batsThrows || '').split('/');
+      const batLabels = { R:'Right-handed hitter', L:'Left-handed hitter', Switch:'Switch hitter' };
+      const throwLabels = { R:'Throws right', L:'Throws left' };
+      const headerPills = [batLabels[handedness[0]], throwLabels[handedness[1]]].filter(Boolean);
+      (headerPills.length ? headerPills : positions).forEach(pos => {
         const span = document.createElement('span');
         span.className = 'pill';
         span.textContent = pos;
