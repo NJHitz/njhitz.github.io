@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 const config = window.NJHitzProfileV2 || {};
 const slug = new URL(location.href).searchParams.get('player') || '';
 if (/^[a-z0-9][a-z0-9-]{0,119}$/.test(slug)) $('back-profile').href = 'player-profile-v2?player=' + encodeURIComponent(slug);
-let auth, sdk, model, busy = false, generation = 0;
+let auth, sdk, model, busy = false, generation = 0, gcCapture = null;
 const fieldSpecs = [
   ['bio','Player bio',5000,true],['schoolName','School',160],['gradYear','Graduation year',4],
   ['gpa','Reported GPA',30],['intendedMajor','Intended major',250],['honors','Honors and activities',3500,true],
@@ -74,6 +74,15 @@ function render() {
     $('player-label').textContent = model.published.playerName || 'Player profile';
     $('draft-status').textContent = model.draft ? 'Saved draft · ' + model.draft.savedAt : 'Showing published information';
     if (model.draft && model.draft.base !== model.publishedVersion) $('draft-status').textContent = 'Published information changed. Showing current published values; the older draft has not been applied. Reapply your intended changes and save a new draft.';
+    $('gc-tools').hidden = !model.statsDrafts;
+    $('gc-seasons').replaceChildren();
+    const staged=Object.values(model.statsDrafts || {});
+    [...staged.map(s=>({...s,stageLabel:'Draft import'})),...(model.seasons || []).map(s=>({...s,stageLabel:'Published'}))].forEach(season=>{
+      const row=text('div','','review');row.append(text('h4',season.teamName+' · '+season.season),text('p',season.playerName+' · '+season.stageLabel+' · Season ends '+season.seasonEndDate));
+      row.append(seasonPreview(season));
+      if(season.stageLabel==='Draft import')row.append(actionButton('Remove draft season',()=>request('removeStagedSeason',{version:model.version,key:season.key})));
+      $('gc-seasons').append(row);
+    });
     $('media-tools').hidden = !Array.isArray(model.videos);
     renderFields();
     $('video-list').replaceChildren();
@@ -110,6 +119,11 @@ function render() {
       item.append(text('h4',fieldSpecs.find(f=>f[0] === key)?.[1] || key));
       const diff = text('div','','diff');diff.append(text('p','Published\n' + (model.published[key] || '(empty)')),text('p','Proposed\n' + (revision.fields[key] || '(empty)')));item.append(diff);
     });
+    (revision.seasonStats || []).forEach(season=>{
+      item.append(text('h4','GameChanger: '+season.teamName+' · '+season.season),text('p','Source player: '+season.playerName+' #'+season.jerseyNumber+' · Season end: '+season.seasonEndDate));
+      const source=text('a','Check player on GameChanger ↗');source.href=season.sourceUrl;source.target='_blank';source.rel='noopener noreferrer';item.append(source,seasonPreview(season));
+      item.append(text('p','Compare the player identity and full-season totals with GameChanger before approving. This import is family supplied.'));
+    });
     (revision.videoIds || []).forEach(id=>{
       const video=(model.videos || []).find(v=>v.id===id);
       if (!video) return;
@@ -122,6 +136,12 @@ function render() {
     approve.dataset.disabled = String(approve.disabled);
     item.append(approve,actionButton('Request corrections',()=>request('review',{version:model.version,id:revision.id,decision:'rejected',note:note.value})));$('staff-reviews').append(item);
   });
+}
+function seasonPreview(season){
+  const block=text('div');
+  const names={avg:'AVG',obp:'OBP',slg:'SLG',ops:'OPS',singles:'1B',doubles:'2B',triples:'3B',hr:'HR',rbi:'RBI',runs:'R',ip:'IP',bf:'BF',k:'K',bb:'BB',era:'ERA',whip:'WHIP'};
+  [['Batting',season.batting],['Pitching',season.pitching]].forEach(([label,values])=>{if(values)block.append(text('p',label+': '+Object.entries(values).map(([key,value])=>(names[key] || key)+' '+(value===''?'—':value)).join(' · ')));});
+  return block;
 }
 async function start() {
   if (!config.enabled || !/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(config.endpoint || '') || !config.firebase?.apiKey || !config.firebase?.projectId) return;
@@ -151,6 +171,33 @@ async function start() {
     }
     message('Changes saved and submitted for review. Your public profile will change after staff approval.');
   }));
+  $('gc-url').addEventListener('input',()=>{
+    gcCapture=null;$('gc-capture-status').textContent='';
+    try{const source=GCStatsV2.parseUrl($('gc-url').value);$('gc-identity').textContent='Team ID: '+source.teamId+' · Player GUID: '+source.playerId;$('gc-open').href=source.url;$('gc-open').hidden=false;}
+    catch{$('gc-identity').textContent='';$('gc-open').hidden=true;}
+  });
+  window.addEventListener('message',event=>{
+    if(event.source!==window || event.origin!==location.origin || event.data?.type!=='NJHITZ_GC_SEASON_CAPTURE' || !model?.canEdit)return;
+    try {
+      const season=GCStatsV2.validateSeason(event.data.season,model.published.playerName);
+      gcCapture=season;$('gc-url').value=season.sourceUrl;$('gc-team').value=season.teamName;$('gc-season').value=season.season;$('gc-end').value=season.seasonEndDate;$('gc-file').value='';$('gc-confirm').checked=false;
+      $('gc-capture-status').textContent='Received '+season.playerName+' · '+season.teamName+' · '+season.season+'. Check the source and confirm before importing.';
+    }catch(error){message('Capture rejected: '+error.message,true);}
+  });
+  $('gc-form').addEventListener('submit',event=>{event.preventDefault();run(async()=>{
+    if(!$('gc-confirm').checked)throw new Error('Confirm the source player and full-season totals first.');
+    const metadata={sourceUrl:$('gc-url').value,teamName:$('gc-team').value,season:$('gc-season').value,seasonEndDate:$('gc-end').value,fullSeasonConfirmed:true};
+    let season;
+    const file=$('gc-file').files[0];
+    if(file){if(file.size>2000000)throw new Error('Choose a CSV up to 2 MB.');season=GCStatsV2.fromCsv(await file.text(),metadata,model.published.playerName,model.published.jerseyNumber);}
+    else if(gcCapture){
+      if(GCStatsV2.parseUrl(metadata.sourceUrl).url!==gcCapture.sourceUrl)throw new Error('The source URL changed. Capture this player again.');
+      season=GCStatsV2.validateSeason({...gcCapture,...metadata},model.published.playerName);
+    }else throw new Error('Choose the authorized GameChanger CSV or send a helper capture. The player URL alone cannot access restricted stats.');
+    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    await request('stageSeason',{version:model.version,base:model.publishedVersion,season});
+    gcCapture=null;$('gc-file').value='';$('gc-confirm').checked=false;message('Season imported into your private draft. Choose Submit for review to send it to staff.');
+  });});
   $('video-form').addEventListener('submit',event=>{event.preventDefault();run(async()=>{
     const file=$('video-file').files[0];
     if (!file || file.size > 25*1024*1024 || !file.size) throw new Error('Choose a video up to 25 MB.');
@@ -166,6 +213,7 @@ async function start() {
     $('video-form').reset();message('Private clip uploaded. Choose Submit for review when your changes and clips are ready.');
   });});
   sdk.onAuthStateChanged(auth,async user=>{
+    gcCapture=null;$('gc-form').reset();$('gc-capture-status').textContent='';$('gc-identity').textContent='';$('gc-open').hidden=true;
     generation++;model=null;['claim-card','editor-card','staff-card'].forEach(id=>$(id).hidden=true);
     $('profile-fields').replaceChildren();$('submission-history').replaceChildren();$('staff-claims').replaceChildren();$('staff-reviews').replaceChildren();$('password').value='';
     $('auth-card').hidden=!!user;$('account-card').hidden=!user;

@@ -1,0 +1,10 @@
+{
+  "manifest_version":3,
+  "name":"NJ Hitz GameChanger Profile Helper",
+  "version":"1.0.0",
+  "description":"Capture an authorized GameChanger season export for one player and send it to an open NJ Hitz draft.",
+  "permissions":["activeTab","scripting","storage"],
+  "host_permissions":["https://njhitz.org/*","https://www.njhitz.org/*"],
+  "action":{"default_title":"NJ Hitz season import","default_popup":"popup.html"},
+  "content_scripts":[{"matches":["https://njhitz.org/player-manage-v2*","https://www.njhitz.org/player-manage-v2*"],"js":["bridge.js"]}]
+}

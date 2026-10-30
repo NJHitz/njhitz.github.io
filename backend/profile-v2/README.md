@@ -64,7 +64,7 @@ Adding or accepting a new player slug is a staff migration, not a family edit. P
 
 ## Moderation email and Drive clips
 
-After replacing Code.gs with Core.js + Service.js and updating appsscript.json,
+After replacing Code.gs with scripts/gc-stats-v2.js + Core.js + Service.js and updating appsscript.json,
 run `setupMediaAndNotificationsV2` as the project owner. It creates a private
 `NJ Hitz Profile Videos V2` folder, stores VIDEO_FOLDER_ID, and creates a
 10-minute retry trigger. NOTIFICATIONS_FROM prevents retroactive alerts for
@@ -97,3 +97,38 @@ Workspace policies must permit external view-by-link access for embeds.
 
 The upload section remains hidden when the deployed backend does not yet expose
 its media model. Existing profile data and the legacy intake service are unchanged.
+
+
+## GameChanger season snapshots
+
+Code.gs source order: `scripts/gc-stats-v2.js`, `backend/profile-v2/Core.js`,
+then `backend/profile-v2/Service.js`. No additional OAuth scopes are needed.
+The shared CSV/schema module is also loaded by the management page and helper;
+copy it into the helper before rebuilding its ZIP if the schema changes.
+
+Pasting a GC URL validates/stores the team ID and player GUID; it does not grant
+access to private GC data. The supported ingestion route is an authorized CSV
+export (or the helper reading the existing export in the user's own GC session).
+Team Staff export availability is controlled by GameChanger. The helper never
+reads/transfers authentication tokens, cookies, passwords, or private API state.
+Live capture needs a signed-in GC validation run; CSV parsing uses the original
+GameChanger section/header format and is covered by fixture tests.
+
+Only the matching player's 10 batting and 6 pitching metrics leave the browser.
+The source URL, player name/jersey, team name, season label, explicit season end
+date, full-season confirmation, and import/approval timestamps are retained.
+Treat snapshots as family-supplied evidence. Staff must compare the identity,
+team/season and unfiltered totals before approval. A source URL or CSV is not a
+cryptographic attestation by GameChanger. Missing values stay blank; zero-innings
+non-pitchers do not acquire fabricated pitching records. Rates are copied from
+the export, not recomputed from rounded figures; innings retain .0/.1/.2 notation.
+
+`stageSeason` stores a private per-user snapshot with a published base version.
+Submit freezes those snapshots with the text/video revision and clears staged
+imports. Approval upserts by GC team ID + player GUID; other season rows survive.
+Rejected/stale submissions cannot overwrite published stats. Re-import to refresh
+or correct a season. Up to 20 source seasons are accepted per profile. There is
+no background GC synchronization. Legacy sheet seasons remain a display fallback,
+and the existing v1 profile is unchanged. The public tables show team/season and
+all requested columns; cards show the newest available batting/pitching season,
+using explicit end dates for imports and year/season ordering for legacy rows.

@@ -180,7 +180,7 @@ function notifySubmissionV2_(state,event) {
   var link = 'https://njhitz.org/player-manage-v2?player='+encodeURIComponent(state.slug);
   MailApp.sendEmail({to:'info@njhitz.org',name:'NJ Hitz Player Profiles',
     subject:'Profile review needed: '+name+' #'+String(p.jerseyNumber || '').replace(/[\r\n]/g,' '),
-    body:'A player profile update is awaiting staff approval.\n\nPlayer: '+name+'\nJersey: '+(p.jerseyNumber || 'Not listed')+'\nTeam: '+(p.teamName || 'Not listed')+'\nClass of: '+(p.gradYear || 'Not listed')+'\nSubmitted by: '+submitter+'\nSubmitted at: '+event.at+'\nChanged fields: '+(changed.join(', ') || 'No text changes')+'\nVideo clips for review: '+(revision.videoIds || []).length+'\n\nReview this profile (staff sign-in required):\n'+link+'\n\nNothing is published until staff approves the submission.'});
+    body:'A player profile update is awaiting staff approval.\n\nPlayer: '+name+'\nJersey: '+(p.jerseyNumber || 'Not listed')+'\nTeam: '+(p.teamName || 'Not listed')+'\nClass of: '+(p.gradYear || 'Not listed')+'\nSubmitted by: '+submitter+'\nSubmitted at: '+event.at+'\nChanged fields: '+(changed.join(', ') || 'No text changes')+'\nImported seasons for review: '+(revision.seasonStats || []).length+'\nVideo clips for review: '+(revision.videoIds || []).length+'\n\nReview this profile (staff sign-in required):\n'+link+'\n\nNothing is published until staff approves the submission.'});
   props.setProperty(key,new Date().toISOString());
 }
 function retryProfileNotificationsV2() {

@@ -55,6 +55,27 @@
       <form id="profile-form"><div class="grid" id="profile-fields"></div>
         <div class="actions"><button type="submit">Save draft</button><button id="submit-review" type="button" class="secondary">Submit for review</button></div>
       </form>
+      <section id="gc-tools" hidden aria-labelledby="gc-heading">
+        <h3 id="gc-heading">GameChanger season statistics</h3>
+        <p class="muted">Add a player link and import an authorized full-season GameChanger CSV, or send a capture with the helper. Stats stay private until submitted and approved. Import the same team/player again to update that season’s row.</p>
+        <form id="gc-form">
+          <label for="gc-url">GameChanger player URL</label><input id="gc-url" type="url" required maxlength="1000" placeholder="https://web.gc.com/teams/TEAM/players/PLAYER-GUID">
+          <p id="gc-identity" class="muted"></p>
+          <a id="gc-open" target="_blank" rel="noopener noreferrer" hidden>Open player in GameChanger ↗</a>
+          <div class="grid">
+            <div><label for="gc-team">GameChanger team name</label><input id="gc-team" required maxlength="160" placeholder="Marauders 12U-Black"></div>
+            <div><label for="gc-season">Season</label><input id="gc-season" required maxlength="80" placeholder="Fall 2026"></div>
+            <div><label for="gc-end">Season end date (for sorting)</label><input id="gc-end" type="date" required></div>
+            <div><label for="gc-file">Original GameChanger stats CSV</label><input id="gc-file" type="file" accept=".csv,text/csv"></div>
+          </div>
+          <p class="muted">In GameChanger, open the team’s Stats page, clear game filters, then Export Stats. Export requires team Staff access. Other authorized users can use a capture sent by their coach.</p>
+          <p><a href="downloads/NJHitz-GameChanger-Profile-Helper-v1.0.0.zip">Download Chrome / Edge capture helper</a> · <a href="tools/gc-profile-helper/README.txt" target="_blank" rel="noopener">Setup instructions</a></p>
+          <label><input id="gc-confirm" type="checkbox" required> I checked the player, team, and season. These are full-season totals with GameChanger’s game filters cleared.</label>
+          <p id="gc-capture-status" class="muted"></p>
+          <button type="submit">Import season into draft</button>
+        </form>
+        <div id="gc-seasons"></div>
+      </section>
       <section id="media-tools" aria-labelledby="video-upload-heading" hidden>
         <h3 id="video-upload-heading">Highlight clips &amp; videos</h3>
         <p class="muted">Upload MP4, MOV, or WebM clips up to 25 MB each (up to 50 clips). Uploads are private drafts until you submit for review. Approved clips appear on the v2 profile after Drive finishes processing.</p>
@@ -74,6 +95,7 @@
   <div id="footer"></div>
   <script src="scripts/profile-v2-config.js?v=20261029-portal"></script>
   <script src="scripts/template-loader.js"></script>
-  <script type="module" src="scripts/player-manage-v2.js?v=20261029-media25"></script>
+  <script src="scripts/gc-stats-v2.js?v=1"></script>
+  <script type="module" src="scripts/player-manage-v2.js?v=20261029-gc1"></script>
 </body>
 </html>

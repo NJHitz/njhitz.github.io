@@ -577,7 +577,7 @@
     .stat-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 24px}
     .stat-summary>div{padding:18px 12px;border:1px solid rgba(179,139,53,.25);border-radius:12px;background:linear-gradient(140deg,#251b31,#100d17)}
     .stat-summary strong{display:block;font-size:clamp(1.3rem,3vw,2.2rem);color:#e0bf6b;letter-spacing:-.04em;margin-bottom:8px}
-    #statistics-section h3{text-transform:uppercase;font-size:.8rem;letter-spacing:.15em;color:#d5c5df}
+    #offense-table td:first-child,#pitching-table td:first-child{min-width:180px;white-space:normal}#offense-table a,#pitching-table a{color:inherit;text-decoration:underline}#statistics-section h3{text-transform:uppercase;font-size:.8rem;letter-spacing:.15em;color:#d5c5df}
     #video-gallery>section{border:1px solid #46364f;border-radius:14px;overflow:hidden;padding:14px;background:#100c18}
     #video-gallery h4{margin:0 0 12px;font-size:1.1rem}#video-gallery iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:9px}
     @media(max-width:480px){.stat-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -650,11 +650,11 @@
                 <div class="section-eyebrow">Performance</div><h2>Season statistics</h2>
                 <p id="stats-empty">No season statistics have been published for this profile yet.</p>
                 <div id="offense-card" style="display:none;"><h3>Batting</h3>
-                  <div id="batting-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="offense-table"></table></div>
+                  <p id="batting-latest-label" class="note"></p><div id="batting-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="offense-table"></table></div>
                   <p class="note" id="stats-note"></p>
                 </div>
                 <div id="pitching-card" style="display:none;"><h3>Pitching</h3>
-                  <div id="pitching-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="pitching-table"></table></div>
+                  <p id="pitching-latest-label" class="note"></p><div id="pitching-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="pitching-table"></table></div>
                 </div>
               </section>
               <article class="card" id="card-bio">
@@ -900,6 +900,21 @@
           whip: a.whip != null ? a.whip : ''
         });
       }
+
+      // Approved multi-season snapshots. The legacy sheet season stays available.
+      function legacyDate(label){
+        const year=String(label || '').match(/20\d{2}/)?.[0] || '0000';
+        const month=/fall/i.test(label)?'11':/summer/i.test(label)?'08':/spring/i.test(label)?'05':/winter/i.test(label)?'02':'01';
+        return year+'-'+month+'-28';
+      }
+      const imported=Array.isArray(a.seasonStats)?a.seasonStats:[];
+      function mergeSeasons(legacy,kind){
+        const rows=imported.filter(row=>row && row[kind]).map(row=>({...row[kind],teamName:row.teamName,season:row.season,seasonEndDate:row.seasonEndDate,sourceUrl:row.sourceUrl}));
+        legacy.forEach(row=>{if(!rows.some(r=>r.teamName===a.teamName && r.season===row.season))rows.push({...row,teamName:a.teamName || '',seasonEndDate:legacyDate(row.season)});});
+        return rows.sort((x,y)=>String(y.seasonEndDate || '').localeCompare(String(x.seasonEndDate || '')) || String(x.teamName).localeCompare(String(y.teamName)));
+      }
+      statsOffense.splice(0,statsOffense.length,...mergeSeasons(statsOffense,'batting'));
+      statsPitching.splice(0,statsPitching.length,...mergeSeasons(statsPitching,'pitching'));
 
       // Additional links (text area – could be "Label - URL" per line or just URLs)
       const additionalLinks = [];
@@ -1183,88 +1198,32 @@
 
       function statSummary(id, values) {
         const target=document.getElementById(id);target.replaceChildren();
-        values.forEach(([label,value])=>{const tile=document.createElement('div'),number=document.createElement('strong'),caption=document.createElement('span');number.textContent=value || '—';caption.textContent=label;tile.append(number,caption);target.append(tile);});
+        values.forEach(([label,value])=>{const tile=document.createElement('div'),number=document.createElement('strong'),caption=document.createElement('span');number.textContent=value == null || value===''?'—':String(value);caption.textContent=label;tile.append(number,caption);target.append(tile);});
       }
       const batting=p.statsOffense[0] || {},pitching=p.statsPitching[0] || {};
       statSummary('batting-summary',[['AVG',batting.avg],['OBP',batting.obp],['SLG',batting.slg],['OPS',batting.ops]]);
       statSummary('pitching-summary',[['ERA',pitching.era],['IP',pitching.ip],['K',pitching.k],['WHIP',pitching.whip]]);
-      // Offensive stats
-      const offCard = document.getElementById('offense-card');
-      const offTable = document.getElementById('offense-table');
-      offTable.innerHTML = '';
-      if (p.statsOffense && p.statsOffense.length) {
-        offCard.style.display = '';
-        const rows = p.statsOffense;
-        offTable.innerHTML = `
-          <thead>
-            <tr>
-              <th>Season</th>
-              <th>AVG</th>
-              <th>OBP</th>
-              <th>SLG</th>
-              <th>OPS</th>
-              <th>HR</th>
-              <th>RBI</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows
-              .map(
-                r => `
-              <tr>
-                <td>${escapeHtml(r.season || '')}</td>
-                <td>${escapeHtml(r.avg || '')}</td>
-                <td>${escapeHtml(r.obp || '')}</td>
-                <td>${escapeHtml(r.slg || '')}</td>
-                <td>${escapeHtml(r.ops || '')}</td>
-                <td>${escapeHtml(r.hr != null ? r.hr : '')}</td>
-                <td>${escapeHtml(r.rbi != null ? r.rbi : '')}</td>
-              </tr>
-            `
-              )
-              .join('')}
-          </tbody>
-        `;
-        document.getElementById('stats-note').textContent =
-          p.statsNote || '';
+      function seasonLabel(row){return [row.teamName,row.season].filter(Boolean).join(' · ');}
+      setText('batting-latest-label',p.statsOffense.length?'Latest batting season: '+seasonLabel(batting):'');
+      setText('pitching-latest-label',p.statsPitching.length?'Latest pitching season: '+seasonLabel(pitching):'');
+      function renderSeasonTable(cardId,tableId,rows,columns){
+        document.getElementById(cardId).style.display=rows.length?'':'none';
+        const table=document.getElementById(tableId);table.replaceChildren();
+        const head=document.createElement('thead'),header=document.createElement('tr'),body=document.createElement('tbody');
+        ['Team / Season',...columns.map(c=>c[1])].forEach(label=>{const th=document.createElement('th');th.scope='col';th.textContent=label;header.append(th);});head.append(header);
+        rows.forEach(row=>{
+          const tr=document.createElement('tr'),label=document.createElement('td');
+          if(safeWebLink(row.sourceUrl)){
+            const link=document.createElement('a');link.href=row.sourceUrl;link.textContent=seasonLabel(row);link.target='_blank';link.rel='noopener noreferrer';label.append(link);
+          }else label.textContent=seasonLabel(row);
+          tr.append(label);
+          columns.forEach(([key])=>{const td=document.createElement('td');td.textContent=row[key] == null || row[key]===''?'—':String(row[key]);tr.append(td);});body.append(tr);
+        });
+        table.append(head,body);
       }
-
-      // Pitching stats
-      const pitchCard = document.getElementById('pitching-card');
-      const pitchTable = document.getElementById('pitching-table');
-      pitchTable.innerHTML = '';
-      if (p.statsPitching && p.statsPitching.length) {
-        pitchCard.style.display = '';
-        const rowsP = p.statsPitching;
-        pitchTable.innerHTML = `
-          <thead>
-            <tr>
-              <th>Season</th>
-              <th>ERA</th>
-              <th>IP</th>
-              <th>K</th>
-              <th>BB</th>
-              <th>WHIP</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsP
-              .map(
-                r => `
-              <tr>
-                <td>${escapeHtml(r.season || '')}</td>
-                <td>${escapeHtml(r.era || '')}</td>
-                <td>${escapeHtml(r.ip || '')}</td>
-                <td>${escapeHtml(r.k != null ? r.k : '')}</td>
-                <td>${escapeHtml(r.bb != null ? r.bb : '')}</td>
-                <td>${escapeHtml(r.whip || '')}</td>
-              </tr>
-            `
-              )
-              .join('')}
-          </tbody>
-        `;
-      }
+      renderSeasonTable('offense-card','offense-table',p.statsOffense,[['avg','AVG'],['obp','OBP'],['slg','SLG'],['ops','OPS'],['singles','1B'],['doubles','2B'],['triples','3B'],['hr','HR'],['rbi','RBI'],['runs','R']]);
+      renderSeasonTable('pitching-card','pitching-table',p.statsPitching,[['ip','IP'],['bf','BF'],['k','K'],['bb','BB'],['era','ERA'],['whip','WHIP']]);
+      setText('stats-note',p.statsNote || 'Season totals are published snapshots, not a live GameChanger feed.');
 
       // Links
       const linksCard = document.getElementById('links-card');

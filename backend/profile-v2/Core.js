@@ -1,3 +1,4 @@
+var GCStatsV2 = typeof require === 'function' ? require('../../scripts/gc-stats-v2.js') : GCStatsV2;
 /* Pure workflow rules. Loaded by Apps Script and by the Node security tests. */
 var ProfileV2Core = (function () {
   'use strict';
@@ -30,7 +31,7 @@ var ProfileV2Core = (function () {
   }
   function empty(playerId, slug, published) {
     return {playerId:playerId, slug:slug, version:0, publishedVersion:0,
-      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}, videos:{}};
+      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}, videos:{}, statsDrafts:{}, seasons:{}};
   }
   function apply(state, event) {
     var s = copy(state), p = event.payload, uid = event.actorUid;
@@ -42,12 +43,19 @@ var ProfileV2Core = (function () {
     }
     if (event.type === 'denyClaim') s.claims[p.uid].status = 'rejected';
     if (event.type === 'revoke') delete s.access[p.uid];
+    if (event.type === 'stageSeason') {
+      if(!s.statsDrafts[uid])s.statsDrafts[uid]={};
+      s.statsDrafts[uid][p.season.key]=Object.assign(copy(p.season),{base:p.base,capturedAt:event.at});
+    }
+    if (event.type === 'removeStagedSeason') delete s.statsDrafts[uid][p.key];
     if (event.type === 'save') s.drafts[uid] = {fields:p.fields, base:p.base, savedAt:event.at};
     if (event.type === 'addVideo') s.videos[p.id] = Object.assign(copy(p), {uid:uid,status:'draft',at:event.at});
     if (event.type === 'removeVideo') s.videos[p.id].status = 'removed';
     if (event.type === 'submit') {
       (p.videoIds || []).forEach(function(id){s.videos[id].status = 'pending';});
       s.submissions[p.id] = {id:p.id, uid:uid, fields:p.fields, base:p.base, videoIds:p.videoIds || [], status:'pending', at:event.at};
+      s.submissions[p.id].seasonStats = copy(p.seasonStats || []);
+      delete s.statsDrafts[uid];
       delete s.drafts[uid];
     }
     if (event.type === 'review') {
@@ -57,6 +65,7 @@ var ProfileV2Core = (function () {
       revision.reviewedBy = uid; revision.reviewedAt = event.at; revision.note = p.note;
       if (p.decision === 'approved') {
         Object.keys(revision.fields).forEach(function (key) { s.published[key] = revision.fields[key]; });
+        (revision.seasonStats || []).forEach(function(season){s.seasons[season.key]=Object.assign(copy(season),{approvedAt:event.at});});
         s.publishedVersion = event.version;
       }
     }
@@ -96,6 +105,16 @@ var ProfileV2Core = (function () {
       var video = state.videos[cmd.id];
       if ((!admin && (!access || video.uid !== actor.uid)) || ['draft','rejected'].indexOf(video.status) < 0) fail('Only an unsubmitted or rejected clip can be removed here.');
       payload = {id:cmd.id};
+    } else if (type === 'stageSeason') {
+      if (!access && !admin) fail('Profile access required.');
+      var season = GCStatsV2.validateSeason(cmd.season,state.published.playerName);
+      var keys = Object.keys(state.seasons).concat(Object.keys(state.statsDrafts[actor.uid] || {}));
+      if (keys.indexOf(season.key)<0 && keys.length>=20) fail('This profile has reached its 20 season limit.');
+      if(cmd.base !== state.publishedVersion)fail('Published profile changed. Reload and re-import this season.');
+      payload = {season:season,base:cmd.base};
+    } else if (type === 'removeStagedSeason') {
+      if ((!access && !admin) || !own(state.statsDrafts,actor.uid) || !own(state.statsDrafts[actor.uid],cmd.key)) fail('No imported draft season to remove.');
+      payload = {key:cmd.key};
     } else if (type === 'save') {
       if (!access && !admin) fail('Profile access required.');
       if (cmd.base !== state.publishedVersion) fail('Published profile changed. Reload and reapply your draft.');
@@ -106,7 +125,8 @@ var ProfileV2Core = (function () {
       var draft = state.drafts[actor.uid];
       if (draft.base !== state.publishedVersion) fail('Published profile changed. Reload and reapply your draft.');
       if (Object.keys(state.submissions).some(function (id) { return state.submissions[id].uid === actor.uid && state.submissions[id].status === 'pending'; })) fail('A submission is already awaiting review.');
-      payload = {id:eventId, fields:copy(draft.fields), base:draft.base, videoIds:Object.keys(state.videos).filter(function(id){var v=state.videos[id];return v.uid === actor.uid && (v.status === 'draft' || v.status === 'rejected');})};
+      if(Object.keys(state.statsDrafts[actor.uid] || {}).some(function(k){return state.statsDrafts[actor.uid][k].base !== state.publishedVersion;}))fail('Published profile changed. Remove and re-import the staged seasons before submitting.');
+      payload = {id:eventId, fields:copy(draft.fields), base:draft.base, seasonStats:Object.keys(state.statsDrafts[actor.uid] || {}).map(function(k){return copy(state.statsDrafts[actor.uid][k]);}), videoIds:Object.keys(state.videos).filter(function(id){var v=state.videos[id];return v.uid === actor.uid && (v.status === 'draft' || v.status === 'rejected');})};
     } else if (type === 'review') {
       if (!admin) fail('Staff access required.');
       if (!own(state.submissions, cmd.id) || state.submissions[cmd.id].status !== 'pending') fail('Submission is not pending.');
@@ -124,6 +144,8 @@ var ProfileV2Core = (function () {
       publishedVersion:s.publishedVersion, canEdit:!!allowed, isAdmin:actor.admin === true,
       claim:own(s.claims,actor.uid) ? s.claims[actor.uid] : null};
     if (allowed) {
+      result.statsDrafts = copy(s.statsDrafts[actor.uid] || {});
+      result.seasons = Object.keys(s.seasons).map(function(k){return copy(s.seasons[k]);});
       result.videos = Object.keys(s.videos).map(function(id){return copy(s.videos[id]);}).filter(function(v){return v.status !== 'removed' && (actor.admin || v.uid === actor.uid || v.status === 'approved');});
       result.published = copy(s.published);
       result.draft = own(s.drafts,actor.uid) ? copy(s.drafts[actor.uid]) : null;
@@ -135,6 +157,7 @@ var ProfileV2Core = (function () {
   }
   function publicProfile(s) {
     var p = copy(s.published);
+    p.seasonStats = Object.keys(s.seasons).map(function(k){return copy(s.seasons[k]);}).sort(function(a,b){return b.seasonEndDate.localeCompare(a.seasonEndDate) || a.key.localeCompare(b.key);});
     p.videos = Object.keys(s.videos).map(function(id){return s.videos[id];}).filter(function(v){return v.status === 'approved';}).map(function(v){return {driveFileId:v.driveFileId,title:v.title,category:v.category,caption:v.caption,sortOrder:v.sortOrder,status:'approved'};});
     // Private family information is never part of this model.
     if (p.contactDisplayOptIn !== 'Yes') { delete p.playerEmail; delete p.playerPhone; }
