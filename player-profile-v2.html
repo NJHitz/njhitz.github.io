@@ -582,7 +582,46 @@
     #video-gallery>section{border:1px solid #46364f;border-radius:14px;overflow:hidden;padding:14px;background:#100c18}
     #video-gallery h4{margin:0 0 12px;font-size:1.1rem}#video-gallery iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:9px}
     @media(max-width:480px){.stat-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media print{.academic-school,.academic-gpa strong,.academic-gpa span,.stat-summary strong,.stat-summary span{color:#111}.stat-summary>div{background:#fff;border:1px solid #aaa}}
+    /* Keep wide tables inside their cards rather than widening the page. */
+    .content,.recruit-content>* ,.recruit-main>*,.recruit-sidebar>*,#statistics-section>div { min-width:0; }
+    .profile-toolbar { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 20px; }
+    .profile-toolbar .back-link { min-height:44px; margin-bottom:0; }
+    .card { overflow-wrap:anywhere; }
+    .table-scroll { max-width:100%; overscroll-behavior-x:contain; }
+    .table-scroll:focus-visible { outline:2px solid #e6c773; outline-offset:3px; }
+    .table-scroll-hint { font-size:.78rem; color:#bcbcd6; margin:8px 0; }
+    @media screen and (max-width:1024px) {
+      .recruit-content { grid-template-columns:minmax(0,1fr); }
+      .recruit-sidebar { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .recruit-intro { padding-right:20px; }
+    }
+    @media screen and (max-width:760px) {
+      .recruit-hero { grid-template-columns:minmax(0,1fr); padding-top:16px; gap:20px; }
+      .recruit-intro { padding:0; }
+      .player-photo-wrap { height:clamp(240px,65vw,420px); }
+      .player-name { font-size:clamp(32px,7.5vw,48px); }
+      dl.recruit-facts { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 14px; }
+      .hero-actions { margin-top:22px; }
+      .recruit-button { min-height:44px; flex:1 1 150px; }
+      .profile-sections { gap:4px 18px; padding:10px 0; margin-bottom:20px; }
+      .profile-sections a { display:flex; align-items:center; min-height:44px; }
+      .stat-summary { gap:10px; }
+    }
+    @media screen and (max-width:540px) {
+      main { padding:16px 12px; }
+      .preview-strip { padding:8px 12px; letter-spacing:.08em; }
+      .recruit-sidebar { grid-template-columns:minmax(0,1fr); }
+      .card { padding:18px 14px; border-radius:12px; }
+      .stat-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .stat-summary>div { padding:16px 12px; }
+      .stat-summary strong { font-size:1.8rem; }
+      .academic-gpa { flex-wrap:wrap; gap:12px; }
+      .player-subtitle { font-size:.96rem; margin-top:12px; }
+      .player-team { font-size:.92rem; }
+      .player-badge { max-width:calc(100% - 24px); overflow-wrap:anywhere; }
+      #offense-table td:first-child,#pitching-table td:first-child { min-width:145px; }
+    }
+    @media print{.profile-toolbar,.table-scroll-hint{display:none}.academic-school,.academic-gpa strong,.academic-gpa span,.stat-summary strong,.stat-summary span{color:#111}.stat-summary>div{background:#fff;border:1px solid #aaa}}
   </style>
 </head>
 <body>
@@ -593,8 +632,10 @@
   <div class="page-container">
     <main>
       <div class="content">
-        <a href="teams" class="back-link" id="back-link"><span>←</span> Back to Teams</a>
-        <a class="back-link" id="manage-profile" href="player-manage-v2" style="float:right">Manage profile →</a>
+        <div class="profile-toolbar">
+          <a href="teams" class="back-link" id="back-link"><span>←</span> Back to Teams</a>
+          <a class="back-link" id="manage-profile" href="player-manage-v2">Manage profile →</a>
+        </div>
 
 
         <section id="player-hero" class="recruit-hero" style="display:none;">
@@ -651,11 +692,11 @@
                 <div class="section-eyebrow">Performance</div><h2>Season statistics</h2>
                 <p id="stats-empty">No season statistics have been published for this profile yet.</p>
                 <div id="offense-card" style="display:none;"><h3>Batting</h3>
-                  <p id="batting-latest-label" class="note"></p><div id="batting-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="offense-table"></table></div>
+                  <p id="batting-latest-label" class="note"></p><div id="batting-summary" class="stat-summary"></div><p class="table-scroll-hint">Scroll the table sideways to view all batting statistics.</p><div class="table-scroll" tabindex="0" role="region" aria-label="Batting season statistics"><table class="stats" id="offense-table"></table></div>
                   <p class="note" id="stats-note"></p>
                 </div>
                 <div id="pitching-card" style="display:none;"><h3>Pitching</h3>
-                  <p id="pitching-latest-label" class="note"></p><div id="pitching-summary" class="stat-summary"></div><div class="table-scroll"><table class="stats" id="pitching-table"></table></div>
+                  <p id="pitching-latest-label" class="note"></p><div id="pitching-summary" class="stat-summary"></div><p class="table-scroll-hint">Scroll the table sideways to view all pitching statistics.</p><div class="table-scroll" tabindex="0" role="region" aria-label="Pitching season statistics"><table class="stats" id="pitching-table"></table></div>
                 </div>
               </section>
               <article class="card" id="card-bio">
