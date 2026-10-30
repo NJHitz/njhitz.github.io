@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 const config = window.NJHitzProfileV2 || {};
 const slug = new URL(location.href).searchParams.get('player') || '';
 if (/^[a-z0-9][a-z0-9-]{0,119}$/.test(slug)) $('back-profile').href = 'player-profile-v2?player=' + encodeURIComponent(slug);
-let auth, sdk, model, busy = false, generation = 0, gcCapture = null;
+let auth, sdk, model, busy = false, generation = 0, gcCapture = null, videoOptimization = null;
 const fieldSpecs = [
   ['bio','Player bio',5000,true],['schoolName','School',160],['gradYear','Graduation year',4],
   ['gpa','Reported GPA',30],['intendedMajor','Intended major',250],['honors','Honors and activities',3500,true],
@@ -244,13 +244,35 @@ async function start() {
     if (!mimeType) throw new Error('Use an MP4, MOV, or WebM video.');
     const title=$('video-title').value.trim(),category=$('video-category').value,caption=$('video-caption').value;
     if(!title)throw new Error('Enter a clip title.');
-    const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('The video could not be read.'));reader.readAsDataURL(file);});
+    const identity=generation;
+    const controller=new AbortController();videoOptimization=controller;
+    const finishOptimization=beginActivity('Preparing video for web playback…');
+    const optimizationUI=$('video-optimization'),cancel=$('cancel-video-optimization');
+    optimizationUI.hidden=false;cancel.disabled=false;
+    let optimized;
+    try {
+      const {optimizeVideo}=await import('./video-optimizer.mjs?v=20261030-web2');
+      optimized=await optimizeVideo(file,{signal:controller.signal,onProgress:({phase,percent})=>{
+        $('video-optimization-status').textContent=phase;
+        const progress=$('video-optimization-progress');
+        if(Number.isFinite(percent)){progress.value=percent;}else progress.removeAttribute('value');
+        $('operation-label').textContent=phase+(Number.isFinite(percent)?' '+percent+'%':'');
+      }});
+      if(identity!==generation || !auth.currentUser)throw new Error('Account changed. Nothing was uploaded.');
+    } finally {
+      videoOptimization=null;optimizationUI.hidden=true;finishOptimization();
+    }
+    const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('The video could not be read.'));reader.readAsDataURL(optimized);});
+    if(identity!==generation)throw new Error('Account changed. Nothing was uploaded.');
     message('Saving profile draft and uploading private clip. Keep this page open.');
     await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
-    await request('uploadVideo',{version:model.version,title,category,caption,mimeType,base64});
+    if(identity!==generation)throw new Error('Account changed. Nothing was uploaded.');
+    await request('uploadVideo',{version:model.version,title,category,caption,mimeType:'video/mp4',base64});
     $('video-form').reset();message('Private clip uploaded. Choose Submit for review when your changes and clips are ready.');
   });});
+  $('cancel-video-optimization').addEventListener('click',()=>videoOptimization?.abort());
   sdk.onAuthStateChanged(auth,async user=>{
+    videoOptimization?.abort();
     gcCapture=null;$('gc-form').reset();$('gc-capture-status').textContent='';$('gc-identity').textContent='';$('gc-open').hidden=true;
     generation++;model=null;['claim-card','editor-card','staff-card'].forEach(id=>$(id).hidden=true);
     $('profile-fields').replaceChildren();$('submission-history').replaceChildren();$('staff-claims').replaceChildren();$('staff-reviews').replaceChildren();$('password').value='';

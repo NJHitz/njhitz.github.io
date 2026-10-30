@@ -85,7 +85,7 @@
       </section>
       <section id="media-tools" aria-labelledby="video-upload-heading" hidden>
         <h3 id="video-upload-heading">Highlight clips &amp; videos</h3>
-        <p class="muted">Upload MP4, MOV, or WebM clips up to 25 MB each (up to 50 clips). Uploads are private drafts until you submit for review. Approved clips appear on the v2 profile after Drive finishes processing.</p>
+        <p class="muted">Upload MP4, MOV, or WebM clips up to 25 MB each (up to 50 clips). Clips are automatically optimized for web playback on your device before upload. First use downloads about 32 MB of processor files. Conversion may take a few minutes; keep this page open. Uploads remain private until submitted and approved.</p>
         <form id="video-form">
           <label for="video-title">Clip title</label><input id="video-title" required maxlength="120" placeholder="Pitching highlights — Fall 2026">
           <label for="video-category">Category</label><select id="video-category"><option>Skills</option><option>Game footage</option><option>Highlights</option></select>
@@ -93,6 +93,12 @@
           <label for="video-file">Video file</label><input id="video-file" type="file" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm" required>
           <button type="submit" style="margin-top:16px">Upload private clip</button>
         </form>
+        <div id="video-optimization" hidden style="margin:16px 0">
+          <p id="video-optimization-status" role="status" aria-live="polite"></p>
+          <progress id="video-optimization-progress" max="100" aria-label="Video optimization progress" style="width:100%"></progress>
+          <button id="cancel-video-optimization" type="button">Cancel optimization</button>
+        </div>
+        <p class="muted">If your device cannot optimize a clip, try a shorter clip or a desktop browser. No file is uploaded when optimization fails.</p>
         <div id="video-list"></div>
       </section>
       <h3>Your submissions</h3><div id="submission-history"></div>
@@ -103,6 +109,6 @@
   <script src="scripts/profile-v2-config.js?v=20261029-portal"></script>
   <script src="scripts/template-loader.js"></script>
   <script src="scripts/gc-stats-v2.js?v=1"></script>
-  <script type="module" src="scripts/player-manage-v2.js?v=20261029-busy-removals1"></script>
+  <script type="module" src="scripts/player-manage-v2.js?v=20261030-web-video1"></script>
 </body>
 </html>
