@@ -81,6 +81,11 @@
     on(video,'playing',()=>{status.hidden=true;show();});
     on(video,'waiting',()=>{status.textContent='Buffering…';status.hidden=false;});
     on(video,'loadedmetadata',()=>{status.hidden=true;update();});
+    on(video,'loadeddata',()=>{
+      // Some originals expose a playable audio track but no decodable picture.
+      // Drive's preview can transcode those files. Never leave a black player.
+      if(video.videoWidth===0 && video.videoHeight===0 && onFallback){destroy();onFallback();}
+    });
     on(video,'canplay',()=>{status.hidden=true;});
     on(video,'timeupdate',update);on(video,'durationchange',update);on(video,'error',fail);
     on(mute,'click',()=>{video.muted=!video.muted;mute.textContent=video.muted?'Muted':'Sound on';mute.setAttribute('aria-label',video.muted?'Unmute':'Mute');show();});
