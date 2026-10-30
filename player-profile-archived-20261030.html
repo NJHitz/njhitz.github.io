@@ -527,7 +527,473 @@
                 </div>
                 <div>
                   <dt>Grad Year</dt>
-         …4456 tokens truncated…il : ''}` +
+                  <dd id="meta-grad"></dd>
+                </div>
+                <div>
+                  <dt>School</dt>
+                  <dd id="meta-school"></dd>
+                </div>
+                <div>
+                  <dt>GPA</dt>
+                  <dd id="meta-gpa"></dd>
+                </div>
+                <div>
+                  <dt>Height</dt>
+                  <dd id="meta-size"></dd>
+                </div>
+                <div>
+                  <dt>Bats / Throws</dt>
+                  <dd id="meta-batsthrows"></dd>
+                </div>
+              </dl>
+
+              <div class="pill-row" id="pos-pills"></div>
+            </article>
+
+            <article class="card" id="card-bio">
+            <h2>Player Bio</h2>
+            <p id="player-bio" class="muted">
+              Bio coming soon.
+            </p>
+          </article>
+
+          <article class="card" id="card-academics" style="margin-top:14px;">
+            <h2>Academics & Scholastic</h2>
+            <div class="info-grid" id="academics-grid">
+              <!-- Filled by JS -->
+            </div>
+            <p id="academics-notes" class="muted" style="margin-top:8px;"></p>
+          </article>
+          </div>
+
+          <div>
+            <article class="card">
+              <h3><span>Recruiting Contact</span></h3>
+              <ul class="list" id="contact-list"></ul>
+            </article>
+
+            <article class="card" id="measurables-card" style="display:none;">
+              <h3><span>Measurables</span></h3>
+              <div class="measurables-grid" id="measurables-grid"></div>
+            </article>
+
+            <article class="card" id="offense-card" style="display:none;">
+              <h3><span>Offensive Stats</span></h3>
+              <table class="stats" id="offense-table"></table>
+              <p class="note" id="stats-note"></p>
+            </article>
+
+            <article class="card" id="pitching-card" style="display:none;">
+              <h3><span>Pitching Stats</span></h3>
+              <table class="stats" id="pitching-table"></table>
+            </article>
+
+            <article class="card" id="links-card" style="display:none;">
+              <h3><span>Video & Links</span></h3>
+              <ul class="list links-list" id="links-list"></ul>
+            </article>
+
+            <article class="card" id="share-card" style="display:none;">
+              <h3><span>Share This Profile</span></h3>
+              <div class="card-center-content">
+                <div id="qr-share-widget">
+                  <div id="qr-share-title"></div>
+                  <div id="qr-share-code"></div>
+                  <p><span>Click to Share</span></p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <p id="player-error" class="error-message" style="display:none;">
+          Player not found. Please return to the <a href="teams.html">Teams</a> page and choose a player from the roster.
+        </p>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+    <!--
+    <footer>
+      © <span id="year"></span> NJ HITZ Softball — Player Showcase
+    </footer>
+    -->
+  </div>
+
+  <!-- Loading overlay -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading player information...</p>
+  </div>
+
+  <script>
+  (function () {
+    // 🔗 Apps Script Web App endpoint (same project as gas_NewRecruitIntake.js)
+    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx7Jph2cP0HLzL4JqaibX4ODn0iGB0ReVniYhlkQV4_Rb4Pu3IV1Ct6MUiBAnHtsp-D/exec';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.classList.remove('hidden'); // show immediately
+
+    function hideOverlay() {
+      loadingOverlay.classList.add('hidden');
+      setTimeout(() => (loadingOverlay.style.display = 'none'), 500);
+    }
+
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    function setText(id, text, fallback) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text || fallback || '';
+    }
+
+    function formatPhoneNumber(input) {
+      if (!input) return '';
+
+      // Remove all non-digit characters
+      const digits = input.toString().replace(/\D/g, '');
+
+      // If fewer than 10 digits, return as-is
+      if (digits.length < 10) return digits;
+
+      // If more than 10 digits (like +1 country codes), trim to last 10
+      const clean = digits.length > 10 ? digits.slice(-10) : digits;
+
+      // Format as ###-###-####
+      return `${clean.slice(0, 3)}-${clean.slice(3, 6)}-${clean.slice(6, 10)}`;
+    }
+
+
+    function createInfoRow(label, value) {
+      if (!value) return null;
+      const wrap = document.createElement('div');
+      const lab = document.createElement('div');
+      lab.className = 'info-label';
+      lab.textContent = label;
+      const val = document.createElement('div');
+      val.className = 'info-value';
+      val.textContent = value;
+      wrap.appendChild(lab);
+      wrap.appendChild(val);
+      return wrap;
+    }
+
+    // 🔎 Get slug from ?player=leah-taylor-31
+    const slug = getParam('player');
+    if (!slug) {
+      document.getElementById('player-error').style.display = 'block';
+      return;
+    }
+
+    // 🚀 Fetch player from GAS doGet instead of data/players.json
+    fetch(`${GAS_ENDPOINT}?slug=${encodeURIComponent(slug)}`, { cache: 'no-cache' })
+      .then(resp => {
+        if (!resp.ok) throw new Error('Network error ' + resp.status);
+        return resp.json();
+      })
+      .then(data => {
+        hideOverlay(); // hide when done
+
+        if (!data || !data.ok || !data.player) {
+          //throw new Error('Player not found');
+          //TEMPORARY - Instead of throwing an error, redirect the static example page
+          const urlParams = new URLSearchParams(window.location.search);
+          const slug = urlParams.get('player');
+          const teamName = urlParams.get('team');
+          const gradYear = urlParams.get('gradYear');
+          //window.location.href = 'player-example.html?player=' + slug;
+          const slugArray = slug.split("-");
+          const playerName = `${slugArray[0].charAt(0).toUpperCase() + slugArray[0].slice(1)} ${slugArray[1].charAt(0).toUpperCase() + slugArray[1].slice(1)}`;
+          const playerNumber = slugArray[2];
+          data = {
+            player: {
+              playerName: playerName,
+              jerseyNumber: playerNumber,
+              teamName: teamName,
+              gradYear: gradYear
+            }
+          }
+        } else {
+          document.getElementById("player-verified-badge").style.display = "";
+        }
+        const apiPlayer = data.player;
+        const player = transformApiPlayerToViewPlayer(apiPlayer);
+        renderPlayer(player);
+      })
+      .catch(err => {
+        hideOverlay(); // hide even on error
+        console.error('Error loading player from GAS', err);
+        document.getElementById('player-error').style.display = 'block';
+      });
+
+    /**
+     * Turn the GAS doGet player object (fields mapped from Sheet)
+     * into the view model that renderPlayer() expects.
+     *
+     * api = {
+     *   playerName, teamName, jerseyNumber, primaryPosition, positions,
+     *   batsThrows, gradYear, height, weight, cityState,
+     *   schoolName, gpa, honors, intendedMajor, academics,
+     *   playerEmail, playerPhone, guardian1Name, guardian1Email, guardian1Phone, ...
+     *   homeToFirst, firstToThird, overhandVelo, exitVelo,
+     *   offSeason, avg, obp, slg, ops, hr, rbi, statsNote,
+     *   pitSeason, era, ip, k, bb, whip,
+     *   highlightVideoUrl, recruitingProfileUrl, additionalLinks,
+     *   slug, etc.
+     * }
+     */
+    function transformApiPlayerToViewPlayer(api) {
+      const a = api || {};
+
+      // Name + jersey → slug
+      const name = (a.playerName || '').toString().trim();
+      const number = (a.jerseyNumber || '').toString().trim();
+
+      // Positions: include primary + others (comma or newline separated)
+      const positions = [];
+      if (a.primaryPosition) positions.push(String(a.primaryPosition).trim());
+      if (a.positions) {
+        String(a.positions)
+          .split(/[,\n]/)
+          .map(v => v.trim())
+          .filter(Boolean)
+          .forEach(pos => {
+            if (!positions.includes(pos)) positions.push(pos);
+          });
+      }
+
+      // Measurables
+      const measurables = [];
+      if (a.homeToFirst) {
+        measurables.push({ label: 'Home to 1st', value: a.homeToFirst });
+      }
+      if (a.firstToThird) {
+        measurables.push({ label: '1st to 3rd', value: a.firstToThird });
+      }
+      if (a.overhandVelo) {
+        measurables.push({ label: 'Overhand Velo', value: a.overhandVelo + ' mph' });
+      }
+      if (a.exitVelo) {
+        measurables.push({ label: 'Exit Velo', value: a.exitVelo + ' mph' });
+      }
+
+      // Offense stats – single season row
+      const statsOffense = [];
+      if (!!a.offSeason || !!a.avg || !!a.obp || !!a.slg || !!a.ops || !!a.hrl || !!a.rbi) {
+        statsOffense.push({
+          season: a.offSeason || '',
+          avg: a.avg != null ? a.avg : '',
+          obp: a.obp != null ? a.obp : '',
+          slg: a.slg != null ? a.slg : '',
+          ops: a.ops != null ? a.ops : '',
+          hr: a.hr != null ? a.hr : '',
+          rbi: a.rbi != null ? a.rbi : ''
+        });
+      }
+
+      // Pitching stats – single season row
+      const statsPitching = [];
+      if (!!a.pitSeason || !!a.era || !!a.ip || !!a.k || !!a.bb || !!a.whip ) {
+        statsPitching.push({
+          season: a.pitSeason || '',
+          era: a.era != null ? a.era : '',
+          ip: a.ip != null ? a.ip : '',
+          k: a.k != null ? a.k : '',
+          bb: a.bb != null ? a.bb : '',
+          whip: a.whip != null ? a.whip : ''
+        });
+      }
+
+      // Additional links (text area – could be "Label - URL" per line or just URLs)
+      const additionalLinks = [];
+      if (a.additionalLinks) {
+        String(a.additionalLinks)
+          .split('\n')
+          .map(line => line.trim())
+          .filter(Boolean)
+          .forEach(line => {
+            const parts = line.split(' - ');
+            if (parts.length === 2) {
+              additionalLinks.push({ label: parts[0].trim(), url: parts[1].trim() });
+            } else {
+              additionalLinks.push({ label: line, url: line });
+            }
+          });
+      }
+
+      // Contact logic: for now, always expose player email/phone if present
+      if(a.contactDisplayOptIn === 'No'){
+        a.playerEmail = '';
+        a.playerPhone = '';
+        a.guardian1Email = '';
+        a.guardian1Phone = '';
+        a.guardian2Email = '';
+        a.guardian2Phone = '';
+      }
+      var contactEmail = a.playerEmail || a.guardian1Email || '';
+      var contactPhone = a.playerPhone || a.guardian1Phone || '';
+
+      return {
+        slug: a.slug || (name && number
+          ? name.toLowerCase().replace(/\s+/g, '-') + '-' + number
+          : ''),
+
+        name: name,
+        number: number,
+        teamName: a.teamName || '',
+        positions: positions,
+        positionPrimary: a.primaryPosition || '',
+        batsThrows: a.batsThrows || '',
+        gradYear: a.gradYear || '',
+        schoolName: a.schoolName || '',
+        gpa: a.gpa != null ? a.gpa : '',
+        height: a.height || '',
+        weight: a.weight || '',
+        cityState: a.cityState || '',
+
+        bio: a.bio || '',
+        honors: a.honors || '',
+        intendedMajor: a.intendedMajor || '',
+        academics: a.academics || '',
+        family: a.family || '',
+
+        contactEmail: contactEmail,
+        contactPhone: contactPhone,
+        guardian1Name: a.guardian1Name || '',
+        guardian1Email: a.guardian1Email || '',
+        guardian1Phone: a.guardian1Phone || '',
+        guardian2Name: a.guardian2Name || '',
+        guardian2Email: a.guardian2Email || '',
+        guardian2Phone: a.guardian2Phone || '',
+
+        measurables: measurables,
+        statsOffense: statsOffense,
+        statsPitching: statsPitching,
+        statsNote: a.statsNote || a['Stats Notes (where stats are from, any clarifications)'] || '',
+
+        highlightVideoUrl: a.highlightVideoUrl || '',
+        recruitingProfileUrl: a.recruitingProfileUrl || '',
+        additionalLinks: additionalLinks,
+
+        photoMain: ( a.photoUrl ? `images/players/${a.photoUrl}` : '' )
+      };
+    }
+
+    // ⬇ renderPlayer(p) is identical to your existing implementation
+    function renderPlayer(p) {
+      document.getElementById('player-hero').style.display = '';
+      document.getElementById('player-layout').style.display = '';
+
+      const nameEl = document.getElementById('player-name');
+      const subtitleEl = document.getElementById('player-subtitle');
+
+      nameEl.textContent = p.name || 'Player Name';
+      const jersey = p.number ? '#' + p.number : '';
+      const team = p.teamName || '';
+      const pos = (Array.isArray(p.positions) ? p.positions.join(', ') : (p.positionPrimary || '')).trim();
+      subtitleEl.textContent = [jersey, team, pos].filter(Boolean).join(' • ');
+
+      /*
+      const photoEl = document.getElementById('player-photo');
+      if (p.photoMain) {
+        photoEl.src = p.photoMain;
+      } else {
+        photoEl.src = p.batsThrows && p.batsThrows.charAt(0) === 'R'
+          ? 'images/player-profile-placeholder-sq-v2.png'
+          : 'images/player-profile-placeholder-sq-v2-reverse.png';
+      }
+      */
+     const photoEl = document.getElementById('player-photo');
+
+     if (p.photoMain) {
+        photoEl.src = p.photoMain;
+     } else {
+        const slugPhoto = `images/players/${p.slug}.png`;
+        const testImg = new Image();
+
+        testImg.onload = () => {
+        photoEl.src = slugPhoto;
+     };
+
+     testImg.onerror = () => {
+        photoEl.src =
+          p.batsThrows && p.batsThrows.charAt(0) === 'R'
+            ? 'images/player-profile-placeholder-sq-v2.png'
+            : 'images/player-profile-placeholder-sq-v2-reverse.png';
+     };
+
+      testImg.src = slugPhoto;
+    }
+      photoEl.alt = p.name ? (p.name + ' — player photo') : 'Player photo';
+
+      const badgeEl = document.getElementById('player-badge');
+      badgeEl.textContent = jersey || 'NJ HITZ';
+
+      document.getElementById('meta-team').textContent = p.teamName || '';
+      document.getElementById('meta-grad').textContent = p.gradYear || '';
+      document.getElementById('meta-school').textContent = p.schoolName || '—';
+      document.getElementById('meta-gpa').textContent = p.gpa || '—';
+      document.getElementById('meta-size').textContent =
+        //(p.height && p.weight) ? `${p.height} / ${p.weight}` : (p.height || p.weight || '—');
+        (p.height) ? `${p.height}` : '—';
+      document.getElementById('meta-batsthrows').textContent = p.batsThrows || '—';
+
+      const posWrap = document.getElementById('pos-pills');
+      posWrap.innerHTML = '';
+      const positions = Array.isArray(p.positions) ? p.positions : (p.positionPrimary ? [p.positionPrimary] : []);
+      positions.forEach(pos => {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        span.textContent = pos;
+        posWrap.appendChild(span);
+      });
+
+      // Bio
+      setText('player-bio', p.bio || 'Player bio coming soon.');
+
+      // Academics
+      const acadGrid = document.getElementById('academics-grid');
+      acadGrid.innerHTML = '';
+      const acadRows = [
+        ['School', p.schoolName],
+        ['GPA', p.gpa],
+        ['Honors / Programs', p.honors],
+        ['Intended Major', p.intendedMajor]
+      ];
+      acadRows.forEach(([label, value]) => {
+        const rowEl = createInfoRow(label, value);
+        if (rowEl) acadGrid.appendChild(rowEl);
+      });
+      setText('academics-notes', p.academics || '');
+
+      // Recruiting contact
+      const contactList = document.getElementById('contact-list');
+      contactList.innerHTML = '';
+      if (p.contactEmail) {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>Email:</strong> <a href="mailto:${p.contactEmail}">${p.contactEmail}</a>`;
+        contactList.appendChild(li);
+      }
+      if (p.contactPhone) {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>Phone:</strong> <a href="tel:${p.contactPhone}">${formatPhoneNumber(p.contactPhone)}</a>`;
+        contactList.appendChild(li);
+      }
+      if (p.guardian1Name || p.guardian1Email || p.guardian1Phone) {
+        const li = document.createElement('li');
+        li.innerHTML =
+          `<strong>Guardian:</strong> ${p.guardian1Name || ''}` +
+          `${p.guardian1Email ? ' • ' + p.guardian1Email : ''}` +
+          `${p.guardian1Phone ? ' • ' + formatPhoneNumber(p.guardian1Phone) : ''}`;
+        contactList.appendChild(li);
+      }
+      if (p.guardian2Name || p.guardian2Email || p.guardian2Phone) {
+        const li = document.createElement('li');
+        li.innerHTML =
+          `<strong>Guardian:</strong> ${p.guardian2Name || ''}` +
+          `${p.guardian2Email ? ' • ' + p.guardian2Email : ''}` +
           `${p.guardian2Phone ? ' • ' + formatPhoneNumber(p.guardian2Phone) : ''}`;
         contactList.appendChild(li);
       }
@@ -688,4 +1154,3 @@
 <script>if(localExtTag){ document.getElementById("back-link").href = "teams.html"; }</script>
 </body>
 </html>
-
