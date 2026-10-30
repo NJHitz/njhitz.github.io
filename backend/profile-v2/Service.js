@@ -77,7 +77,7 @@ function doGet(e) {
 function doPost(e) {
   var lock;
   try {
-    if (!e.postData || e.postData.contents.length > 28500000) throw new Error('Invalid request size.');
+    if (!e.postData || e.postData.contents.length > 35100000) throw new Error('Invalid request size.');
     var req = JSON.parse(e.postData.contents), c = configV2_();
     if (req.action !== 'uploadVideo' && e.postData.contents.length > 45000) throw new Error('Invalid request size.');
     if (req.action === 'addVideo') throw new Error('Use the video upload form.');
@@ -156,12 +156,12 @@ function setupMediaAndNotificationsV2() {
     ScriptApp.newTrigger('retryProfileNotificationsV2').timeBased().everyMinutes(10).create();
 }
 function createVideoV2_(req,slug) {
-  var max = 20*1024*1024, encoded = req.base64;
-  if (typeof encoded !== 'string' || !encoded.length || encoded.length > Math.ceil(max/3)*4 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) throw new Error('Choose a video up to 20 MB.');
+  var max = 25*1024*1024, encoded = req.base64;
+  if (typeof encoded !== 'string' || !encoded.length || encoded.length > Math.ceil(max/3)*4 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) throw new Error('Choose a video up to 25 MB.');
   if (['video/mp4','video/quicktime','video/webm'].indexOf(req.mimeType) < 0) throw new Error('Use an MP4, MOV, or WebM video.');
   if (!String(req.title || '').trim() || String(req.title).length > 120) throw new Error('Enter a clip title of up to 120 characters.');
   var bytes = Utilities.base64Decode(encoded);
-  if (!bytes.length || bytes.length > max) throw new Error('Choose a video up to 20 MB.');
+  if (!bytes.length || bytes.length > max) throw new Error('Choose a video up to 25 MB.');
   var signature = bytes.slice(4,8).map(function(b){return String.fromCharCode(b & 255);}).join('');
   var webm = [26,69,223,163].every(function(b,i){return (bytes[i] & 255) === b;});
   if (req.mimeType === 'video/webm' ? !webm : signature !== 'ftyp') throw new Error('The file does not appear to be a supported video.');

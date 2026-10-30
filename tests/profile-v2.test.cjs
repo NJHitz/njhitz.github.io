@@ -161,7 +161,7 @@ test('upload adapter rejects disguised and oversized files before creating Drive
     DriveApp:{getFolderById:()=>({createFile:()=>{created++;return {};}})}};
   vm.createContext(context);vm.runInContext(fs.readFileSync(require.resolve('../backend/profile-v2/Service.js'),'utf8'),context);
   assert.throws(()=>context.createVideoV2_({base64:Buffer.from('not video').toString('base64'),mimeType:'video/mp4',title:'Clip'},'player'),/does not appear/);
-  assert.throws(()=>context.createVideoV2_({base64:'a'.repeat(28000000),mimeType:'video/mp4',title:'Clip'},'player'),/20 MB/);
+  assert.throws(()=>context.createVideoV2_({base64:'a'.repeat(35000000),mimeType:'video/mp4',title:'Clip'},'player'),/25 MB/);
   assert.equal(created,0);
   context.createVideoV2_({base64:Buffer.from([0,0,0,16,102,116,121,112,109,112,52,50]).toString('base64'),mimeType:'video/mp4',title:'Clip'},'player');assert.equal(created,1);
 });

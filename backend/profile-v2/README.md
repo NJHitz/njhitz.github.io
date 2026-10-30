@@ -83,7 +83,7 @@ Mail failures do not undo a submission; the event log is the retry outbox.
 MAIL_SENT_<revision> markers prevent normal duplicate deliveries. An interruption
 between sending and marking may cause a duplicate notification.
 
-Uploads: MP4/MOV/WebM, up to 20 MiB per clip, 50 active clips per player.
+Uploads: MP4/MOV/WebM, up to 25 MiB per clip, 50 active clips per player.
 The adapter checks authorization, version, size, MIME and container signature.
 Files are created privately. A clip belongs to its uploader, appears only in
 that user's/staff's private view, and enters moderation with their next profile

@@ -153,7 +153,7 @@ async function start() {
   }));
   $('video-form').addEventListener('submit',event=>{event.preventDefault();run(async()=>{
     const file=$('video-file').files[0];
-    if (!file || file.size > 20*1024*1024 || !file.size) throw new Error('Choose a video up to 20 MB.');
+    if (!file || file.size > 25*1024*1024 || !file.size) throw new Error('Choose a video up to 25 MB.');
     const extension=file.name.split('.').pop().toLowerCase();
     const mimeType={mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm'}[extension];
     if (!mimeType) throw new Error('Use an MP4, MOV, or WebM video.');
