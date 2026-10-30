@@ -62,3 +62,44 @@ test('Apps Script bundle loads the shared validator before workflow rules',()=>{
  const event=context.ProfileV2Core.command(initial,staff,{action:'stageSeason',version:0,base:0,season:snap()},'now','id');
  assert.equal(event.payload.season.pitching.k,'19');
 });
+
+function legacyState(){let s=state();s.published={...s.published,teamName:'Example Club',offSeason:'Spring 2025',avg:'0.300',obp:'0.400',hr:'2',pitSeason:'Spring 2025',ip:'10.2',k:'17',era:'2.100'};return s;}
+function submitAndReview(s,decision='approved'){
+ s=act(s,parent,'save',{base:s.publishedVersion,fields:{bio:'Original'}});s=act(s,parent,'submit');
+ const id=Object.keys(s.submissions).find(k=>s.submissions[k].status==='pending');return act(s,staff,'review',{id,decision,note:decision==='rejected'?'Keep this season.':''});
+}
+test('legacy removals stay private until approval and suppress only the selected legacy group',()=>{
+ let s=legacyState();assert.equal(core.view(s,parent).legacyStats.length,2);
+ s=act(s,parent,'stageStatRemoval',{base:s.publishedVersion,key:'legacy:batting'});
+ assert.equal(core.publicProfile(s).avg,'0.300');assert.equal(core.view(s,{uid:'stranger'}).statRemovals,undefined);
+ s=submitAndReview(s);const p=core.publicProfile(s);assert.equal(p.avg,'');assert.equal(p.offSeason,'');assert.equal(p.ip,'10.2');
+ assert.equal(s.published.avg,'0.300');assert.equal(core.view(s,parent).legacyStats.length,1);
+});
+test('rejecting or undoing a removal preserves published statistics',()=>{
+ let s=legacyState();s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:pitching'});s=act(s,parent,'cancelStatRemoval',{key:'legacy:pitching'});
+ assert.equal(Object.keys(core.view(s,parent).statRemovals).length,0);assert.equal(core.publicProfile(s).ip,'10.2');
+ s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:pitching'});s=submitAndReview(s,'rejected');assert.equal(core.publicProfile(s).ip,'10.2');
+});
+test('removal requires ownership and targets only existing published rows',()=>{
+ let s=legacyState();assert.throws(()=>act(s,{uid:'stranger',email:'other@example.test',verified:true},'stageStatRemoval',{base:0,key:'legacy:batting'}),/access required/);
+ assert.throws(()=>act(s,parent,'stageStatRemoval',{base:0,key:'unknown'}),/not found/);
+ s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:batting'});
+ assert.throws(()=>act(s,staff,'cancelStatRemoval',{key:'legacy:batting'}),/No removal request/);
+});
+test('imported-season removal preserves other seasons and can be restored by a reviewed re-import',()=>{
+ let s=state();s=act(s,parent,'stageSeason',{base:0,season:snap()});s=submitAndReview(s);
+ const key=snap().key;s=act(s,parent,'stageStatRemoval',{base:s.publishedVersion,key});assert.equal(core.publicProfile(s).seasonStats.length,1);
+ assert.throws(()=>act(s,parent,'stageSeason',{base:s.publishedVersion,season:snap()}),/Cancel the removal/);
+ s=submitAndReview(s);assert.equal(core.publicProfile(s).seasonStats.length,0);assert.equal(s.seasons[key].removed,true);
+ s=act(s,parent,'stageSeason',{base:s.publishedVersion,season:snap()});s=submitAndReview(s);assert.equal(core.publicProfile(s).seasonStats.length,1);
+});
+test('a removal frozen in one submission does not include later staged removals',()=>{
+ let s=legacyState();s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:batting'});s=act(s,parent,'save',{base:0,fields:{bio:'Original'}});s=act(s,parent,'submit');
+ const id=Object.keys(s.submissions)[0];s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:pitching'});s=act(s,staff,'review',{id,decision:'approved'});
+ assert.equal(core.publicProfile(s).avg,'');assert.equal(core.publicProfile(s).ip,'10.2');
+ s=act(s,parent,'save',{base:s.publishedVersion,fields:{bio:'Original'}});assert.throws(()=>act(s,parent,'submit'),/Cancel and reselect/);
+});
+test('legacy duplicate cleanup and a new season can be approved together',()=>{
+ let s=legacyState();s=act(s,parent,'stageSeason',{base:0,season:snap()});s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:batting'});s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:pitching'});s=submitAndReview(s);
+ const p=core.publicProfile(s);assert.equal(p.avg,'');assert.equal(p.ip,'');assert.equal(p.seasonStats.length,1);assert.equal(p.seasonStats[0].batting.avg,'0.350');assert.equal(p.seasonStats[0].pitching.ip,'12.2');
+});

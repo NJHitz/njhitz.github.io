@@ -31,7 +31,22 @@ var ProfileV2Core = (function () {
   }
   function empty(playerId, slug, published) {
     return {playerId:playerId, slug:slug, version:0, publishedVersion:0,
-      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}, videos:{}, statsDrafts:{}, seasons:{}};
+      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}, videos:{}, statsDrafts:{}, seasons:{}, statRemovals:{}, hiddenLegacy:{}};
+  }
+  function legacyStats(s) {
+    var p=s.published, rows=[];
+    var groups=[['batting','offSeason',['avg','obp','slg','ops','hr','rbi']],['pitching','pitSeason',['ip','k','bb','era','whip']]];
+    groups.forEach(function(g){
+      if(s.hiddenLegacy[g[0]] || ![g[1]].concat(g[2]).some(function(k){return p[k]!=null && p[k]!=='';}))return;
+      var row={key:'legacy:'+g[0],kind:g[0],teamName:p.teamName || '',season:p[g[1]] || 'Legacy season'};
+      row[g[0]]={};g[2].forEach(function(k){row[g[0]][k]=p[k] == null?'':p[k];});
+      row.label=[row.teamName,row.season,'Legacy '+g[0]].filter(Boolean).join(' · ');rows.push(row);
+    });return rows;
+  }
+  function removalTarget(s,key) {
+    var legacy=legacyStats(s).find(function(row){return row.key===key;});if(legacy)return legacy;
+    if(own(s.seasons,key) && !s.seasons[key].removed){var season=s.seasons[key];return {key:key,label:season.teamName+' · '+season.season,sourceUrl:season.sourceUrl,batting:copy(season.batting),pitching:copy(season.pitching)};}
+    fail('Published statistics row not found. Reload the profile.');
   }
   function apply(state, event) {
     var s = copy(state), p = event.payload, uid = event.actorUid;
@@ -47,6 +62,11 @@ var ProfileV2Core = (function () {
       if(!s.statsDrafts[uid])s.statsDrafts[uid]={};
       s.statsDrafts[uid][p.season.key]=Object.assign(copy(p.season),{base:p.base,capturedAt:event.at});
     }
+    if(event.type === 'stageStatRemoval') {
+      if(!s.statRemovals[uid])s.statRemovals[uid]={};
+      s.statRemovals[uid][p.target.key]=Object.assign(copy(p.target),{base:p.base});
+    }
+    if(event.type === 'cancelStatRemoval')delete s.statRemovals[uid][p.key];
     if (event.type === 'removeStagedSeason') delete s.statsDrafts[uid][p.key];
     if (event.type === 'save') s.drafts[uid] = {fields:p.fields, base:p.base, savedAt:event.at};
     if (event.type === 'addVideo') s.videos[p.id] = Object.assign(copy(p), {uid:uid,status:'draft',at:event.at});
@@ -55,6 +75,8 @@ var ProfileV2Core = (function () {
       (p.videoIds || []).forEach(function(id){s.videos[id].status = 'pending';});
       s.submissions[p.id] = {id:p.id, uid:uid, fields:p.fields, base:p.base, videoIds:p.videoIds || [], status:'pending', at:event.at};
       s.submissions[p.id].seasonStats = copy(p.seasonStats || []);
+      s.submissions[p.id].statRemovals=copy(p.statRemovals || []);
+      delete s.statRemovals[uid];
       delete s.statsDrafts[uid];
       delete s.drafts[uid];
     }
@@ -66,6 +88,11 @@ var ProfileV2Core = (function () {
       if (p.decision === 'approved') {
         Object.keys(revision.fields).forEach(function (key) { s.published[key] = revision.fields[key]; });
         (revision.seasonStats || []).forEach(function(season){s.seasons[season.key]=Object.assign(copy(season),{approvedAt:event.at});});
+        (revision.statRemovals || []).forEach(function(target){
+          if(target.key==='legacy:batting')s.hiddenLegacy.batting=true;
+          else if(target.key==='legacy:pitching')s.hiddenLegacy.pitching=true;
+          else if(own(s.seasons,target.key)){s.seasons[target.key].removed=true;s.seasons[target.key].removedAt=event.at;}
+        });
         s.publishedVersion = event.version;
       }
     }
@@ -108,13 +135,22 @@ var ProfileV2Core = (function () {
     } else if (type === 'stageSeason') {
       if (!access && !admin) fail('Profile access required.');
       var season = GCStatsV2.validateSeason(cmd.season,state.published.playerName);
-      var keys = Object.keys(state.seasons).concat(Object.keys(state.statsDrafts[actor.uid] || {}));
+      if(own(state.statRemovals[actor.uid] || {},season.key))fail('Cancel the removal request before importing this season.');
+      var keys = Object.keys(state.seasons).filter(function(k){return !state.seasons[k].removed;}).concat(Object.keys(state.statsDrafts[actor.uid] || {}));
       if (keys.indexOf(season.key)<0 && keys.length>=20) fail('This profile has reached its 20 season limit.');
       if(cmd.base !== state.publishedVersion)fail('Published profile changed. Reload and re-import this season.');
       payload = {season:season,base:cmd.base};
     } else if (type === 'removeStagedSeason') {
       if ((!access && !admin) || !own(state.statsDrafts,actor.uid) || !own(state.statsDrafts[actor.uid],cmd.key)) fail('No imported draft season to remove.');
       payload = {key:cmd.key};
+    } else if(type === 'stageStatRemoval') {
+      if(!access && !admin)fail('Profile access required.');
+      if(cmd.base!==state.publishedVersion)fail('Published profile changed. Reload before requesting removal.');
+      if(own(state.statsDrafts[actor.uid] || {},cmd.key))fail('Remove the draft import before requesting removal of this published season.');
+      payload={target:removalTarget(state,cmd.key),base:cmd.base};
+    } else if(type === 'cancelStatRemoval') {
+      if((!access && !admin) || !own(state.statRemovals[actor.uid] || {},cmd.key))fail('No removal request to cancel.');
+      payload={key:cmd.key};
     } else if (type === 'save') {
       if (!access && !admin) fail('Profile access required.');
       if (cmd.base !== state.publishedVersion) fail('Published profile changed. Reload and reapply your draft.');
@@ -126,7 +162,8 @@ var ProfileV2Core = (function () {
       if (draft.base !== state.publishedVersion) fail('Published profile changed. Reload and reapply your draft.');
       if (Object.keys(state.submissions).some(function (id) { return state.submissions[id].uid === actor.uid && state.submissions[id].status === 'pending'; })) fail('A submission is already awaiting review.');
       if(Object.keys(state.statsDrafts[actor.uid] || {}).some(function(k){return state.statsDrafts[actor.uid][k].base !== state.publishedVersion;}))fail('Published profile changed. Remove and re-import the staged seasons before submitting.');
-      payload = {id:eventId, fields:copy(draft.fields), base:draft.base, seasonStats:Object.keys(state.statsDrafts[actor.uid] || {}).map(function(k){return copy(state.statsDrafts[actor.uid][k]);}), videoIds:Object.keys(state.videos).filter(function(id){var v=state.videos[id];return v.uid === actor.uid && (v.status === 'draft' || v.status === 'rejected');})};
+      if(Object.keys(state.statRemovals[actor.uid] || {}).some(function(k){return state.statRemovals[actor.uid][k].base !== state.publishedVersion;}))fail('Published profile changed. Cancel and reselect the statistics removals before submitting.');
+      payload = {id:eventId, statRemovals:Object.keys(state.statRemovals[actor.uid] || {}).map(function(k){return copy(state.statRemovals[actor.uid][k]);}), fields:copy(draft.fields), base:draft.base, seasonStats:Object.keys(state.statsDrafts[actor.uid] || {}).map(function(k){return copy(state.statsDrafts[actor.uid][k]);}), videoIds:Object.keys(state.videos).filter(function(id){var v=state.videos[id];return v.uid === actor.uid && (v.status === 'draft' || v.status === 'rejected');})};
     } else if (type === 'review') {
       if (!admin) fail('Staff access required.');
       if (!own(state.submissions, cmd.id) || state.submissions[cmd.id].status !== 'pending') fail('Submission is not pending.');
@@ -144,8 +181,10 @@ var ProfileV2Core = (function () {
       publishedVersion:s.publishedVersion, canEdit:!!allowed, isAdmin:actor.admin === true,
       claim:own(s.claims,actor.uid) ? s.claims[actor.uid] : null};
     if (allowed) {
+      result.statRemovals=copy(s.statRemovals[actor.uid] || {});
+      result.legacyStats=legacyStats(s);
       result.statsDrafts = copy(s.statsDrafts[actor.uid] || {});
-      result.seasons = Object.keys(s.seasons).map(function(k){return copy(s.seasons[k]);});
+      result.seasons = Object.keys(s.seasons).filter(function(k){return !s.seasons[k].removed;}).map(function(k){return copy(s.seasons[k]);});
       result.videos = Object.keys(s.videos).map(function(id){return copy(s.videos[id]);}).filter(function(v){return v.status !== 'removed' && (actor.admin || v.uid === actor.uid || v.status === 'approved');});
       result.published = copy(s.published);
       result.draft = own(s.drafts,actor.uid) ? copy(s.drafts[actor.uid]) : null;
@@ -157,7 +196,9 @@ var ProfileV2Core = (function () {
   }
   function publicProfile(s) {
     var p = copy(s.published);
-    p.seasonStats = Object.keys(s.seasons).map(function(k){return copy(s.seasons[k]);}).sort(function(a,b){return b.seasonEndDate.localeCompare(a.seasonEndDate) || a.key.localeCompare(b.key);});
+    if(s.hiddenLegacy.batting)['offSeason','avg','obp','slg','ops','hr','rbi'].forEach(function(k){p[k]='';});
+    if(s.hiddenLegacy.pitching)['pitSeason','ip','k','bb','era','whip'].forEach(function(k){p[k]='';});
+    p.seasonStats = Object.keys(s.seasons).filter(function(k){return !s.seasons[k].removed;}).map(function(k){return copy(s.seasons[k]);}).sort(function(a,b){return b.seasonEndDate.localeCompare(a.seasonEndDate) || a.key.localeCompare(b.key);});
     p.videos = Object.keys(s.videos).map(function(id){return s.videos[id];}).filter(function(v){return v.status === 'approved';}).map(function(v){return {driveFileId:v.driveFileId,title:v.title,category:v.category,caption:v.caption,sortOrder:v.sortOrder,status:'approved'};});
     // Private family information is never part of this model.
     if (p.contactDisplayOptIn !== 'Yes') { delete p.playerEmail; delete p.playerPhone; }

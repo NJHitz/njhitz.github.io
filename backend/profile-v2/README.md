@@ -132,3 +132,23 @@ no background GC synchronization. Legacy sheet seasons remain a display fallback
 and the existing v1 profile is unchanged. The public tables show team/season and
 all requested columns; cards show the newest available batting/pitching season,
 using explicit end dates for imports and year/season ordering for legacy rows.
+
+
+## Activity indicator and statistic removals
+
+The portal shows a fixed, accessible progress indicator for all managed actions,
+including initial profile loads. Nested requests keep it visible for the full
+operation and show the current phase. Controls remain disabled until all phases
+finish; error paths clear the indicator and re-enable the applicable controls.
+
+Published GC seasons and legacy batting/pitching rows can be marked for removal.
+`stageStatRemoval` records an owner/staff-authorized, versioned target from the
+server's current published state; the client cannot invent the target snapshot.
+`cancelStatRemoval` undoes the actor's unsubmitted request. Submit freezes the
+removals with the rest of the revision and emails their labels to moderators.
+Only an approved, current revision applies removals. Imported seasons receive
+an audited tombstone; legacy sections are suppressed in the v2 public projection.
+The source Sheet and original v1 site are untouched. Re-importing a removed GC
+season can restore it through review. The portal exposes legacy rows separately
+as Legacy batting / Legacy pitching, so one can be removed without suppressing
+the other. Stale removal requests remain visible so the user can cancel them.

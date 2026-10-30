@@ -18,13 +18,28 @@ const fieldSpecs = [
 function text(tag, value, cls) { const el = document.createElement(tag); el.textContent = value; if (cls) el.className = cls; return el; }
 function message(value, error = false) { $('message').textContent = value; $('message').className = error ? 'error' : 'success'; }
 function controls(disabled) { document.querySelectorAll('main button').forEach(button => {button.disabled = disabled || button.dataset.disabled === 'true';}); }
+const activities=[];
+function beginActivity(label) {
+  const activity={label};activities.push(activity);
+  function update(){
+    const indicator=$('operation-progress');
+    if(indicator){indicator.hidden=!activities.length;$('operation-label').textContent=activities.at(-1)?.label || '';}
+    document.querySelector('main')?.setAttribute('aria-busy',String(activities.length>0));
+    controls(busy || activities.length>0);
+  }
+  update();let finished=false;
+  return ()=>{if(finished)return;finished=true;activities.splice(activities.indexOf(activity),1);update();};
+}
 async function run(work) {
-  if (busy) return;
-  busy = true; controls(true);
+  if (busy || activities.length) return;
+  busy = true; const finish=beginActivity('Working… Please wait.');
   try { await work(); } catch (error) { message(error.message || 'Please try again.', true); }
-  finally { busy = false; controls(false); }
+  finally { busy = false; finish(); controls(activities.length>0); }
 }
 async function request(action, data = {}) {
+  const labels={read:'Loading profile…',save:'Saving draft…',submit:'Submitting changes for staff review…',uploadVideo:'Uploading video… Keep this page open.',stageSeason:'Importing season statistics…',removeStagedSeason:'Removing draft season…',stageStatRemoval:'Saving statistics removal request…',cancelStatRemoval:'Undoing removal request…',review:'Applying staff review…',claim:'Requesting profile access…',grant:'Granting profile access…',denyClaim:'Updating access request…',revoke:'Revoking profile access…',removeVideo:'Removing clip…'};
+  const finish=beginActivity(labels[action] || 'Working… Please wait.');
+  try {
   const user = auth.currentUser;
   if (!user || !user.emailVerified) throw new Error('Sign in with a verified account first.');
   const identity = generation;
@@ -37,7 +52,9 @@ async function request(action, data = {}) {
   if (identity !== generation) throw new Error('Account changed. Reload the profile.');
   model = result.profile;
   render();
+  controls(busy || activities.length>0);
   return result;
+  } finally { finish(); }
 }
 function fields() {
   const out = {};
@@ -80,8 +97,15 @@ function render() {
     [...staged.map(s=>({...s,stageLabel:'Draft import'})),...(model.seasons || []).map(s=>({...s,stageLabel:'Published'}))].forEach(season=>{
       const row=text('div','','review');row.append(text('h4',season.teamName+' · '+season.season),text('p',season.playerName+' · '+season.stageLabel+' · Season ends '+season.seasonEndDate));
       row.append(seasonPreview(season));
+      if(season.stageLabel==='Published' && model.statRemovals)row.append(statRemovalControl(season.key));
       if(season.stageLabel==='Draft import')row.append(actionButton('Remove draft season',()=>request('removeStagedSeason',{version:model.version,key:season.key})));
       $('gc-seasons').append(row);
+    });
+    (model.legacyStats || []).forEach(legacy=>{
+      const row=text('div','','review');row.append(text('h4',legacy.label),seasonPreview(legacy),statRemovalControl(legacy.key));$('gc-seasons').append(row);
+    });
+    Object.values(model.statRemovals || {}).filter(target=>!(model.seasons || []).some(s=>s.key===target.key) && !(model.legacyStats || []).some(s=>s.key===target.key)).forEach(target=>{
+      const row=text('div','','review');row.append(text('h4',target.label),text('p','This published row changed or was already removed. Undo this older request before submitting.'),statRemovalControl(target.key));$('gc-seasons').append(row);
     });
     $('media-tools').hidden = !Array.isArray(model.videos);
     renderFields();
@@ -119,6 +143,9 @@ function render() {
       item.append(text('h4',fieldSpecs.find(f=>f[0] === key)?.[1] || key));
       const diff = text('div','','diff');diff.append(text('p','Published\n' + (model.published[key] || '(empty)')),text('p','Proposed\n' + (revision.fields[key] || '(empty)')));item.append(diff);
     });
+    (revision.statRemovals || []).forEach(target=>{
+      item.append(text('h4','Remove statistics: '+target.label),seasonPreview(target),text('p','Approval will remove this row from the v2 profile.'));
+    });
     (revision.seasonStats || []).forEach(season=>{
       item.append(text('h4','GameChanger: '+season.teamName+' · '+season.season),text('p','Source player: '+season.playerName+' #'+season.jerseyNumber+' · Season end: '+season.seasonEndDate));
       const source=text('a','Check player on GameChanger ↗');source.href=season.sourceUrl;source.target='_blank';source.rel='noopener noreferrer';item.append(source,seasonPreview(season));
@@ -136,6 +163,17 @@ function render() {
     approve.dataset.disabled = String(approve.disabled);
     item.append(approve,actionButton('Request corrections',()=>request('review',{version:model.version,id:revision.id,decision:'rejected',note:note.value})));$('staff-reviews').append(item);
   });
+}
+function statRemovalControl(key){
+  const marked=!!model.statRemovals?.[key];
+  const wrap=document.createElement('div');
+  if(marked)wrap.append(text('p','Marked for removal · Submit for review to send this request.','state'));
+  wrap.append(actionButton(marked?'Undo removal request':'Mark for removal',async()=>{
+    // Preserve any text edits before re-rendering the profile response.
+    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    await request(marked?'cancelStatRemoval':'stageStatRemoval',{version:model.version,base:model.publishedVersion,key});
+    message(marked?'Removal request undone.':'Marked for removal. Choose Submit for review when ready; the published row remains visible until staff approval.');
+  }));return wrap;
 }
 function seasonPreview(season){
   const block=text('div');
