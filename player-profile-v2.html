@@ -143,6 +143,8 @@
   <script src="scripts/profile-v2-config.js?v=20261029-portal"></script>
 
   <link href="css/main.css" rel="stylesheet">
+  <link href="scripts/profile-video-player.css?v=20261030-native1" rel="stylesheet">
+  <script src="scripts/profile-video-player.js?v=20261030-native1"></script>
   <style>
     .v2-note { max-width:1000px; margin:20px auto; }
     .video-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); }
@@ -1059,6 +1061,8 @@
     function renderApprovedVideos(api) {
       const gallery = document.getElementById('video-gallery');
       const card = document.getElementById('video-gallery-card');
+      if (gallery.videoPlayers) gallery.videoPlayers.forEach(player => player.destroy());
+      gallery.videoPlayers = [];
       gallery.replaceChildren();
       const approved = (Array.isArray(api.videos) ? api.videos : [])
         .filter(video => video && video.status === 'approved')
@@ -1080,7 +1084,18 @@
         frame.allowFullscreen = true;
         frame.setAttribute('webkitallowfullscreen', '');
         frame.referrerPolicy = 'strict-origin-when-cross-origin';
-        player.append(frame);
+        const streamBase = window.NJHitzProfileV2 && window.NJHitzProfileV2.videoStreamBase;
+        const slug = new URLSearchParams(location.search).get('player');
+        if (typeof streamBase === 'string' && /^https:\/\/[^/?#]+(?:\/[a-zA-Z0-9_-]+)*\/?$/.test(streamBase) &&
+            /^[a-z0-9][a-z0-9-]{0,119}$/.test(slug || '') && window.NJHitzVideoPlayer) {
+          player.className = '';
+          const nativePlayer = window.NJHitzVideoPlayer.mount(player, {
+            src:streamBase.replace(/\/$/,'')+'/v1/video/'+encodeURIComponent(slug)+'/'+encodeURIComponent(id),
+            title:heading.textContent,
+            onFallback:() => { player.className='video-player';player.replaceChildren(frame); }
+          });
+          gallery.videoPlayers.push(nativePlayer);
+        } else player.append(frame);
         const caption = document.createElement('p');
         caption.textContent = [video.category, video.recordedDate, video.caption].filter(Boolean).join(' • ');
         item.append(heading, player, caption);

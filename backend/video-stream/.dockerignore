@@ -1,0 +1,6 @@
+test
+README.md
+node_modules
+.env*
+*.key
+*.pem
