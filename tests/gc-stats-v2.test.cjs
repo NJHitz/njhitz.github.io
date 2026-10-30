@@ -103,3 +103,9 @@ test('legacy duplicate cleanup and a new season can be approved together',()=>{
  let s=legacyState();s=act(s,parent,'stageSeason',{base:0,season:snap()});s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:batting'});s=act(s,parent,'stageStatRemoval',{base:0,key:'legacy:pitching'});s=submitAndReview(s);
  const p=core.publicProfile(s);assert.equal(p.avg,'');assert.equal(p.ip,'');assert.equal(p.seasonStats.length,1);assert.equal(p.seasonStats[0].batting.avg,'0.350');assert.equal(p.seasonStats[0].pitching.ip,'12.2');
 });
+test('a fresh season import supersedes earlier draft label edits for that same row',()=>{
+ let s=state(),season=snap();s=act(s,parent,'stageSeason',{base:0,season});s=act(s,parent,'save',{base:0,fields:{}});s=act(s,parent,'submit');s=act(s,staff,'review',{id:Object.keys(s.submissions)[0],decision:'approved'});
+ const base=s.publishedVersion;s=act(s,parent,'stageStatLabels',{base,key:season.key,teamName:'Earlier label',season:'Earlier season',seasonEndDate:'2026-11-01'});
+ s=act(s,parent,'stageSeason',{base,season:{...season,teamName:'Updated import'}});assert.equal(core.view(s,parent).statLabels[season.key],undefined);
+ s=act(s,parent,'save',{base,fields:{}});s=act(s,parent,'submit');s=act(s,staff,'review',{id:Object.keys(s.submissions).at(-1),decision:'approved'});assert.equal(core.publicProfile(s).seasonStats[0].teamName,'Updated import');
+});

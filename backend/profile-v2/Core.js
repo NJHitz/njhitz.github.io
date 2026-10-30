@@ -70,6 +70,7 @@ var ProfileV2Core = (function () {
     if (event.type === 'stageSeason') {
       if(!s.statsDrafts[uid])s.statsDrafts[uid]={};
       s.statsDrafts[uid][p.season.key]=Object.assign(copy(p.season),{base:p.base,capturedAt:event.at});
+      if(s.statLabelDrafts && s.statLabelDrafts[uid])delete s.statLabelDrafts[uid][p.season.key];
     }
     if(event.type === 'stageStatRemoval') {
       if(!s.statRemovals[uid])s.statRemovals[uid]={};
