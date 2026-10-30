@@ -147,17 +147,23 @@ function render() {
 function displayDate(value){return value?new Date(value).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'—';}
 function legacyDate(label){const year=String(label || '').match(/20\d{2}/)?.[0] || '0000';const month=/fall/i.test(label)?'11':/summer/i.test(label)?'08':/spring/i.test(label)?'05':/winter/i.test(label)?'02':'01';return year+'-'+month+'-28';}
 function table(hostId,caption,headers){
-  const host=$(hostId);host.replaceChildren();const wrap=text('div','','table-scroll');wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label',caption+' table; scroll horizontally on small screens');
-  const el=document.createElement('table');el.className='manage-table';el.append(text('caption',caption));const head=document.createElement('thead'),row=document.createElement('tr');
-  headers.forEach(h=>{const cell=text('th',h);cell.scope='col';row.append(cell);});head.append(row);const body=document.createElement('tbody');el.append(head,body);wrap.append(el);host.append(wrap);return {host,body};
+  const host=$(hostId);host.replaceChildren();const wrap=text('div','','table-scroll');wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label',caption+'; rows stack into cards on small screens');
+  const el=document.createElement('table');el.className='manage-table '+hostId+'-table';el.setAttribute('role','table');el.append(text('caption',caption));const head=document.createElement('thead'),row=document.createElement('tr');
+  headers.forEach(h=>{const cell=text('th',h);cell.scope='col';row.append(cell);});head.setAttribute('role','rowgroup');row.setAttribute('role','row');head.append(row);const body=document.createElement('tbody');body.setAttribute('role','rowgroup');el.append(head,body);wrap.append(el);host.append(wrap);return {host,body};
 }
-function cell(row,content){const td=document.createElement('td');if(typeof content==='string')td.textContent=content;else if(content)td.append(content);row.append(td);return td;}
+function cell(row,content,label=''){row.setAttribute('role','row');const td=document.createElement('td');td.dataset.label=label;td.setAttribute('role','cell');if(typeof content==='string')td.textContent=content;else if(content)td.append(content);row.append(td);return td;}
 function editInput(value,label,max=160,type='text'){const input=document.createElement('input');input.type=type;input.value=value || '';input.maxLength=max;input.setAttribute('aria-label',label);return input;}
 function rowButton(label,work,danger=false){const b=actionButton(label,work);b.className=danger?'danger':'secondary';return b;}
+function iconButton(icon,label,work,danger=false){
+  const b=rowButton('',work,danger);b.classList?.add('icon-action');if(!b.classList)b.className+=' icon-action';b.title=label;b.setAttribute('aria-label',label);
+  const paths={save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z"/><path d="M7 3v6h10V3M7 21v-8h10v8"/>',trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',undo:'<path d="m9 4-5 5 5 5M4 9h10a6 6 0 0 1 0 12"/>'};
+  b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths[icon]+'</svg>';
+  return b;
+}
 function selectionToolbar(host,entries,label,remove,undo){
   const bar=text('div','','table-toolbar'),all=document.createElement('input');all.type='checkbox';all.setAttribute('aria-label','Select all '+label);const lab=text('label','Select all');lab.prepend(all);const count=text('span','0 selected','selection-count');count.setAttribute('aria-live','polite');
-  const removeButton=rowButton('🗑 Remove selected',()=>remove(entries.filter(e=>e.box.checked).map(e=>e.item)),true);
-  const undoButton=undo?rowButton('Undo selected removals',()=>undo(entries.filter(e=>e.box.checked).map(e=>e.item))):null;
+  const removeButton=rowButton('Remove selected',()=>remove(entries.filter(e=>e.box.checked).map(e=>e.item)),true);
+  const undoButton=undo?rowButton('Undo selected',()=>undo(entries.filter(e=>e.box.checked).map(e=>e.item))):null;
   const update=()=>{const n=entries.filter(e=>e.box.checked).length;count.textContent=n+' selected';all.checked=!!entries.length && n===entries.length;all.indeterminate=n>0 && n<entries.length;[removeButton,undoButton].filter(Boolean).forEach(b=>{b.dataset.disabled=String(!n);b.disabled=!n || busy;});};
   all.addEventListener('change',()=>{entries.forEach(e=>e.box.checked=all.checked);update();});entries.forEach(e=>e.box.addEventListener('change',update));
   bar.append(lab,count,removeButton);if(undoButton)bar.append(undoButton);host.prepend(bar);update();
@@ -192,19 +198,19 @@ function renderStatsTable(){
   const {host,body}=table('gc-seasons','Season statistics — newest first',['Select','Team','Season','Season end','Statistics','Status','Actions']);const entries=[];
   if(!rows.length){const row=document.createElement('tr');const td=cell(row,'No season statistics yet.');td.colSpan=7;body.append(row);return;}
   rows.forEach(s=>{
-    const row=document.createElement('tr'),marked=!!model.statRemovals?.[s.key],box=selectionBox(s.teamName+' '+s.season);entries.push({box,item:s});cell(row,box);
+    const row=document.createElement('tr'),marked=!!model.statRemovals?.[s.key],box=selectionBox(s.teamName+' '+s.season);entries.push({box,item:s});cell(row,box,'Select');
     const team=editInput(s.teamName,'Team name for '+s.season),season=editInput(s.season,'Season for '+s.teamName,80),end=editInput(s.seasonEndDate || legacyDate(s.season),'Season end for '+s.teamName,10,'date');
-    [team,season,end].forEach(input=>input.disabled=marked);cell(row,team);cell(row,season);cell(row,end);
-    const details=document.createElement('details');details.append(text('summary',[s.batting?'Batting':'',s.pitching?'Pitching':''].filter(Boolean).join(' & ') || 'Statistics'),seasonPreview(s));cell(row,details);
-    cell(row,marked?'Marked for removal':model.statLabels?.[s.key]?'Draft label edit':s.state);if(marked)row.className='marked';
+    [team,season,end].forEach(input=>input.disabled=marked);cell(row,team,'Team');cell(row,season,'Season');cell(row,end,'Season end');
+    const details=document.createElement('details');details.append(text('summary',[s.batting?'Batting':'',s.pitching?'Pitching':''].filter(Boolean).join(' & ') || 'Statistics'),seasonPreview(s));cell(row,details,'Statistics');
+    cell(row,marked?'Marked for removal':model.statLabels?.[s.key]?'Draft label edit':s.state,'Status');if(marked)row.className='marked';
     tableEdits.push(()=>{
       if(marked || (team.value.trim()===s.teamName && season.value.trim()===s.season && end.value===(s.seasonEndDate || legacyDate(s.season))))return null;
       if(!team.value.trim() || !season.value.trim() || !end.validity.valid || !/^20\d{2}-\d{2}-\d{2}$/.test(end.value))throw new Error('Enter a team, season and valid season end date.');
       if(model.statsDrafts?.[s.key])return {action:'stageSeason',season:{...s,teamName:team.value.trim(),season:season.value.trim(),seasonEndDate:end.value}};
       return {action:'stageStatLabels',key:s.key,teamName:team.value.trim(),season:season.value.trim(),seasonEndDate:end.value};
     });
-    const actions=text('div','','row-actions');if(!marked)actions.append(rowButton('Save labels',async()=>{await saveAllDraft();message('Labels saved in your private draft. Submit for review when ready.');}));
-    actions.append(rowButton(marked?'Undo removal':'🗑 Delete',()=>removeStats([s],marked),!marked));cell(row,actions);body.append(row);
+    const actions=text('div','','row-actions');if(!marked)actions.append(iconButton('save','Save season labels',async()=>{await saveAllDraft();message('Labels saved in your private draft. Submit for review when ready.');}));
+    actions.append(iconButton(marked?'undo':'trash',marked?'Undo statistics removal':'Remove statistics row',()=>removeStats([s],marked),!marked));cell(row,actions,'Actions');body.append(row);
   });selectionToolbar(host,entries,'statistics rows',rows=>removeStats(rows),rows=>removeStats(rows,true));
 }
 async function changeVideos(rows,undo=false){
@@ -218,14 +224,14 @@ function renderVideoTable(){
   if(!videos.length){const row=document.createElement('tr');cell(row,'No uploaded clips yet.').colSpan=6;body.append(row);return;}
   videos.forEach(v=>{
     const row=document.createElement('tr'),change=model.videoChanges?.[v.id],locked=v.status==='pending' || model.submissions.some(r=>r.status==='pending' && (r.videoChanges || []).some(c=>c.id===v.id));
-    const editable=!locked && (v.status==='approved' || model.isAdmin || v.uid===auth.currentUser.uid);const box=selectionBox(v.title);box.disabled=!editable;if(editable)entries.push({box,item:v});cell(row,box);
-    const title=editInput(change?.title || v.title,'Clip title: '+v.title,120);title.disabled=!editable || change?.remove;cell(row,title);cell(row,v.category);cell(row,change?.remove?'Marked for removal':change?'Draft rename':v.status);cell(row,displayDate(v.at));
+    const editable=!locked && (v.status==='approved' || model.isAdmin || v.uid===auth.currentUser.uid);const box=selectionBox(v.title);box.disabled=!editable;if(editable)entries.push({box,item:v});cell(row,box,'Select');
+    const title=editInput(change?.title || v.title,'Clip title: '+v.title,120);title.disabled=!editable || change?.remove;cell(row,title,'Title');cell(row,v.category,'Category');cell(row,change?.remove?'Marked for removal':change?'Draft rename':v.status,'Status');cell(row,displayDate(v.at),'Uploaded');
     if(change?.remove)row.className='marked';
     if(editable)tableEdits.push(()=>{if(change?.remove || title.value.trim()===(change?.title || v.title))return null;if(!title.value.trim())throw new Error('Enter a clip title.');return {action:'stageVideoChanges',changes:[{id:v.id,title:title.value.trim()}]};});
     const actions=text('div','','row-actions');
-    if(model.isAdmin || v.status==='approved'){const link=text('a','Preview ↗');link.href='https://drive.google.com/file/d/'+encodeURIComponent(v.driveFileId)+'/view';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
-    if(editable){if(!change?.remove)actions.append(rowButton('Save title',async()=>{await saveAllDraft();message('Video title saved in your private draft. Submit for review when ready.');}));actions.append(rowButton(change?.remove?'Undo removal':'🗑 Delete',()=>changeVideos([v],!!change?.remove),!change?.remove));}
-    cell(row,actions);body.append(row);
+    if(model.isAdmin || v.status==='approved'){const link=text('a','');link.className='icon-action preview-action';link.title='Preview video in Google Drive';link.setAttribute('aria-label','Preview video in Google Drive');link.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 11 7-11 7V5Z"/></svg>';link.href='https://drive.google.com/file/d/'+encodeURIComponent(v.driveFileId)+'/view';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
+    if(editable){if(!change?.remove)actions.append(iconButton('save','Save video title',async()=>{await saveAllDraft();message('Video title saved in your private draft. Submit for review when ready.');}));actions.append(iconButton(change?.remove?'undo':'trash',change?.remove?'Undo video removal':'Remove video',()=>changeVideos([v],!!change?.remove),!change?.remove));}
+    cell(row,actions,'Actions');body.append(row);
   });selectionToolbar(host,entries,'editable videos',rows=>changeVideos(rows),rows=>changeVideos(rows,true));
   host.append(text('p','Video renames and removals require submission and staff approval. Removal hides the clip from the profile; the original Drive file is retained. Clips awaiting review are locked.','muted'));
 }
@@ -240,7 +246,7 @@ function submissionSummary(r){
 function renderSubmissionTable(){
   const {body}=table('submission-history','Submission audit',['Submitted','Status','Changes','Reviewed','Staff note']);
   if(!model.submissions.length){const row=document.createElement('tr');cell(row,'No submissions yet.').colSpan=5;body.append(row);return;}
-  [...model.submissions].sort((a,b)=>String(b.at).localeCompare(String(a.at))).forEach(r=>{const row=document.createElement('tr');cell(row,displayDate(r.at));cell(row,r.status);cell(row,submissionSummary(r));cell(row,displayDate(r.reviewedAt));cell(row,r.note || '—');body.append(row);});
+  [...model.submissions].sort((a,b)=>String(b.at).localeCompare(String(a.at))).forEach(r=>{const row=document.createElement('tr');cell(row,displayDate(r.at),'Submitted');cell(row,r.status,'Status');cell(row,submissionSummary(r),'Changes');cell(row,displayDate(r.reviewedAt),'Reviewed');cell(row,r.note || '—','Staff note');body.append(row);});
 }
 function statRemovalControl(key){
   const marked=!!model.statRemovals?.[key];
