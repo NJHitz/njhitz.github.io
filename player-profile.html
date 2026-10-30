@@ -141,6 +141,7 @@
   <!-- QRCode.js library (lightweight, no dependencies) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="scripts/preload.js"></script>
+  <script src="scripts/profile-roster.js?v=20261030-current1"></script>
   <script src="scripts/profile-v2-config.js?v=20261030-free-drive1"></script>
 
   <link href="css/main.css" rel="stylesheet">
@@ -828,13 +829,13 @@
     }
 
     // 🚀 Fetch player from GAS doGet instead of data/players.json
+    const currentTeamPromise = window.NJHitzProfileRoster.load(slug);
     fetch(`${GAS_ENDPOINT}?slug=${encodeURIComponent(slug)}`, { cache: 'no-cache', signal: AbortSignal.timeout(20000) })
       .then(resp => {
         if (!resp.ok) throw new Error('Network error ' + resp.status);
         return resp.json();
       })
-      .then(data => {
-        hideOverlay(); // hide when done
+      .then(async data => {
 
         if (!data || !data.ok || !data.player) {
           //throw new Error('Player not found');
@@ -859,7 +860,9 @@
           // V2 uses a recruiting header without the legacy verification badge.
         }
         const apiPlayer = data.player;
-        const player = transformApiPlayerToViewPlayer(apiPlayer);
+        const savedPlayer = transformApiPlayerToViewPlayer(apiPlayer);
+        const player = window.NJHitzProfileRoster.apply(savedPlayer,await currentTeamPromise);
+        hideOverlay();
         renderPlayer(player);
         renderApprovedVideos(apiPlayer);
         updateRecruitingNavigation(player);

@@ -265,13 +265,17 @@ function seasonPreview(season){
   [['Batting',season.batting],['Pitching',season.pitching]].forEach(([label,values])=>{if(values)block.append(text('p',label+': '+Object.entries(values).map(([key,value])=>(names[key] || key)+' '+(value===''?'—':value)).join(' · ')));});
   return block;
 }
+async function persistProfileSignIn(auth,sdk){
+  try { await sdk.setPersistence(auth,sdk.browserLocalPersistence); }
+  catch(error){ await sdk.setPersistence(auth,sdk.browserSessionPersistence); }
+}
 async function start() {
   if (!config.enabled || !/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(config.endpoint || '') || !config.firebase?.apiKey || !config.firebase?.projectId) return;
   if (!/^[a-z0-9][a-z0-9-]{0,119}$/.test(slug)) {$('setup').textContent='Open this page from a player’s v2 profile link.';return;}
   const appSDK = await import('https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js');
   sdk = await import('https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js');
   auth = sdk.getAuth(appSDK.initializeApp(config.firebase));
-  await sdk.setPersistence(auth,sdk.inMemoryPersistence);
+  await persistProfileSignIn(auth,sdk);
   $('setup').hidden = true;$('auth-card').hidden = false;
   $('google-signin').addEventListener('click',()=>run(()=>sdk.signInWithPopup(auth,new sdk.GoogleAuthProvider())));
   $('auth-form').addEventListener('submit',e=>{e.preventDefault();run(()=>sdk.signInWithEmailAndPassword(auth,$('email').value,$('password').value));});
