@@ -2,9 +2,15 @@
   'use strict';
   const dialog=document.getElementById('recruiting-dialog'),form=document.getElementById('recruiting-form'),status=document.getElementById('recruiting-status'),send=document.getElementById('recruiting-send');
   const config=window.NJHitzProfileV2 || {},slug=new URL(location.href).searchParams.get('player');
-  let player={name:'this player',available:false},challenge=null,controller=null,sending=false,lastFocus=null;
+  let player={name:'this player',available:false},challenge=null,controller=null,sending=false,lastFocus=null,drawerTimer=null;
   const validEndpoint=config.enabled===true && /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(config.endpoint || '');
   function setStatus(message,error=false){status.textContent=message;status.className=error?'error':'';}
+  function showDrawer(message){
+    const drawer=document.getElementById('recruiting-drawer');
+    clearTimeout(drawerTimer);document.getElementById('recruiting-drawer-message').textContent=message;drawer.hidden=false;
+    drawerTimer=setTimeout(()=>{drawer.hidden=true;},6000);
+  }
+  document.getElementById('recruiting-drawer-close').addEventListener('click',()=>{clearTimeout(drawerTimer);document.getElementById('recruiting-drawer').hidden=true;});
   function setPlayer(value){player=value;document.getElementById('recruiting-availability').textContent=value.available?'Send a recruiting message without exposing the player’s email address.':'A recruiting contact email has not been added yet.';}
   window.NJHitzRecruitingContact={setPlayer};
   async function prepare(){
@@ -32,6 +38,7 @@
   form.addEventListener('submit',async event=>{
     event.preventDefault();if(sending || !form.reportValidity())return;
     const phone=form.elements.phone.value.trim(),digits=phone.replace(/\D/g,'');if(digits.length<10 || digits.length>15 || !/^[+()\d .-]+$/.test(phone)){setStatus('Enter a valid phone number.',true);form.elements.phone.focus();return;}
+    let accepted=false;
     sending=true;send.disabled=true;dialog.setAttribute('aria-busy','true');setStatus('Verifying spam protection…');
     try{
       let value=await challenge;if(!value || value.expiresAt<Date.now()+1000){value=await prepare();challenge=Promise.resolve(value);}
@@ -39,10 +46,10 @@
       const wait=Math.max(0,value.issuedAt+3100-Date.now());if(wait)await new Promise(resolve=>setTimeout(resolve,wait));
       setStatus('Sending your message…');
       const response=await fetch(config.endpoint,{method:'POST',credentials:'omit',headers:{'Content-Type':'text/plain;charset=UTF-8'},signal:AbortSignal.timeout(25000),body:JSON.stringify({action:'recruitingContact',slug,name:form.elements.name.value,email:form.elements.email.value,phone,message:form.elements.message.value,_gotcha:form.elements._gotcha.value,challenge:value,solution})});
-      const result=await response.json();if(!response.ok || !result.ok)throw new Error(result.error || 'Your message could not be sent. Please try again later.');
-      form.reset();challenge=null;setStatus('Your recruiting message has been sent.');send.textContent='Message sent';send.dataset.sent='true';
+      const result=await response.json();if(!response.ok || !result.ok || result.accepted!==true)throw new Error(result.error || 'Your message was not sent. Please reopen the form and try again.');
+      form.reset();challenge=null;accepted=true;
     }catch(error){setStatus(error.name==='TimeoutError' || error.name==='TypeError'?'We could not confirm delivery. Please wait before retrying.':error.message,true);}
-    finally{sending=false;send.disabled=send.dataset.sent==='true';dialog.removeAttribute('aria-busy');}
+    finally{sending=false;send.disabled=false;dialog.removeAttribute('aria-busy');if(accepted){close();showDrawer('Your recruiting message has been sent.');}}
   });
-  dialog.addEventListener('close',()=>{send.textContent='Send message';delete send.dataset.sent;});
+  dialog.addEventListener('close',()=>{send.textContent='Send message';});
 })();

@@ -756,7 +756,7 @@
 
 
   <dialog id="recruiting-dialog" aria-labelledby="recruiting-dialog-title">
-    <div class="recruiting-dialog-header"><h2 id="recruiting-dialog-title">Recruiting contact</h2><button type="button" class="recruiting-close" aria-label="Close recruiting form">×</button></div>
+    <div class="recruiting-dialog-header"><h2 id="recruiting-dialog-title">Recruiting contact</h2><button type="button" class="recruiting-close" aria-label="Close recruiting form"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
     <p id="recruiting-recipient"></p><p class="recruiting-muted">Subject: <strong>NJ Hitz Recruiting Message</strong></p>
     <p id="recruiting-unavailable" hidden>The player has not added a recruiting contact email yet. Please contact NJ Hitz for assistance.</p>
     <form id="recruiting-form">
@@ -768,8 +768,9 @@
       <p id="recruiting-status" role="status" aria-live="polite"></p><div class="recruiting-dialog-actions"><button class="recruit-button primary" id="recruiting-send" type="submit">Send message</button><button class="recruit-button recruiting-close" type="button">Cancel</button></div>
     </form>
   </dialog>
-  <link href="scripts/recruiting-contact.css?v=20261030-private1" rel="stylesheet">
-  <script src="scripts/recruiting-contact.js?v=20261030-private1"></script>
+  <aside id="recruiting-drawer" class="recruiting-drawer" role="status" aria-live="polite" aria-atomic="true" hidden><p id="recruiting-drawer-message"></p><button id="recruiting-drawer-close" type="button" aria-label="Dismiss notification"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></aside>
+  <link href="scripts/recruiting-contact.css?v=20261030-contact-receipt2" rel="stylesheet">
+  <script src="scripts/recruiting-contact.js?v=20261030-contact-receipt2"></script>
 
   <!-- Loading overlay -->
   <div id="loading-overlay">

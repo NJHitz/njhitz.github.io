@@ -173,3 +173,9 @@ Send limits are maintained under the script lock: 3 globally per minute, 20 per 
 MailApp uses a fixed subject, `NJ Hitz Recruiting Message`, and the validated sender as Reply-To. The body includes player name, profile link, sender name/email/phone and the submitted message. It sends only to the approved destination. Replies from the player's normal email account will reveal that address to the recruiter; the management screen explains this.
 
 The existing homepage form uses Formspree with `_gotcha` and client validation. Its reCAPTCHA key is a placeholder and is not copied into this flow. The relay adds backend validation, signed proof of work, replay protection and send limits. Apps Script does not provide a trustworthy client IP in this endpoint, so these are global/player/sender limits rather than IP limits. They deter automated abuse but are not equivalent to a managed CAPTCHA service.
+
+### Send acknowledgements and UI feedback
+
+Successful relay responses require `accepted: true`, written only after MailApp returns without an error. Spam-suppressed requests are never shown as sent. Deduplication records now distinguish reserved from accepted requests; old numeric reservations are not used as proof of acceptance. Accepted sends log only request ID, player slug, timestamp and status for project-level troubleshooting. This is Google mail-service acceptance, not confirmation of inbox delivery. Google Workspace Email Log Search is required to investigate downstream delivery/filtering.
+
+After acceptance the public modal closes and a dismissible six-second drawer announces success. Errors keep the form open. The close icon uses a centered SVG inside a 44px target.

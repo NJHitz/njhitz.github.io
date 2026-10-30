@@ -17,7 +17,7 @@ test('relay picks the approved server-side recipient, fixes the subject and sets
  h.ctx.recruitingSendV2_(r,{sheetId:'test'});assert.equal(h.sent.length,1,'retrying the same accepted nonce does not send twice');
 });
 test('honeypot, forged/expired/wrong-player challenges, invalid proof and bad sender data cannot send',()=>{
- const h=harness();assert.equal(h.ctx.recruitingSendV2_({_gotcha:'spam'},{}).ok,true);assert.equal(h.sent.length,0);
+ const h=harness();assert.equal(h.ctx.recruitingSendV2_({_gotcha:'spam'},{}).accepted,false);assert.equal(h.sent.length,0);
  for(const mutate of [r=>r.challenge.signature='A'.repeat(43),r=>r.challenge.expiresAt=0,r=>r.slug='different-player',r=>r.challenge.difficulty=0,r=>r.solution=-1,r=>r.email='bad\nBcc: evil@example.test',r=>r.phone='bad',r=>r.message='short']){const r=h.request();mutate(r);assert.throws(()=>h.ctx.recruitingSendV2_(r,{sheetId:'test'}));}assert.equal(h.sent.length,0);
 });
 test('missing destination and provider failures return errors without exposing the destination',()=>{
@@ -38,13 +38,19 @@ test('approved contact changes still follow the existing draft and moderation wo
  const act=(actor,action,data={})=>{const e=core.command(s,actor,{action,version:s.version,...data},'2026-10-30T00:00:00Z','contact'+(++n));s=core.apply(s,e);};
  act(parent,'save',{base:0,fields:{playerEmail:'new@example.test'}});assert.equal(s.published.playerEmail,'old@example.test');act(parent,'submit');assert.equal(s.published.playerEmail,'old@example.test');act(staff,'review',{id:'contact2',decision:'approved'});assert.equal(s.published.playerEmail,'new@example.test');assert.equal(core.publicProfile(s).playerEmail,undefined);
 });
-test('public modal sends only sender fields, player slug and spam proof, never a recipient address or subject',async()=>{
- const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,{value:'',dataset:{},listeners:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(){},removeAttribute(){},focus(){},showModal(){this.open=true;},querySelectorAll:()=>[]});return nodes.get(id);};
+test('modal closes into a temporary drawer only after a send receipt, without exposing recipient or subject',async()=>{
+ for(const accepted of [true,false]){
+ const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,{value:'',dataset:{},listeners:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(){},removeAttribute(){},focus(){},showModal(){this.open=true;},close(){this.open=false;this.listeners.close?.();},querySelectorAll:()=>[]});return nodes.get(id);};
  const form=get('recruiting-form');form.elements={name:get('name'),email:get('email'),phone:get('phone'),message:get('message'),_gotcha:get('hp')};form.reportValidity=()=>true;form.reset=()=>{};
- const open=get('open'),posts=[],now=Date.now()-4000;
+ const timers=[];const open=get('open'),posts=[],now=Date.now()-4000;
  const challenge={slug:'example-player-31',nonce:crypto.randomUUID(),issuedAt:now,expiresAt:now+600000,difficulty:3,signature:'test'};
- const context={window:{NJHitzProfileV2:{enabled:true,endpoint:'https://script.google.com/macros/s/example/exec'}},document:{getElementById:get,querySelectorAll:()=>[open],activeElement:get('focus')},location:{href:'https://njhitz.org/player-profile?player=example-player-31'},URL,AbortController,AbortSignal,TextEncoder,crypto:crypto.webcrypto,Date,DOMException,setTimeout,fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));return {ok:true,json:async()=>({ok:true})};}return {ok:true,json:async()=>({ok:true,challenge})};}};
+ const context={window:{NJHitzProfileV2:{enabled:true,endpoint:'https://script.google.com/macros/s/example/exec'}},document:{getElementById:get,querySelectorAll:()=>[open],activeElement:get('focus')},location:{href:'https://njhitz.org/player-profile?player=example-player-31'},URL,AbortController,AbortSignal,TextEncoder,crypto:crypto.webcrypto,Date,DOMException,clearTimeout(){},setTimeout(fn,ms){timers.push({fn,ms});return timers.length;},fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));return {ok:true,json:async()=>({ok:true,accepted})};}return {ok:true,json:async()=>({ok:true,challenge})};}};
  vm.createContext(context);vm.runInContext(fs.readFileSync(require.resolve('../scripts/recruiting-contact.js'),'utf8'),context);context.window.NJHitzRecruitingContact.setPlayer({name:'Example Player',available:true});open.listeners.click();await new Promise(r=>setImmediate(r));
  form.elements.name.value='Coach Example';form.elements.email.value='coach@example.test';form.elements.phone.value='5551234567';form.elements.message.value='Recruiting opportunity for your player.';
- await form.listeners.submit({preventDefault(){}});assert.equal(posts.length,1);assert.equal(posts[0].action,'recruitingContact');assert.equal(posts[0].to,undefined);assert.equal(posts[0].subject,undefined);assert.equal(posts[0].email,'coach@example.test');assert.match(get('recruiting-status').textContent,/has been sent/);
+ await form.listeners.submit({preventDefault(){}});assert.equal(posts.length,1);assert.equal(posts[0].action,'recruitingContact');assert.equal(posts[0].to,undefined);assert.equal(posts[0].subject,undefined);assert.equal(posts[0].email,'coach@example.test');if(accepted){assert.equal(get('recruiting-dialog').open,false);assert.equal(get('recruiting-drawer').hidden,false);assert.match(get('recruiting-drawer-message').textContent,/has been sent/);const dismiss=timers.find(t=>t.ms===6000);assert.ok(dismiss);dismiss.fn();assert.equal(get('recruiting-drawer').hidden,true);}else{assert.equal(get('recruiting-dialog').open,true);assert.match(get('recruiting-status').textContent,/was not sent/);assert.notEqual(get('recruiting-drawer').hidden,false);}
+ }
+});
+
+test('a legacy or interrupted reservation cannot be reported as an accepted email',()=>{
+ const h=harness(),req=h.request();h.props.RECRUITING_SEND_LIMITS=JSON.stringify({buckets:{},used:{[req.challenge.nonce]:Date.now()+600000}});assert.throws(()=>h.ctx.recruitingSendV2_(req,{sheetId:'test'}),/could not be confirmed/);assert.equal(h.sent.length,0);
 });
