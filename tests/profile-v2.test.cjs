@@ -92,7 +92,7 @@ test('identity adapter requires Firebase validation, project, expiry, and matchi
   for(const bad of [{aud:'other'},{sub:'other'},{exp:0},{iss:'https://evil.test'},{auth_time:null}]) assert.throws(identityHarness(bad),/sign in/);
 });
 test('v2 page keeps legacy endpoint fallback and safe rendering',()=>{
-  const s=fs.readFileSync(require.resolve('../player-profile-v2.html'),'utf8');
+  const s=fs.readFileSync(require.resolve('../player-profile.html'),'utf8');
   for(const script of [...s.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).filter(x=>x.trim()&&!x.trim().startsWith('{')))new vm.Script(script);
   assert.match(s,/portalEnabled \? portalConfig.endpoint : LEGACY_GAS_ENDPOINT/);
   assert.match(s,/new QRCode\(qrContainer/);assert.match(s,/escapeHtml\(m.value/);assert.match(s,/safeWebLink\(l.url\)/);

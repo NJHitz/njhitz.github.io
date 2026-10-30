@@ -1,7 +1,7 @@
 const $ = id => document.getElementById(id);
 const config = window.NJHitzProfileV2 || {};
 const slug = new URL(location.href).searchParams.get('player') || '';
-if (/^[a-z0-9][a-z0-9-]{0,119}$/.test(slug)) $('back-profile').href = 'player-profile-v2?player=' + encodeURIComponent(slug);
+if (/^[a-z0-9][a-z0-9-]{0,119}$/.test(slug)) $('back-profile').href = 'player-profile?player=' + encodeURIComponent(slug);
 let auth, sdk, model, busy = false, generation = 0, gcCapture = null, videoOptimization = null;
 let tableEdits=[];
 const fieldSpecs = [
