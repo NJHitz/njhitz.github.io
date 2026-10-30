@@ -60,7 +60,9 @@ export async function optimizeVideo(file,{signal,onProgress=()=>{}}={}) {
     onProgress({phase:'Checking optimized video…'});
     stage='verification';
     const checked=await ffmpeg.ffprobe(['-v','error','-select_streams','v:0','-show_entries','stream=codec_name,width,height','-of','json','-o','probe.json','web.mp4']);
-    if(checked!==0)throw new Error('probe');
+    // Core 0.12.10 leaves ffprobe's return value at -1 on successful runs.
+    // Require a readable, valid probe file below instead of rejecting that sentinel.
+    if(checked!==0 && checked!==-1)throw new Error('probe');
     const data=await ffmpeg.readFile('web.mp4');
     const probe=JSON.parse(await ffmpeg.readFile('probe.json','utf8'));
     validateOutput(data,probe);
