@@ -27,7 +27,9 @@ export async function optimizeVideo(file,{signal,onProgress=()=>{}}={}) {
   const {FFmpeg}=await import('./vendor/ffmpeg-0.12.15/index.js');
   const ffmpeg=new FFmpeg(), urls=[];
   const controller=new AbortController();
-  let canceled=false;
+  let canceled=false,stage='loading';
+  const diagnostic=[];
+  ffmpeg.on('log',({message})=>{diagnostic.push(String(message));if(diagnostic.length>8)diagnostic.shift();});
   const cancel=()=>{canceled=true;controller.abort();ffmpeg.terminate();};
   signal?.addEventListener('abort',cancel,{once:true});
   if(signal?.aborted)cancel();
@@ -52,9 +54,11 @@ export async function optimizeVideo(file,{signal,onProgress=()=>{}}={}) {
       if(!canceled)onProgress({phase:'Optimizing video on this device…',percent:Math.min(99,Math.max(0,Math.floor(progress*100)))});
     });
     onProgress({phase:'Optimizing video on this device…',percent:0});
+    stage='conversion';
     const result=await ffmpeg.exec(optimizationArgs(input),10*60*1000);
     if(result!==0)throw new Error('conversion');
     onProgress({phase:'Checking optimized video…'});
+    stage='verification';
     const checked=await ffmpeg.ffprobe(['-v','error','-select_streams','v:0','-show_entries','stream=codec_name,width,height','-of','json','-o','probe.json','web.mp4']);
     if(checked!==0)throw new Error('probe');
     const data=await ffmpeg.readFile('web.mp4');
@@ -65,6 +69,7 @@ export async function optimizeVideo(file,{signal,onProgress=()=>{}}={}) {
     onProgress({phase:'Video optimized and ready to upload.',percent:100});
     return output;
   } catch(error) {
+    if(!canceled)console.warn('Video optimizer diagnostic',stage,String(error?.message||error),diagnostic.join('\n'));
     if(canceled || signal?.aborted || error.name==='AbortError') throw new Error('Optimization canceled or timed out. Nothing was uploaded.');
     if(/Nothing was uploaded/.test(error.message))throw error;
     throw new Error('This device could not optimize the clip. Try a shorter clip or a current desktop browser. Nothing was uploaded.');
