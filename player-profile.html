@@ -1070,11 +1070,7 @@
       watch.href = '#video-gallery-card';
       document.getElementById('measurables-nav').hidden = !player.measurables.length;
       document.getElementById('stats-empty').hidden = !!(player.statsOffense.length || player.statsPitching.length);
-      if (!player.recruitingContactAvailable && !player.contactPhone && !player.guardian1Name && !player.guardian2Name) {
-        const item = document.createElement('li');
-        item.textContent = 'A recruiting contact email has not been added yet.';
-        document.getElementById('contact-list').append(item);
-      }
+
     }
 
     // V2 contract: only backend-approved media may be returned here.

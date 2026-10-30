@@ -13,7 +13,8 @@
   }
   function open(){
     lastFocus=document.activeElement;challenge=null;form.reset();setStatus('');dialog.showModal();document.getElementById('recruiting-recipient').textContent='Message the recruiting contact for '+player.name+'.';
-    const available=player.available && validEndpoint;form.hidden=!available;document.getElementById('recruiting-unavailable').hidden=available;
+    const available=player.available && validEndpoint;form.hidden=false;send.disabled=true;document.getElementById('recruiting-unavailable').hidden=available;
+    ['name','email','phone','message'].forEach(key=>form.elements[key].disabled=!available);
     if(available){controller=new AbortController();send.disabled=true;setStatus('Preparing secure form…');challenge=prepare().then(value=>{setStatus('');send.disabled=false;return value;}).catch(error=>{if(!controller?.signal.aborted)setStatus(error.message,true);return null;});document.getElementById('recruiter-name').focus();}
   }
   function close(){if(sending)return;controller?.abort();dialog.close();lastFocus?.focus();}
