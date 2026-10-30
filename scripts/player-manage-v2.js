@@ -3,6 +3,7 @@ const config = window.NJHitzProfileV2 || {};
 const slug = new URL(location.href).searchParams.get('player') || '';
 if (/^[a-z0-9][a-z0-9-]{0,119}$/.test(slug)) $('back-profile').href = 'player-profile-v2?player=' + encodeURIComponent(slug);
 let auth, sdk, model, busy = false, generation = 0, gcCapture = null, videoOptimization = null;
+let tableEdits=[];
 const fieldSpecs = [
   ['bio','Player bio',5000,true],['schoolName','School',160],['gradYear','Graduation year',4],
   ['gpa','Reported GPA',30],['intendedMajor','Intended major',250],['honors','Honors and activities',3500,true],
@@ -37,7 +38,7 @@ async function run(work) {
   finally { busy = false; finish(); controls(activities.length>0); }
 }
 async function request(action, data = {}) {
-  const labels={read:'Loading profile…',save:'Saving draft…',submit:'Submitting changes for staff review…',uploadVideo:'Uploading video… Keep this page open.',stageSeason:'Importing season statistics…',removeStagedSeason:'Removing draft season…',stageStatRemoval:'Saving statistics removal request…',cancelStatRemoval:'Undoing removal request…',review:'Applying staff review…',claim:'Requesting profile access…',grant:'Granting profile access…',denyClaim:'Updating access request…',revoke:'Revoking profile access…',removeVideo:'Removing clip…'};
+  const labels={stageStatLabels:'Saving season labels…',stageVideoChanges:'Saving video changes…',read:'Loading profile…',save:'Saving draft…',submit:'Submitting changes for staff review…',uploadVideo:'Uploading video… Keep this page open.',stageSeason:'Importing season statistics…',removeStagedSeason:'Removing draft season…',stageStatRemoval:'Saving statistics removal request…',cancelStatRemoval:'Undoing removal request…',review:'Applying staff review…',claim:'Requesting profile access…',grant:'Granting profile access…',denyClaim:'Updating access request…',revoke:'Revoking profile access…',removeVideo:'Removing clip…'};
   const finish=beginActivity(labels[action] || 'Working… Please wait.');
   try {
   const user = auth.currentUser;
@@ -92,35 +93,12 @@ function render() {
     $('draft-status').textContent = model.draft ? 'Saved draft · ' + model.draft.savedAt : 'Showing published information';
     if (model.draft && model.draft.base !== model.publishedVersion) $('draft-status').textContent = 'Published information changed. Showing current published values; the older draft has not been applied. Reapply your intended changes and save a new draft.';
     $('gc-tools').hidden = !model.statsDrafts;
-    $('gc-seasons').replaceChildren();
-    const staged=Object.values(model.statsDrafts || {});
-    [...staged.map(s=>({...s,stageLabel:'Draft import'})),...(model.seasons || []).map(s=>({...s,stageLabel:'Published'}))].forEach(season=>{
-      const row=text('div','','review');row.append(text('h4',season.teamName+' · '+season.season),text('p',season.playerName+' · '+season.stageLabel+' · Season ends '+season.seasonEndDate));
-      row.append(seasonPreview(season));
-      if(season.stageLabel==='Published' && model.statRemovals)row.append(statRemovalControl(season.key));
-      if(season.stageLabel==='Draft import')row.append(actionButton('Remove draft season',()=>request('removeStagedSeason',{version:model.version,key:season.key})));
-      $('gc-seasons').append(row);
-    });
-    (model.legacyStats || []).forEach(legacy=>{
-      const row=text('div','','review');row.append(text('h4',legacy.label),seasonPreview(legacy),statRemovalControl(legacy.key));$('gc-seasons').append(row);
-    });
-    Object.values(model.statRemovals || {}).filter(target=>!(model.seasons || []).some(s=>s.key===target.key) && !(model.legacyStats || []).some(s=>s.key===target.key)).forEach(target=>{
-      const row=text('div','','review');row.append(text('h4',target.label),text('p','This published row changed or was already removed. Undo this older request before submitting.'),statRemovalControl(target.key));$('gc-seasons').append(row);
-    });
+    tableEdits=[];
+    renderStatsTable();
     $('media-tools').hidden = !Array.isArray(model.videos);
     renderFields();
-    $('video-list').replaceChildren();
-    (model.videos || []).forEach(video=>{
-      const row=text('div','','review');row.append(text('h4',video.title),text('p',video.category+' · '+video.status));
-      if (model.isAdmin || video.status === 'approved') {
-        const link=text('a','Preview in Google Drive');link.href='https://drive.google.com/file/d/'+encodeURIComponent(video.driveFileId)+'/view';link.target='_blank';link.rel='noopener noreferrer';row.append(link);
-      }
-      if ((model.isAdmin || video.uid === auth.currentUser.uid) && ['draft','rejected'].includes(video.status)) row.append(actionButton('Remove clip',()=>request('removeVideo',{version:model.version,id:video.id})));
-      $('video-list').append(row);
-    });
-    $('submission-history').replaceChildren();
-    if (!model.submissions.length) $('submission-history').append(text('p','No submissions yet.'));
-    model.submissions.forEach(r => $('submission-history').append(text('p',r.at + ' · ' + r.status + (r.note ? ' · Staff note: ' + r.note : ''))));
+    renderVideoTable();
+    renderSubmissionTable();
   }
   if (!model.isAdmin) return;
   $('staff-claims').replaceChildren();$('staff-reviews').replaceChildren();
@@ -143,6 +121,8 @@ function render() {
       item.append(text('h4',fieldSpecs.find(f=>f[0] === key)?.[1] || key));
       const diff = text('div','','diff');diff.append(text('p','Published\n' + (model.published[key] || '(empty)')),text('p','Proposed\n' + (revision.fields[key] || '(empty)')));item.append(diff);
     });
+    (revision.statLabels || []).forEach(c=>item.append(text('p','Rename statistics: '+c.previousLabel+' → '+c.teamName+' · '+c.season+' (ends '+c.seasonEndDate+')')));
+    (revision.videoChanges || []).forEach(c=>item.append(text('p',c.remove?'Remove video: '+c.previousTitle:'Rename video: '+c.previousTitle+' → '+c.title)));
     (revision.statRemovals || []).forEach(target=>{
       item.append(text('h4','Remove statistics: '+target.label),seasonPreview(target),text('p','Approval will remove this row from the v2 profile.'));
     });
@@ -164,13 +144,111 @@ function render() {
     item.append(approve,actionButton('Request corrections',()=>request('review',{version:model.version,id:revision.id,decision:'rejected',note:note.value})));$('staff-reviews').append(item);
   });
 }
+function displayDate(value){return value?new Date(value).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'—';}
+function legacyDate(label){const year=String(label || '').match(/20\d{2}/)?.[0] || '0000';const month=/fall/i.test(label)?'11':/summer/i.test(label)?'08':/spring/i.test(label)?'05':/winter/i.test(label)?'02':'01';return year+'-'+month+'-28';}
+function table(hostId,caption,headers){
+  const host=$(hostId);host.replaceChildren();const wrap=text('div','','table-scroll');wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label',caption+' table; scroll horizontally on small screens');
+  const el=document.createElement('table');el.className='manage-table';el.append(text('caption',caption));const head=document.createElement('thead'),row=document.createElement('tr');
+  headers.forEach(h=>{const cell=text('th',h);cell.scope='col';row.append(cell);});head.append(row);const body=document.createElement('tbody');el.append(head,body);wrap.append(el);host.append(wrap);return {host,body};
+}
+function cell(row,content){const td=document.createElement('td');if(typeof content==='string')td.textContent=content;else if(content)td.append(content);row.append(td);return td;}
+function editInput(value,label,max=160,type='text'){const input=document.createElement('input');input.type=type;input.value=value || '';input.maxLength=max;input.setAttribute('aria-label',label);return input;}
+function rowButton(label,work,danger=false){const b=actionButton(label,work);b.className=danger?'danger':'secondary';return b;}
+function selectionToolbar(host,entries,label,remove,undo){
+  const bar=text('div','','table-toolbar'),all=document.createElement('input');all.type='checkbox';all.setAttribute('aria-label','Select all '+label);const lab=text('label','Select all');lab.prepend(all);const count=text('span','0 selected','selection-count');count.setAttribute('aria-live','polite');
+  const removeButton=rowButton('🗑 Remove selected',()=>remove(entries.filter(e=>e.box.checked).map(e=>e.item)),true);
+  const undoButton=undo?rowButton('Undo selected removals',()=>undo(entries.filter(e=>e.box.checked).map(e=>e.item))):null;
+  const update=()=>{const n=entries.filter(e=>e.box.checked).length;count.textContent=n+' selected';all.checked=!!entries.length && n===entries.length;all.indeterminate=n>0 && n<entries.length;[removeButton,undoButton].filter(Boolean).forEach(b=>{b.dataset.disabled=String(!n);b.disabled=!n || busy;});};
+  all.addEventListener('change',()=>{entries.forEach(e=>e.box.checked=all.checked);update();});entries.forEach(e=>e.box.addEventListener('change',update));
+  bar.append(lab,count,removeButton);if(undoButton)bar.append(undoButton);host.prepend(bar);update();
+}
+function selectionBox(label){const b=document.createElement('input');b.type='checkbox';b.setAttribute('aria-label','Select '+label);return b;}
+async function saveAllDraft(){
+  // Snapshot all inline edits before any response re-renders the tables.
+  const edits=tableEdits.map(read=>read()).filter(Boolean);
+  await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+  for(const edit of edits)await request(edit.action,{...edit,version:model.version,base:model.publishedVersion});
+}
+async function removeStats(rows,undo=false){
+  if(!rows.length)throw new Error('Select at least one statistics row.');
+  await saveAllDraft();let done=0;
+  try{for(const row of rows){
+    if(undo){if(model.statRemovals?.[row.key])await request('cancelStatRemoval',{version:model.version,key:row.key});}
+    else {
+      if(model.statsDrafts?.[row.key])await request('removeStagedSeason',{version:model.version,key:row.key});
+      if((model.seasons || []).some(s=>s.key===row.key) || (model.legacyStats || []).some(s=>s.key===row.key)){
+        if(!model.statRemovals?.[row.key])await request('stageStatRemoval',{version:model.version,base:model.publishedVersion,key:row.key});
+      }
+    }done++;
+  }}catch(error){throw new Error(done+' of '+rows.length+' rows processed. '+error.message);}
+  message(undo?'Selected removal requests undone.':'Selected statistics removed from the draft or marked for removal. Submit for review to update published rows.');
+}
+function renderStatsTable(){
+  const merged=new Map((model.seasons || []).map(s=>[s.key,{...s,state:'Published'}]));
+  (model.legacyStats || []).forEach(s=>merged.set(s.key,{...s,state:'Legacy'}));
+  Object.values(model.statsDrafts || {}).forEach(s=>merged.set(s.key,{...s,state:merged.has(s.key)?'Draft update':'Draft import'}));
+  Object.values(model.statRemovals || {}).forEach(s=>{if(!merged.has(s.key))merged.set(s.key,{...s,teamName:s.label,season:'Changed row',state:'Removal request'});});
+  const rows=[...merged.values()].map(s=>({...s,...model.statLabels?.[s.key]})).sort((a,b)=>String(b.seasonEndDate || legacyDate(b.season)).localeCompare(String(a.seasonEndDate || legacyDate(a.season))) || String(a.teamName).localeCompare(String(b.teamName)));
+  const {host,body}=table('gc-seasons','Season statistics — newest first',['Select','Team','Season','Season end','Statistics','Status','Actions']);const entries=[];
+  if(!rows.length){const row=document.createElement('tr');const td=cell(row,'No season statistics yet.');td.colSpan=7;body.append(row);return;}
+  rows.forEach(s=>{
+    const row=document.createElement('tr'),marked=!!model.statRemovals?.[s.key],box=selectionBox(s.teamName+' '+s.season);entries.push({box,item:s});cell(row,box);
+    const team=editInput(s.teamName,'Team name for '+s.season),season=editInput(s.season,'Season for '+s.teamName,80),end=editInput(s.seasonEndDate || legacyDate(s.season),'Season end for '+s.teamName,10,'date');
+    [team,season,end].forEach(input=>input.disabled=marked);cell(row,team);cell(row,season);cell(row,end);
+    const details=document.createElement('details');details.append(text('summary',[s.batting?'Batting':'',s.pitching?'Pitching':''].filter(Boolean).join(' & ') || 'Statistics'),seasonPreview(s));cell(row,details);
+    cell(row,marked?'Marked for removal':model.statLabels?.[s.key]?'Draft label edit':s.state);if(marked)row.className='marked';
+    tableEdits.push(()=>{
+      if(marked || (team.value.trim()===s.teamName && season.value.trim()===s.season && end.value===(s.seasonEndDate || legacyDate(s.season))))return null;
+      if(!team.value.trim() || !season.value.trim() || !end.validity.valid || !/^20\d{2}-\d{2}-\d{2}$/.test(end.value))throw new Error('Enter a team, season and valid season end date.');
+      if(model.statsDrafts?.[s.key])return {action:'stageSeason',season:{...s,teamName:team.value.trim(),season:season.value.trim(),seasonEndDate:end.value}};
+      return {action:'stageStatLabels',key:s.key,teamName:team.value.trim(),season:season.value.trim(),seasonEndDate:end.value};
+    });
+    const actions=text('div','','row-actions');if(!marked)actions.append(rowButton('Save labels',async()=>{await saveAllDraft();message('Labels saved in your private draft. Submit for review when ready.');}));
+    actions.append(rowButton(marked?'Undo removal':'🗑 Delete',()=>removeStats([s],marked),!marked));cell(row,actions);body.append(row);
+  });selectionToolbar(host,entries,'statistics rows',rows=>removeStats(rows),rows=>removeStats(rows,true));
+}
+async function changeVideos(rows,undo=false){
+  if(!rows.length)throw new Error('Select at least one editable clip.');await saveAllDraft();
+  await request('stageVideoChanges',{version:model.version,base:model.publishedVersion,changes:rows.map(v=>undo?{id:v.id,undo:true}:{id:v.id,remove:true})});
+  message(undo?'Selected video edits undone.':'Selected clips marked for removal. Submit for review to apply these changes.');
+}
+function renderVideoTable(){
+  const {host,body}=table('video-list','Uploaded video footage',['Select','Title','Category','Status','Uploaded','Actions']);const entries=[];
+  const videos=[...(model.videos || [])].sort((a,b)=>String(b.at).localeCompare(String(a.at)));
+  if(!videos.length){const row=document.createElement('tr');cell(row,'No uploaded clips yet.').colSpan=6;body.append(row);return;}
+  videos.forEach(v=>{
+    const row=document.createElement('tr'),change=model.videoChanges?.[v.id],locked=v.status==='pending' || model.submissions.some(r=>r.status==='pending' && (r.videoChanges || []).some(c=>c.id===v.id));
+    const editable=!locked && (v.status==='approved' || model.isAdmin || v.uid===auth.currentUser.uid);const box=selectionBox(v.title);box.disabled=!editable;if(editable)entries.push({box,item:v});cell(row,box);
+    const title=editInput(change?.title || v.title,'Clip title: '+v.title,120);title.disabled=!editable || change?.remove;cell(row,title);cell(row,v.category);cell(row,change?.remove?'Marked for removal':change?'Draft rename':v.status);cell(row,displayDate(v.at));
+    if(change?.remove)row.className='marked';
+    if(editable)tableEdits.push(()=>{if(change?.remove || title.value.trim()===(change?.title || v.title))return null;if(!title.value.trim())throw new Error('Enter a clip title.');return {action:'stageVideoChanges',changes:[{id:v.id,title:title.value.trim()}]};});
+    const actions=text('div','','row-actions');
+    if(model.isAdmin || v.status==='approved'){const link=text('a','Preview ↗');link.href='https://drive.google.com/file/d/'+encodeURIComponent(v.driveFileId)+'/view';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
+    if(editable){if(!change?.remove)actions.append(rowButton('Save title',async()=>{await saveAllDraft();message('Video title saved in your private draft. Submit for review when ready.');}));actions.append(rowButton(change?.remove?'Undo removal':'🗑 Delete',()=>changeVideos([v],!!change?.remove),!change?.remove));}
+    cell(row,actions);body.append(row);
+  });selectionToolbar(host,entries,'editable videos',rows=>changeVideos(rows),rows=>changeVideos(rows,true));
+  host.append(text('p','Video renames and removals require submission and staff approval. Removal hides the clip from the profile; the original Drive file is retained. Clips awaiting review are locked.','muted'));
+}
+function submissionSummary(r){
+  const summary=r.summary,parts=[];
+  if(summary?.fields?.length)parts.push('Profile: '+summary.fields.map(k=>fieldSpecs.find(f=>f[0]===k)?.[1] || k).join(', '));
+  const count=(n,label)=>{if(n)parts.push(n+' '+label);};
+  count(summary?.seasons ?? r.seasonStats?.length,'season imports/updates');count(summary?.statLabels ?? r.statLabels?.length,'season label edits');count(summary?.statRemovals ?? r.statRemovals?.length,'statistics removals');count(summary?.videoUploads ?? r.videoIds?.length,'video uploads');count(summary?.videoRenames ?? r.videoChanges?.filter(c=>!c.remove).length,'video renames');count(summary?.videoRemovals ?? r.videoChanges?.filter(c=>c.remove).length,'video removals');
+  if(!summary?.fields)parts.push('Historical entry: text-change summary unavailable');
+  return parts.join(' · ') || 'No content changes';
+}
+function renderSubmissionTable(){
+  const {body}=table('submission-history','Submission audit',['Submitted','Status','Changes','Reviewed','Staff note']);
+  if(!model.submissions.length){const row=document.createElement('tr');cell(row,'No submissions yet.').colSpan=5;body.append(row);return;}
+  [...model.submissions].sort((a,b)=>String(b.at).localeCompare(String(a.at))).forEach(r=>{const row=document.createElement('tr');cell(row,displayDate(r.at));cell(row,r.status);cell(row,submissionSummary(r));cell(row,displayDate(r.reviewedAt));cell(row,r.note || '—');body.append(row);});
+}
 function statRemovalControl(key){
   const marked=!!model.statRemovals?.[key];
   const wrap=document.createElement('div');
   if(marked)wrap.append(text('p','Marked for removal · Submit for review to send this request.','state'));
   wrap.append(actionButton(marked?'Undo removal request':'Mark for removal',async()=>{
     // Preserve any text edits before re-rendering the profile response.
-    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    await saveAllDraft();
     await request(marked?'cancelStatRemoval':'stageStatRemoval',{version:model.version,base:model.publishedVersion,key});
     message(marked?'Removal request undone.':'Marked for removal. Choose Submit for review when ready; the published row remains visible until staff approval.');
   }));return wrap;
@@ -197,10 +275,10 @@ async function start() {
   $('signout').addEventListener('click',()=>run(()=>sdk.signOut(auth)));
   $('refresh-profile').addEventListener('click',()=>run(async()=>{await auth.currentUser.reload();if(!auth.currentUser.emailVerified)throw new Error('Verify your email first.');$('verify-email').hidden=true;await request('read');message('Profile reloaded.');}));
   $('claim-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{await request('claim',{version:model.version,note:$('claim-note').value});message('Access request submitted for staff review.');});});
-  $('profile-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});message('Draft saved. Your public profile has not changed.');});});
+  $('profile-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{await saveAllDraft();message('Draft saved. Your public profile has not changed.');});});
   $('submit-review').addEventListener('click',()=>run(async()=>{
     if (!$('profile-form').reportValidity()) return;
-    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    await saveAllDraft();
     try {
       const result = await request('submit',{version:model.version});
       if (result.notificationPending) { message('Submitted for review. The staff email is queued for retry. Your public profile has not changed.'); return; }
@@ -232,7 +310,7 @@ async function start() {
       if(GCStatsV2.parseUrl(metadata.sourceUrl).url!==gcCapture.sourceUrl)throw new Error('The source URL changed. Capture this player again.');
       season=GCStatsV2.validateSeason({...gcCapture,...metadata},model.published.playerName);
     }else throw new Error('Choose the authorized GameChanger CSV or send a helper capture. The player URL alone cannot access restricted stats.');
-    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    await saveAllDraft();
     await request('stageSeason',{version:model.version,base:model.publishedVersion,season});
     gcCapture=null;$('gc-file').value='';$('gc-confirm').checked=false;message('Season imported into your private draft. Choose Submit for review to send it to staff.');
   });});
@@ -265,7 +343,7 @@ async function start() {
     const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('The video could not be read.'));reader.readAsDataURL(optimized);});
     if(identity!==generation)throw new Error('Account changed. Nothing was uploaded.');
     message('Saving profile draft and uploading private clip. Keep this page open.');
-    await request('save',{version:model.version,base:model.publishedVersion,fields:fields()});
+    await saveAllDraft();
     if(identity!==generation)throw new Error('Account changed. Nothing was uploaded.');
     await request('uploadVideo',{version:model.version,title,category,caption,mimeType:'video/mp4',base64});
     $('video-form').reset();message('Private clip uploaded. Choose Submit for review when your changes and clips are ready.');

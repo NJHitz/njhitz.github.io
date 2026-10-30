@@ -140,11 +140,11 @@
   <!-- QRCode.js library (lightweight, no dependencies) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="scripts/preload.js"></script>
-  <script src="scripts/profile-v2-config.js?v=20261030-free-drive-key1"></script>
+  <script src="scripts/profile-v2-config.js?v=20261030-free-drive1"></script>
 
   <link href="css/main.css" rel="stylesheet">
   <link href="scripts/profile-video-player.css?v=20261030-native1" rel="stylesheet">
-  <script src="scripts/profile-video-player.js?v=20261030-free-drive-format1"></script>
+  <script src="scripts/profile-video-player.js?v=20261030-free-drive1"></script>
   <style>
     .v2-note { max-width:1000px; margin:20px auto; }
     .video-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); }
@@ -957,7 +957,7 @@
       const imported=Array.isArray(a.seasonStats)?a.seasonStats:[];
       function mergeSeasons(legacy,kind){
         const rows=imported.filter(row=>row && row[kind]).map(row=>({...row[kind],teamName:row.teamName,season:row.season,seasonEndDate:row.seasonEndDate,sourceUrl:row.sourceUrl}));
-        legacy.forEach(row=>{if(!rows.some(r=>r.teamName===a.teamName && r.season===row.season))rows.push({...row,teamName:a.teamName || '',seasonEndDate:legacyDate(row.season)});});
+        legacy.forEach(row=>{const labels=a.legacyStatsLabels?.['legacy:'+kind] || {};const merged={...row,teamName:a.teamName || '',seasonEndDate:legacyDate(row.season),...labels};if(!rows.some(r=>r.teamName===merged.teamName && r.season===merged.season))rows.push(merged);});
         return rows.sort((x,y)=>String(y.seasonEndDate || '').localeCompare(String(x.seasonEndDate || '')) || String(x.teamName).localeCompare(String(y.teamName)));
       }
       statsOffense.splice(0,statsOffense.length,...mergeSeasons(statsOffense,'batting'));

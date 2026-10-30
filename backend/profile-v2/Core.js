@@ -31,7 +31,7 @@ var ProfileV2Core = (function () {
   }
   function empty(playerId, slug, published) {
     return {playerId:playerId, slug:slug, version:0, publishedVersion:0,
-      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}, videos:{}, statsDrafts:{}, seasons:{}, statRemovals:{}, hiddenLegacy:{}};
+      published:copy(published), access:{}, claims:{}, drafts:{}, submissions:{}, videos:{}, statsDrafts:{}, seasons:{}, statRemovals:{}, hiddenLegacy:{}, statLabelDrafts:{}, legacyLabels:{}, videoChanges:{}};
   }
   function legacyStats(s) {
     var p=s.published, rows=[];
@@ -40,6 +40,7 @@ var ProfileV2Core = (function () {
       if(s.hiddenLegacy[g[0]] || ![g[1]].concat(g[2]).some(function(k){return p[k]!=null && p[k]!=='';}))return;
       var row={key:'legacy:'+g[0],kind:g[0],teamName:p.teamName || '',season:p[g[1]] || 'Legacy season'};
       row[g[0]]={};g[2].forEach(function(k){row[g[0]][k]=p[k] == null?'':p[k];});
+      Object.assign(row,(s.legacyLabels || {})[row.key] || {});
       row.label=[row.teamName,row.season,'Legacy '+g[0]].filter(Boolean).join(' · ');rows.push(row);
     });return rows;
   }
@@ -58,6 +59,14 @@ var ProfileV2Core = (function () {
     }
     if (event.type === 'denyClaim') s.claims[p.uid].status = 'rejected';
     if (event.type === 'revoke') delete s.access[p.uid];
+    if(event.type === 'stageStatLabels') {
+      if(!s.statLabelDrafts)s.statLabelDrafts={};if(!s.statLabelDrafts[uid])s.statLabelDrafts[uid]={};
+      s.statLabelDrafts[uid][p.key]=copy(p);
+    }
+    if(event.type === 'stageVideoChanges') {
+      if(!s.videoChanges)s.videoChanges={};if(!s.videoChanges[uid])s.videoChanges[uid]={};
+      p.changes.forEach(function(c){if(c.undo)delete s.videoChanges[uid][c.id];else s.videoChanges[uid][c.id]=copy(c);});
+    }
     if (event.type === 'stageSeason') {
       if(!s.statsDrafts[uid])s.statsDrafts[uid]={};
       s.statsDrafts[uid][p.season.key]=Object.assign(copy(p.season),{base:p.base,capturedAt:event.at});
@@ -76,6 +85,10 @@ var ProfileV2Core = (function () {
       s.submissions[p.id] = {id:p.id, uid:uid, fields:p.fields, base:p.base, videoIds:p.videoIds || [], status:'pending', at:event.at};
       s.submissions[p.id].seasonStats = copy(p.seasonStats || []);
       s.submissions[p.id].statRemovals=copy(p.statRemovals || []);
+      s.submissions[p.id].statLabels=copy(p.statLabels || []);
+      s.submissions[p.id].videoChanges=copy(p.videoChanges || []);
+      s.submissions[p.id].summary=copy(p.summary || {});
+      if(s.statLabelDrafts)delete s.statLabelDrafts[uid];if(s.videoChanges)delete s.videoChanges[uid];
       delete s.statRemovals[uid];
       delete s.statsDrafts[uid];
       delete s.drafts[uid];
@@ -93,6 +106,11 @@ var ProfileV2Core = (function () {
           else if(target.key==='legacy:pitching')s.hiddenLegacy.pitching=true;
           else if(own(s.seasons,target.key)){s.seasons[target.key].removed=true;s.seasons[target.key].removedAt=event.at;}
         });
+        (revision.statLabels || []).forEach(function(c){
+          if(c.key.indexOf('legacy:')===0){if(!s.legacyLabels)s.legacyLabels={};s.legacyLabels[c.key]={teamName:c.teamName,season:c.season,seasonEndDate:c.seasonEndDate};}
+          else if(s.seasons[c.key] && !s.seasons[c.key].removed)Object.assign(s.seasons[c.key],{teamName:c.teamName,season:c.season,seasonEndDate:c.seasonEndDate});
+        });
+        (revision.videoChanges || []).forEach(function(c){if(c.remove)s.videos[c.id].status='removed';else s.videos[c.id].title=c.title;});
         s.publishedVersion = event.version;
       }
     }
@@ -132,6 +150,29 @@ var ProfileV2Core = (function () {
       var video = state.videos[cmd.id];
       if ((!admin && (!access || video.uid !== actor.uid)) || ['draft','rejected'].indexOf(video.status) < 0) fail('Only an unsubmitted or rejected clip can be removed here.');
       payload = {id:cmd.id};
+    } else if(type === 'stageVideoChanges') {
+      if(!access && !admin)fail('Profile access required.');
+      if(cmd.base!==state.publishedVersion)fail('Published profile changed. Reload before editing videos.');
+      if(!Array.isArray(cmd.changes) || !cmd.changes.length || cmd.changes.length>50)fail('Choose 1 to 50 clips.');
+      var seen={};payload={changes:cmd.changes.map(function(c){
+        if(!c || !own(state.videos,c.id) || own(seen,c.id))fail('Invalid or duplicate clip.');seen[c.id]=true;
+        var v=state.videos[c.id];
+        if(v.status==='removed' || v.status==='pending' || (!admin && v.status!=='approved' && v.uid!==actor.uid))fail('This clip cannot be edited.');
+        if(Object.keys(state.submissions).some(function(k){var r=state.submissions[k];return r.status==='pending' && (r.videoChanges || []).some(function(x){return x.id===c.id;});}))fail('This clip is awaiting staff review.');
+        if(c.undo)return {id:c.id,undo:true};
+        var title=typeof c.title==='string'?c.title.trim():v.title;
+        if(!title || title.length>120)fail('Enter a clip title of up to 120 characters.');
+        return {id:c.id,title:title,previousTitle:v.title,remove:c.remove===true,base:cmd.base};
+      })};
+    } else if(type === 'stageStatLabels') {
+      if(!access && !admin)fail('Profile access required.');
+      if(cmd.base!==state.publishedVersion)fail('Published profile changed. Reload before editing statistics.');
+      var target=removalTarget(state,cmd.key);
+      if(own(state.statRemovals[actor.uid] || {},cmd.key))fail('Undo removal before editing this row.');
+      var teamName=String(cmd.teamName || '').trim(),label=String(cmd.season || '').trim(),date=String(cmd.seasonEndDate || '');
+      if(!teamName || teamName.length>160 || !label || label.length>80)fail('Enter a team name and season.');
+      if(!/^20\d{2}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date+'T00:00:00Z')) || new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date)fail('Choose a valid season end date.');
+      payload={key:cmd.key,teamName:teamName,season:label,seasonEndDate:date,previousLabel:target.label,base:cmd.base};
     } else if (type === 'stageSeason') {
       if (!access && !admin) fail('Profile access required.');
       var season = GCStatsV2.validateSeason(cmd.season,state.published.playerName);
@@ -163,7 +204,12 @@ var ProfileV2Core = (function () {
       if (Object.keys(state.submissions).some(function (id) { return state.submissions[id].uid === actor.uid && state.submissions[id].status === 'pending'; })) fail('A submission is already awaiting review.');
       if(Object.keys(state.statsDrafts[actor.uid] || {}).some(function(k){return state.statsDrafts[actor.uid][k].base !== state.publishedVersion;}))fail('Published profile changed. Remove and re-import the staged seasons before submitting.');
       if(Object.keys(state.statRemovals[actor.uid] || {}).some(function(k){return state.statRemovals[actor.uid][k].base !== state.publishedVersion;}))fail('Published profile changed. Cancel and reselect the statistics removals before submitting.');
-      payload = {id:eventId, statRemovals:Object.keys(state.statRemovals[actor.uid] || {}).map(function(k){return copy(state.statRemovals[actor.uid][k]);}), fields:copy(draft.fields), base:draft.base, seasonStats:Object.keys(state.statsDrafts[actor.uid] || {}).map(function(k){return copy(state.statsDrafts[actor.uid][k]);}), videoIds:Object.keys(state.videos).filter(function(id){var v=state.videos[id];return v.uid === actor.uid && (v.status === 'draft' || v.status === 'rejected');})};
+      var labels=Object.values((state.statLabelDrafts || {})[actor.uid] || {}).filter(function(c){return !own(state.statRemovals[actor.uid] || {},c.key);});
+      var videoChanges=Object.values((state.videoChanges || {})[actor.uid] || {});
+      if(labels.concat(videoChanges).some(function(c){return c.base!==state.publishedVersion;}))fail('Published profile changed. Reload and reapply table edits.');
+      if(videoChanges.some(function(c){return !state.videos[c.id] || ['removed','pending'].indexOf(state.videos[c.id].status)>=0;}))fail('A clip changed. Reload before submitting.');
+      payload = {id:eventId,statLabels:copy(labels),videoChanges:copy(videoChanges), statRemovals:Object.keys(state.statRemovals[actor.uid] || {}).map(function(k){return copy(state.statRemovals[actor.uid][k]);}), fields:copy(draft.fields), base:draft.base, seasonStats:Object.keys(state.statsDrafts[actor.uid] || {}).map(function(k){return copy(state.statsDrafts[actor.uid][k]);}), videoIds:Object.keys(state.videos).filter(function(id){var v=state.videos[id];return v.uid === actor.uid && (v.status === 'draft' || v.status === 'rejected') && !videoChanges.some(function(c){return c.id===id && c.remove;});})};
+      payload.summary={fields:Object.keys(draft.fields).filter(function(k){return String(state.published[k] || '')!==draft.fields[k];}),seasons:payload.seasonStats.length,statLabels:labels.length,statRemovals:payload.statRemovals.length,videoUploads:payload.videoIds.length,videoRenames:videoChanges.filter(function(c){return !c.remove;}).length,videoRemovals:videoChanges.filter(function(c){return c.remove;}).length};
     } else if (type === 'review') {
       if (!admin) fail('Staff access required.');
       if (!own(state.submissions, cmd.id) || state.submissions[cmd.id].status !== 'pending') fail('Submission is not pending.');
@@ -181,6 +227,8 @@ var ProfileV2Core = (function () {
       publishedVersion:s.publishedVersion, canEdit:!!allowed, isAdmin:actor.admin === true,
       claim:own(s.claims,actor.uid) ? s.claims[actor.uid] : null};
     if (allowed) {
+      result.statLabels=copy((s.statLabelDrafts || {})[actor.uid] || {});
+      result.videoChanges=copy((s.videoChanges || {})[actor.uid] || {});
       result.statRemovals=copy(s.statRemovals[actor.uid] || {});
       result.legacyStats=legacyStats(s);
       result.statsDrafts = copy(s.statsDrafts[actor.uid] || {});
@@ -198,6 +246,7 @@ var ProfileV2Core = (function () {
     var p = copy(s.published);
     if(s.hiddenLegacy.batting)['offSeason','avg','obp','slg','ops','hr','rbi'].forEach(function(k){p[k]='';});
     if(s.hiddenLegacy.pitching)['pitSeason','ip','k','bb','era','whip'].forEach(function(k){p[k]='';});
+    p.legacyStatsLabels=copy(s.legacyLabels || {});
     p.seasonStats = Object.keys(s.seasons).filter(function(k){return !s.seasons[k].removed;}).map(function(k){return copy(s.seasons[k]);}).sort(function(a,b){return b.seasonEndDate.localeCompare(a.seasonEndDate) || a.key.localeCompare(b.key);});
     p.videos = Object.keys(s.videos).map(function(id){return s.videos[id];}).filter(function(v){return v.status === 'approved';}).map(function(v){return {driveFileId:v.driveFileId,title:v.title,category:v.category,caption:v.caption,sortOrder:v.sortOrder,status:'approved'};});
     // Private family information is never part of this model.

@@ -152,3 +152,12 @@ The source Sheet and original v1 site are untouched. Re-importing a removed GC
 season can restore it through review. The portal exposes legacy rows separately
 as Legacy batting / Legacy pitching, so one can be removed without suppressing
 the other. Stale removal requests remain visible so the user can cancel them.
+
+
+## Table management and moderation (v6)
+
+The portal places final save/submit controls after statistics and video tools. Season tables merge draft overrides with published rows and sort by end date (legacy rows use the public page's year/season ordering). Inline team/season/end-date changes are saved with the whole draft before submission. Bulk statistics removal uses existing version-checked commands; if interrupted, completed rows remain staged and the UI reports how many succeeded.
+
+`stageStatLabels` stages validated metadata for published GC or legacy rows without changing stats or team assignments. `stageVideoChanges` validates an entire batch before staging title edits/removals. Changes are per guardian, base-version checked, frozen on submission, and applied only by staff approval. Pending clips are locked. Removal hides profile records and retains the underlying Drive file; it does not revoke an existing public Drive link.
+
+New submissions retain a frozen high-level summary of changed profile fields, season imports, label edits, statistics removals, video uploads, video renames and removals. Historical submissions show available counts and explicitly mark unavailable text summaries. Rejection preserves public data. Legacy events without the new properties remain replayable.

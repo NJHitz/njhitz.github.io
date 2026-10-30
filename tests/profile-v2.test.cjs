@@ -105,7 +105,9 @@ test('Submit saves current edits before submitting and uses the returned version
     const calls=[],messages=[];
     const context={model:{version:3,publishedVersion:0},$ :()=>({reportValidity:()=>true}),fields:()=>({bio:'Latest unsaved edits'}),message:s=>messages.push(s),
       request:async(action,data)=>{calls.push({action,data});if(action===failure)throw Error('Service unavailable');context.model.version++;return {ok:true};}};
+    context.tableEdits=[];
     vm.createContext(context);
+    vm.runInContext(source.slice(source.indexOf('async function saveAllDraft()'),source.indexOf('async function removeStats(')),context);
     const work=vm.runInContext('(async()=>{'+handler+'})',context);
     if(failure)await assert.rejects(work(),failure==='submit'?/draft was saved, but submission failed/:/Service unavailable/);
     else await work();
@@ -164,4 +166,35 @@ test('upload adapter rejects disguised and oversized files before creating Drive
   assert.throws(()=>context.createVideoV2_({base64:'a'.repeat(35000000),mimeType:'video/mp4',title:'Clip'},'player'),/25 MB/);
   assert.equal(created,0);
   context.createVideoV2_({base64:Buffer.from([0,0,0,16,102,116,121,112,109,112,52,50]).toString('base64'),mimeType:'video/mp4',title:'Clip'},'player');assert.equal(created,1);
+});
+
+test('video renames/removals are private, frozen and moderated, with immutable audit context',()=>{
+ let s=addClip(owned()),id=Object.keys(s.videos)[0];
+ s=act(s,parent,'save',{base:0,fields:{bio:'New bio'}});s=act(s,parent,'submit');s=act(s,staff,'review',{id:Object.keys(s.submissions)[0],decision:'approved'});
+ const base=s.publishedVersion;
+ s=act(s,parent,'stageVideoChanges',{base,changes:[{id,title:'Renamed highlight'}]});
+ assert.equal(core.publicProfile(s).videos[0].title,'Skills');assert.equal(core.view(s,parent).videoChanges[id].title,'Renamed highlight');
+ s=act(s,parent,'save',{base,fields:{bio:'Another bio'}});s=act(s,parent,'submit');const revision=Object.values(s.submissions).at(-1);
+ assert.equal(revision.summary.videoRenames,1);assert.deepEqual(revision.summary.fields,['bio']);
+ assert.throws(()=>act(s,parent,'stageVideoChanges',{base,changes:[{id,title:'Tamper frozen title'}]}),/awaiting staff/);
+ s=act(s,staff,'review',{id:revision.id,decision:'approved'});assert.equal(core.publicProfile(s).videos[0].title,'Renamed highlight');
+ s=act(s,parent,'stageVideoChanges',{base:s.publishedVersion,changes:[{id,remove:true}]});s=act(s,parent,'save',{base:s.publishedVersion,fields:{}});s=act(s,parent,'submit');const removal=Object.values(s.submissions).at(-1);
+ assert.equal(core.publicProfile(s).videos.length,1);s=act(s,staff,'review',{id:removal.id,decision:'approved'});assert.equal(core.publicProfile(s).videos.length,0);assert.equal(s.videos[id].driveFileId,'safe_drive_file_id_123');
+});
+test('bulk video changes validate every target before staging and cannot cross ownership',()=>{
+ let s=addClip(addClip(owned()));const ids=Object.keys(s.videos);
+ assert.throws(()=>act(s,parent,'stageVideoChanges',{base:0,changes:[{id:ids[0],remove:true},{id:'unknown',remove:true}]}),/Invalid/);
+ assert.deepEqual(core.view(s,parent).videoChanges,{});
+ assert.throws(()=>act(s,stranger,'stageVideoChanges',{base:0,changes:[{id:ids[0],remove:true}]}),/access/);
+ s=act(s,parent,'stageVideoChanges',{base:0,changes:ids.map(id=>({id,remove:true}))});assert.equal(Object.keys(core.view(s,parent).videoChanges).length,2);
+ s=act(s,parent,'stageVideoChanges',{base:0,changes:ids.map(id=>({id,undo:true}))});assert.deepEqual(core.view(s,parent).videoChanges,{});
+});
+test('legacy statistics labels are reviewed without changing the team assignment or raw stats',()=>{
+ let s=owned();s.published.avg='.400';s.published.offSeason='2025 Fall';s.published.teamName='NJ Hitz';
+ s=act(s,parent,'stageStatLabels',{base:0,key:'legacy:batting',teamName:'Marauders',season:'Fall 2026',seasonEndDate:'2026-11-01'});
+ assert.equal(core.publicProfile(s).legacyStatsLabels['legacy:batting'],undefined);
+ s=act(s,parent,'save',{base:0,fields:{}});s=act(s,parent,'submit');const r=Object.values(s.submissions)[0];assert.equal(r.summary.statLabels,1);
+ s=act(s,staff,'review',{id:r.id,decision:'approved'});assert.equal(core.publicProfile(s).legacyStatsLabels['legacy:batting'].teamName,'Marauders');assert.equal(core.publicProfile(s).teamName,'NJ Hitz');assert.equal(core.publicProfile(s).avg,'.400');
+ assert.equal(core.view(s,parent).legacyStats[0].season,'Fall 2026');
+ assert.throws(()=>act(s,parent,'stageStatLabels',{base:s.publishedVersion,key:'legacy:batting',teamName:'X',season:'Y',seasonEndDate:'2026-02-31'}),/valid season/);
 });
