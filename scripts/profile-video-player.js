@@ -5,6 +5,14 @@
     seconds = Math.max(0,Math.floor(Number(seconds) || 0));
     return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
   }
+  function driveSource(key,fileId) {
+    // This must be a dedicated public browser key restricted to our sites and
+    // Drive API. Never use a server secret or an OAuth access token here.
+    if(typeof key!=='string'||!/^[A-Za-z0-9_-]{20,200}$/.test(key)||
+       !/^[a-zA-Z0-9_-]{10,200}$/.test(fileId||''))return '';
+    return 'https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(fileId)+
+      '?alt=media&key='+encodeURIComponent(key);
+  }
   function mount(container, {src,title,onFallback} = {}) {
     const doc = container.ownerDocument;
     const el = (tag,cls,text) => { const n=doc.createElement(tag); if(cls)n.className=cls; if(text)n.textContent=text; return n; };
@@ -106,6 +114,6 @@
     if('IntersectionObserver' in root){observer=new root.IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){prepare();observer.disconnect();}},{rootMargin:'600px'});observer.observe(shell);}else prepare();
     return {destroy,prepare};
   }
-  root.NJHitzVideoPlayer={mount,formatTime};
-  if(typeof module==='object'&&module.exports)module.exports={formatTime};
+  root.NJHitzVideoPlayer={mount,formatTime,driveSource};
+  if(typeof module==='object'&&module.exports)module.exports={formatTime,driveSource};
 })(typeof window==='object'?window:globalThis);

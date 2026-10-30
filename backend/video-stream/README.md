@@ -1,3 +1,7 @@
+# PAUSED: paid Cloud Run approach
+
+The owner requires no additional-cost hosting. This service is not deployed and is no longer connected to the profile. Do not follow the deployment steps below unless the owner explicitly chooses this approach again. See `docs/free-drive-video.md` for the current direct-to-Drive experiment.
+
 # NJ Hitz video streaming service
 
 Status: implemented and locally tested; **not deployed or live-validated**. The website retains Drive embeds until `videoStreamBase` is configured. Do not activate it before the checks below pass.

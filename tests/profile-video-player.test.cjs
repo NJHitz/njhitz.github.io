@@ -45,3 +45,11 @@ test('scrubbing prevents auto-hide and seeks to the selected time',()=>{
 test('fullscreen fallback and cleanup restore page state and stop media',async()=>{
  const f=fixture();f.controls.children[4].click();await Promise.resolve();assert(f.shell.classList.contains('hitz-video-expanded'));assert.equal(f.other.inert,true);assert.equal(f.doc.body.style.overflow,'hidden');f.player.destroy();assert.equal(f.other.inert,false);assert.equal(f.doc.body.style.overflow,'auto');assert.equal(f.video.paused,true);assert(!f.video.src);assert.equal(f.timers.size,0);
 });
+test('direct Drive source accepts only explicit public-key configuration and valid file IDs',()=>{
+ const {driveSource}=require('../scripts/profile-video-player.js');
+ assert.equal(driveSource('', 'public_file_123'), '');
+ assert.equal(driveSource('test_browser_key_1234567890','../private'), '');
+ assert.equal(driveSource('Bearer secret','public_file_123'), '');
+ const url=new URL(driveSource('test_browser_key_1234567890','public_file_123'));
+ assert.equal(url.origin,'https://www.googleapis.com');assert.equal(url.pathname,'/drive/v3/files/public_file_123');assert.equal(url.searchParams.get('alt'),'media');
+});

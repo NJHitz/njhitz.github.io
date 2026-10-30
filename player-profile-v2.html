@@ -140,11 +140,11 @@
   <!-- QRCode.js library (lightweight, no dependencies) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="scripts/preload.js"></script>
-  <script src="scripts/profile-v2-config.js?v=20261029-portal"></script>
+  <script src="scripts/profile-v2-config.js?v=20261030-free-drive1"></script>
 
   <link href="css/main.css" rel="stylesheet">
   <link href="scripts/profile-video-player.css?v=20261030-native1" rel="stylesheet">
-  <script src="scripts/profile-video-player.js?v=20261030-native1"></script>
+  <script src="scripts/profile-video-player.js?v=20261030-free-drive1"></script>
   <style>
     .v2-note { max-width:1000px; margin:20px auto; }
     .video-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); }
@@ -1084,13 +1084,12 @@
         frame.allowFullscreen = true;
         frame.setAttribute('webkitallowfullscreen', '');
         frame.referrerPolicy = 'strict-origin-when-cross-origin';
-        const streamBase = window.NJHitzProfileV2 && window.NJHitzProfileV2.videoStreamBase;
-        const slug = new URLSearchParams(location.search).get('player');
-        if (typeof streamBase === 'string' && /^https:\/\/[^/?#]+(?:\/[a-zA-Z0-9_-]+)*\/?$/.test(streamBase) &&
-            /^[a-z0-9][a-z0-9-]{0,119}$/.test(slug || '') && window.NJHitzVideoPlayer) {
+        const browserKey = window.NJHitzProfileV2 && window.NJHitzProfileV2.driveVideoApiKey;
+        const directSource = window.NJHitzVideoPlayer && window.NJHitzVideoPlayer.driveSource(browserKey,id);
+        if (directSource) {
           player.className = '';
           const nativePlayer = window.NJHitzVideoPlayer.mount(player, {
-            src:streamBase.replace(/\/$/,'')+'/v1/video/'+encodeURIComponent(slug)+'/'+encodeURIComponent(id),
+            src:directSource,
             title:heading.textContent,
             onFallback:() => { player.className='video-player';player.replaceChildren(frame); }
           });
