@@ -655,7 +655,7 @@
             <div class="hero-actions">
               <a class="recruit-button primary" href="#video-gallery-card" id="watch-video-link" hidden>Watch video ↓</a>
               <a class="recruit-button" href="#statistics-section" id="stats-link">Stats ↓</a>
-              <a class="recruit-button" href="#recruiting-contact">Recruiting contact</a>
+              <button class="recruit-button" type="button" data-recruiting-contact>Recruiting contact</button>
               <button class="recruit-button" type="button" id="print-profile">Print / Save PDF</button>
             </div>
           </div>
@@ -725,7 +725,7 @@
               </article>
               <article class="card" id="recruiting-contact">
                 <div class="section-eyebrow">Start a conversation</div><h2>Recruiting contact</h2>
-                <ul class="list" id="contact-list"></ul>
+                <p id="recruiting-availability">Send a recruiting message without exposing the player’s email address.</p><button class="recruit-button" type="button" data-recruiting-contact>Send recruiting message</button><ul class="list" id="contact-list"></ul>
               </article>
               <article class="card" id="share-card" style="display:none;">
                 <div class="section-eyebrow">Keep in touch</div><h2>Share this profile</h2>
@@ -754,6 +754,22 @@
     -->
   </div>
 
+
+  <dialog id="recruiting-dialog" aria-labelledby="recruiting-dialog-title">
+    <div class="recruiting-dialog-header"><h2 id="recruiting-dialog-title">Recruiting contact</h2><button type="button" class="recruiting-close" aria-label="Close recruiting form">×</button></div>
+    <p id="recruiting-recipient"></p><p class="recruiting-muted">Subject: <strong>NJ Hitz Recruiting Message</strong></p>
+    <p id="recruiting-unavailable" hidden>The player has not added a recruiting contact email yet. Please contact NJ Hitz for assistance.</p>
+    <form id="recruiting-form">
+      <div class="recruiting-hp" aria-hidden="true"><label for="recruiting-hp">Leave this empty</label><input id="recruiting-hp" name="_gotcha" type="text" tabindex="-1" autocomplete="off"></div>
+      <label for="recruiter-name">Sender’s name</label><input id="recruiter-name" name="name" type="text" required minlength="2" maxlength="120" autocomplete="name">
+      <div class="recruiting-form-grid"><div><label for="recruiter-email">Email</label><input id="recruiter-email" name="email" type="email" required maxlength="250" autocomplete="email"></div><div><label for="recruiter-phone">Phone number</label><input id="recruiter-phone" name="phone" type="tel" required maxlength="40" autocomplete="tel"></div></div>
+      <label for="recruiter-message">Message</label><textarea id="recruiter-message" name="message" required minlength="10" maxlength="5000" rows="5"></textarea>
+      <p class="recruiting-muted">Your name, email, phone number and message will be sent to the player’s recruiting contact. The player’s email address stays private.</p>
+      <p id="recruiting-status" role="status" aria-live="polite"></p><div class="recruiting-dialog-actions"><button class="recruit-button primary" id="recruiting-send" type="submit">Send message</button><button class="recruit-button recruiting-close" type="button">Cancel</button></div>
+    </form>
+  </dialog>
+  <link href="scripts/recruiting-contact.css?v=20261030-private1" rel="stylesheet">
+  <script src="scripts/recruiting-contact.js?v=20261030-private1"></script>
 
   <!-- Loading overlay -->
   <div id="loading-overlay">
@@ -864,6 +880,7 @@
         const player = window.NJHitzProfileRoster.apply(savedPlayer,await currentTeamPromise);
         hideOverlay();
         renderPlayer(player);
+        window.NJHitzRecruitingContact.setPlayer({name:player.name,available:player.recruitingContactAvailable});
         renderApprovedVideos(apiPlayer);
         updateRecruitingNavigation(player);
       })
@@ -992,7 +1009,7 @@
         a.guardian2Email = '';
         a.guardian2Phone = '';
       }
-      var contactEmail = a.playerEmail || a.guardian1Email || '';
+      var contactEmail = ''; // Destination addresses are never displayed in the public profile.
       var contactPhone = a.playerPhone || a.guardian1Phone || '';
 
       return {
@@ -1019,6 +1036,7 @@
         academics: a.academics || '',
         family: a.family || '',
 
+        recruitingContactAvailable: a.recruitingContactAvailable===true,
         contactEmail: contactEmail,
         contactPhone: contactPhone,
         guardian1Name: a.guardian1Name || '',
@@ -1052,9 +1070,9 @@
       watch.href = '#video-gallery-card';
       document.getElementById('measurables-nav').hidden = !player.measurables.length;
       document.getElementById('stats-empty').hidden = !!(player.statsOffense.length || player.statsPitching.length);
-      if (!player.contactEmail && !player.contactPhone && !player.guardian1Name && !player.guardian2Name) {
+      if (!player.recruitingContactAvailable && !player.contactPhone && !player.guardian1Name && !player.guardian2Name) {
         const item = document.createElement('li');
-        item.textContent = 'Recruiting contact information has not been published.';
+        item.textContent = 'A recruiting contact email has not been added yet.';
         document.getElementById('contact-list').append(item);
       }
     }
@@ -1219,11 +1237,6 @@
       // Recruiting contact
       const contactList = document.getElementById('contact-list');
       contactList.innerHTML = '';
-      if (p.contactEmail) {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>Email:</strong> <a href="mailto:${escapeHtml(p.contactEmail)}">${escapeHtml(p.contactEmail)}</a>`;
-        contactList.appendChild(li);
-      }
       if (p.contactPhone) {
         const li = document.createElement('li');
         li.innerHTML = `<strong>Phone:</strong> <a href="tel:${escapeHtml(p.contactPhone)}">${escapeHtml(formatPhoneNumber(p.contactPhone))}</a>`;

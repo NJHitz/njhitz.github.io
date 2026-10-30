@@ -13,6 +13,7 @@ var ProfileV2Core = (function () {
   function fail(message) { throw new Error(message); }
   function copy(v) { return JSON.parse(JSON.stringify(v)); }
   function own(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+  function isEmail(value){return typeof value==='string' && value.length<=250 && !/[\r\n,;<>():\"\\]/.test(value) && /^[^\s@]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(value.trim());}
   function clean(input) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) fail('Invalid profile fields.');
     var out = {};
@@ -23,6 +24,7 @@ var ProfileV2Core = (function () {
       if (/Url$/.test(key) && out[key]) {
         if (!/^https:\/\/[^\s]+$/i.test(out[key])) fail('Video and recruiting links must use HTTPS.');
       }
+      if (key === 'playerEmail' && out[key] && !isEmail(out[key]))fail('Enter a valid recruiting contact email address.');
       if (key === 'gradYear' && out[key] && !/^20\d{2}$/.test(out[key])) fail('Enter a four-digit graduation year.');
       if (key === 'contactDisplayOptIn' && !/^(Yes|No)$/.test(out[key])) fail('Choose Yes or No for contact display.');
     });
@@ -251,9 +253,11 @@ var ProfileV2Core = (function () {
     p.seasonStats = Object.keys(s.seasons).filter(function(k){return !s.seasons[k].removed;}).map(function(k){return copy(s.seasons[k]);}).sort(function(a,b){return b.seasonEndDate.localeCompare(a.seasonEndDate) || a.key.localeCompare(b.key);});
     p.videos = Object.keys(s.videos).map(function(id){return s.videos[id];}).filter(function(v){return v.status === 'approved';}).map(function(v){return {driveFileId:v.driveFileId,title:v.title,category:v.category,caption:v.caption,sortOrder:v.sortOrder,status:'approved'};});
     // Private family information is never part of this model.
-    if (p.contactDisplayOptIn !== 'Yes') { delete p.playerEmail; delete p.playerPhone; }
+    p.recruitingContactAvailable=isEmail(p.playerEmail || '');
+    delete p.playerEmail;
+    if (p.contactDisplayOptIn !== 'Yes') delete p.playerPhone;
     return p;
   }
-  return {fields:FIELDS, clean:clean, empty:empty, apply:apply, command:command, view:view, publicProfile:publicProfile};
+  return {fields:FIELDS,isEmail:isEmail, clean:clean, empty:empty, apply:apply, command:command, view:view, publicProfile:publicProfile};
 }());
 if (typeof module !== 'undefined') module.exports = ProfileV2Core;

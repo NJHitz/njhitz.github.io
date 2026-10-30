@@ -70,6 +70,7 @@ function loadV2_(book, slug) {
 function doGet(e) {
   try {
     var c = configV2_(), slug = slugV2_(e.parameter.slug);
+    if(e.parameter.action==='recruitingChallenge')return jsonV2_({ok:true,challenge:recruitingChallengeV2_(slug)});
     var loaded = loadV2_(SpreadsheetApp.openById(c.sheetId), slug);
     return jsonV2_({ok:true, player:ProfileV2Core.publicProfile(loaded.state)});
   } catch (error) { return jsonV2_({ok:false, error:'Profile unavailable.'}); }
@@ -80,6 +81,7 @@ function doPost(e) {
     if (!e.postData || e.postData.contents.length > 35100000) throw new Error('Invalid request size.');
     var req = JSON.parse(e.postData.contents), c = configV2_();
     if (req.action !== 'uploadVideo' && e.postData.contents.length > 45000) throw new Error('Invalid request size.');
+    if(req.action==='recruitingContact'){if(e.postData.contents.length>12000)throw new Error('Message is too large.');return jsonV2_(recruitingSendV2_(req,c));}
     if (req.action === 'addVideo') throw new Error('Use the video upload form.');
     var actor = actorV2_(req.idToken,c), slug = slugV2_(req.slug);
     lock = LockService.getScriptLock();

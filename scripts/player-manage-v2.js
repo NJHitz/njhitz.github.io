@@ -9,8 +9,8 @@ const fieldSpecs = [
   ['gpa','Reported GPA',30],['intendedMajor','Intended major',250],['honors','Honors and activities',3500,true],
   ['academics','Courses and academic interests',5000,true],['height','Height',40],['cityState','City and state',160],
   ['primaryPosition','Primary position',20],['positions','Other positions (comma-separated)',120],['batsThrows','Bats / throws (R/R, L/R, etc.)',20],
-  ['playerEmail','Public recruiting email',250],['playerPhone','Public recruiting phone',60],
-  ['contactDisplayOptIn','Display recruiting contact publicly?',3,false,'select'],
+  ['playerEmail','Private recruiting contact email',250,false,'email'],['playerPhone','Public recruiting phone',60],
+  ['contactDisplayOptIn','Display recruiting phone publicly?',3,false,'select'],
   ['homeToFirst','Home-to-first time',40],['firstToThird','First-to-third time',40],
   ['overhandVelo','Overhand velocity (mph)',40],['exitVelo','Exit velocity (mph)',40],
   ['highlightVideoUrl','Existing highlight video URL',1000],['recruitingProfileUrl','External recruiting profile URL',1000],
@@ -65,16 +65,16 @@ function fields() {
 function renderFields() {
   const currentDraft = model.draft && model.draft.base === model.publishedVersion ? model.draft.fields : {};
   const values = {...model.published, ...currentDraft};
-  $('profile-fields').replaceChildren();
+  $('profile-fields').replaceChildren();$('recruiting-fields').replaceChildren();
   fieldSpecs.forEach(([key,label,max,multi,kind]) => {
     const wrap = document.createElement('div');
     const lab = text('label',label);lab.htmlFor = 'field-' + key;
     const input = document.createElement(kind === 'select' ? 'select' : multi ? 'textarea' : 'input');
-    input.id = 'field-' + key;input.name = key;
+    input.id = 'field-' + key;input.name = key;if(kind==='email')input.type='email';
     if (kind === 'select') ['No','Yes'].forEach(value => {const option = text('option',value);option.value = value;input.append(option);});
     else input.maxLength = max;
     input.value = values[key] || (kind === 'select' ? 'No' : '');
-    wrap.append(lab,input);$('profile-fields').append(wrap);
+    wrap.append(lab,input);$(key==='playerEmail' || key==='playerPhone' || key==='contactDisplayOptIn'?'recruiting-fields':'profile-fields').append(wrap);
   });
 }
 function actionButton(label, work) {
@@ -363,7 +363,7 @@ async function start() {
     videoOptimization?.abort();
     gcCapture=null;$('gc-form').reset();$('gc-capture-status').textContent='';$('gc-identity').textContent='';$('gc-open').hidden=true;
     generation++;model=null;['claim-card','editor-card','staff-card'].forEach(id=>$(id).hidden=true);
-    $('profile-fields').replaceChildren();$('submission-history').replaceChildren();$('staff-claims').replaceChildren();$('staff-reviews').replaceChildren();$('password').value='';
+    $('profile-fields').replaceChildren();$('recruiting-fields').replaceChildren();$('submission-history').replaceChildren();$('staff-claims').replaceChildren();$('staff-reviews').replaceChildren();$('password').value='';
     $('auth-card').hidden=!!user;$('account-card').hidden=!user;
     if(!user){$('account-label').textContent='';message('');return;}
     $('account-label').textContent='Signed in as ' + user.email;

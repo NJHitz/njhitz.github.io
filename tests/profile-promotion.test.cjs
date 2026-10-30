@@ -16,7 +16,7 @@ test('Watch Video requires uploaded approved gallery clips; external links alone
  const fn=profile.slice(profile.indexOf('function updateRecruitingNavigation(player)'),profile.indexOf('// V2 contract:',profile.indexOf('function updateRecruitingNavigation(player)')));
  for(const gallery of [0,1])for(const links of [false,true]){
   const nodes={'video-gallery':{childElementCount:gallery},'links-card':{style:{display:links?'':'none'}},'video-empty':{},'watch-video-link':{},'measurables-nav':{},'stats-empty':{}};
-  const ctx={document:{getElementById:id=>nodes[id]}};vm.createContext(ctx);vm.runInContext(fn,ctx);ctx.updateRecruitingNavigation({measurables:[],statsOffense:[],statsPitching:[],contactEmail:'coach@example.test'});
+  const ctx={document:{getElementById:id=>nodes[id]}};vm.createContext(ctx);vm.runInContext(fn,ctx);ctx.updateRecruitingNavigation({measurables:[],statsOffense:[],statsPitching:[],recruitingContactAvailable:true,contactEmail:'coach@example.test'});
   assert.equal(nodes['watch-video-link'].hidden,!gallery);assert.equal(nodes['watch-video-link'].href,'#video-gallery-card');
  }
 });
