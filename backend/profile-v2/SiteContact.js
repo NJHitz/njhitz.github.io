@@ -1,5 +1,9 @@
 /* Fixed-recipient website contact inbox. No public reads, arbitrary destinations or email copies. */
 function setupSiteContactV2(){siteContactSheet_(SpreadsheetApp.openById(configV2_().sheetId));console.info('Website contact inbox ready. No email sent.');}
+function verifySiteContactSenderV2(){
+  if(GmailApp.getAliases().map(function(a){return a.toLowerCase();}).indexOf('info@njhitz.org')<0)throw new Error('info@njhitz.org is not an available Gmail sending alias.');
+  console.info('Website sender verified: info@njhitz.org.');
+}
 function siteContactSheet_(book){
   var sheet=book.getSheetByName('WebsiteContactMessages'),headers=['Received at','Message ID','Name','Email','Phone','Message','Notification status','Fingerprint'];
   if(!sheet){sheet=book.insertSheet('WebsiteContactMessages');sheet.getRange(1,1,1,8).setValues([headers]);sheet.setFrozenRows(1);}
@@ -10,7 +14,8 @@ function siteContactSheet_(book){
 function siteContactMail_(sheet,row,r){
   if(MailApp.getRemainingDailyQuota()<1)return false;
   try{
-    MailApp.sendEmail({to:'info@njhitz.org',replyTo:String(r[3]),name:'NJ Hitz Website',subject:'NJ HITZ Website — Contact Form',body:'New website contact message\n\nName: '+r[2]+'\nEmail: '+r[3]+'\nPhone: '+r[4]+'\n\nMessage:\n'+r[5]+'\n\nMessage ID: '+r[1]+'\nReply to this email to contact the sender.'});
+    verifySiteContactSenderV2();
+    GmailApp.sendEmail('info@njhitz.org','NJ HITZ Website — Contact Form','New website contact message\n\nName: '+r[2]+'\nEmail: '+r[3]+'\nPhone: '+r[4]+'\n\nMessage:\n'+r[5]+'\n\nMessage ID: '+r[1]+'\nReply to this email to contact the sender.',{from:'info@njhitz.org',replyTo:String(r[3]),name:'NJ Hitz Website'});
     sheet.getRange(row,7).setValue('Sent');return true;
   }catch(error){console.warn(JSON.stringify({event:'site-contact-mail',status:'pending',requestId:String(r[1])}));return false;}
 }
