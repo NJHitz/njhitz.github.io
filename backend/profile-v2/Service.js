@@ -71,6 +71,7 @@ function doGet(e) {
   try {
     var c = configV2_();
     if(e.parameter.action==='tryoutChallenge')return jsonV2_({ok:true,challenge:recruitingChallengeV2_('tryout-registration')});
+    if(e.parameter.action==='siteContactChallenge')return jsonV2_({ok:true,challenge:recruitingChallengeV2_('website-contact')});
     var slug = slugV2_(e.parameter.slug);
     if(e.parameter.action==='recruitingChallenge')return jsonV2_({ok:true,challenge:recruitingChallengeV2_(slug)});
     var loaded = loadV2_(SpreadsheetApp.openById(c.sheetId), slug);
@@ -85,6 +86,7 @@ function doPost(e) {
     if (req.action !== 'uploadVideo' && e.postData.contents.length > 45000) throw new Error('Invalid request size.');
     if(req.action==='recruitingContact'){if(e.postData.contents.length>12000)throw new Error('Message is too large.');return jsonV2_(recruitingSendV2_(req,c));}
     if(req.action==='tryoutRegister'){if(e.postData.contents.length>6000)throw new Error('Registration is too large.');return jsonV2_(tryoutRegisterV2_(req,c));}
+    if(req.action==='siteContact'){if(e.postData.contents.length>12000)throw new Error('Message is too large.');return jsonV2_(siteContactSendV2_(req,c));}
     if (req.action === 'addVideo') throw new Error('Use the video upload form.');
     var actor = actorV2_(req.idToken,c), slug = slugV2_(req.slug);
     lock = LockService.getScriptLock();
@@ -189,6 +191,7 @@ function notifySubmissionV2_(state,event) {
   props.setProperty(key,new Date().toISOString());
 }
 function retryProfileNotificationsV2() {
+  retrySiteContactNotificationsV2_();
   retryTryoutNotificationsV2_();
   var lock = LockService.getScriptLock(); if (!lock.tryLock(1000)) return;
   try {
@@ -205,3 +208,4 @@ function retryProfileNotificationsV2() {
     });
   } finally { lock.releaseLock(); }
 }
+

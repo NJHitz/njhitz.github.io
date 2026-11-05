@@ -45,7 +45,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
   <script src="scripts/preload.js"></script>
-  <!--- <script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script> --->
   
   <link href="css/main.css" rel="stylesheet">
   <style>
@@ -175,7 +174,7 @@
 
     
 
-    /* Modal (Formspree) */
+    /* Contact modal */
     .modal{position:fixed;inset:0;display:none;z-index:10000}
     .modal.open{display:block}
     .modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78)}
@@ -524,26 +523,24 @@
       <h3 id="emailModalTitle">Contact NJ HITZ</h3>
       <p class="modal__subtitle">Send us a message and we’ll get back to you.</p>
 
-      <form id="emailForm" action="https://formspree.io/f/xrbywlgw" method="POST" novalidate>
-        <input type="hidden" name="_subject" value="NJ HITZ Website — Contact Form" />
-        <input type="hidden" name="g-recaptcha-response" id="recaptchaToken" />
+      <form id="emailForm" method="POST" novalidate>
         <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
         <div class="form-field">
           <label for="cfName">Your Name</label>
-          <input id="cfName" name="name" type="text" required placeholder="Jane Doe" />
+          <input maxlength="120" id="cfName" name="name" type="text" required placeholder="Jane Doe" />
           <div class="field-error" id="errName" aria-live="polite"></div>
         </div>
 
         <div class="form-field">
           <label for="cfEmail">Your Email</label>
-          <input id="cfEmail" name="email" type="email" required placeholder="jane@example.com" />
+          <input maxlength="250" id="cfEmail" name="email" type="email" required placeholder="jane@example.com" />
           <div class="field-error" id="errEmail" aria-live="polite"></div>
         </div>
 
         <div class="form-field">
           <label for="cfPhone">Phone Number</label>
-          <input id="cfPhone" name="phone" type="tel" required placeholder="(555) 123-4567"
+          <input maxlength="40" id="cfPhone" name="phone" type="tel" required placeholder="(555) 123-4567"
                 pattern="^(\+?\d{1,2}\s?)?(\(?\d{3}\)?[\\s.-]?)?\\d{3}[\\s.-]?\\d{4}$"
                 title="Enter a valid 10-digit phone number" />
           <div class="field-error" id="errPhone" aria-live="polite"></div>
@@ -551,7 +548,7 @@
 
         <div class="form-field">
           <label for="cfMessage">Message</label>
-          <textarea id="cfMessage" name="message" rows="4" required placeholder="How can we help?"></textarea>
+          <textarea minlength="10" maxlength="5000" id="cfMessage" name="message" rows="4" required placeholder="How can we help?"></textarea>
           <div class="field-error" id="errMessage" aria-live="polite"></div>
         </div>
 
@@ -560,7 +557,8 @@
           <button class="btn" type="button" data-close>Cancel</button>
         </div>
 
-        <p class="form-success" id="emailSuccess" hidden>✅ Thanks! Your message has been sent.</p>
+        <p id="emailStatus" role="status" aria-live="polite"></p>
+        <p class="form-success" id="emailSuccess" role="status" hidden>Thanks! Your message has been received.</p>
         <p class="form-error" id="emailError" hidden>⚠️ Sorry — please check your details and try again.</p>
       </form>
     </div>
@@ -971,7 +969,9 @@
       const successEl = document.getElementById('emailSuccess');
       const errorEl = document.getElementById('emailError');
       const sendBtn = document.getElementById('sendBtn');
-      const recaptchaTokenEl = document.getElementById('recaptchaToken');
+      const statusEl = document.getElementById('emailStatus');
+      let sending=false, security=null, preparing=null;
+      const endpoint='https://script.google.com/macros/s/AKfycbz3eGOVLqW8lEYYfpn4jvDnoARyQr6C_9MdNmtawZN5trsi1zefQa_9fVAs0u6JoAmE/exec';
 
       const fName = document.getElementById('cfName');
       const fEmail = document.getElementById('cfEmail');
@@ -989,6 +989,7 @@
       const phoneRegex = /^(\+?\d{1,2}\s?)?(\(?\d{3}\)?[\s.-]?)?\d{3}[\s.-]?\d{4}$/;
 
       function openModal(){
+        if(!security)prepare().catch(()=>{});
         lastFocus = document.activeElement;
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
@@ -996,6 +997,8 @@
         setTimeout(()=> fName.focus(), 50);
       }
       function closeModal(){
+        if(sending)return;
+        statusEl.textContent="";
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden','true');
         document.body.style.overflow = '';
@@ -1042,7 +1045,7 @@
           clearError(input, ePhone); return true;
         }
         if (id === 'cfMessage'){
-          if (!val){ setError(input, eMsg, 'Message is required.'); return false; }
+          if (val.length<10 || val.length>5000){ setError(input, eMsg, 'Enter a message of 10–5,000 characters.'); return false; }
           clearError(input, eMsg); return true;
         }
         return true;
@@ -1060,39 +1063,38 @@
         return results.every(Boolean);
       }
 
-      form.addEventListener('submit', async (e)=>{
-        e.preventDefault();
-        successEl.hidden = true; errorEl.hidden = true;
-
-        const ok = validateAll();
-        if (!ok) { errorEl.hidden = false; errorEl.textContent = '⚠️ Please fix the highlighted fields.'; return; }
-
-        sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
-
-        try{
-          await grecaptcha.ready();
-          const token = await grecaptcha.execute('YOUR_RECAPTCHA_SITE_KEY', {action: 'contact'});
-          recaptchaTokenEl.value = token;
-        }catch(err){
-          console.warn('reCAPTCHA error:', err);
-        }
-
-        try{
-          const data = new FormData(form);
-          const resp = await fetch(form.action, { method:'POST', body:data, headers:{'Accept':'application/json'} });
-          if(resp.ok){
-            form.reset();
-            [fName,fEmail,fPhone,fMsg].forEach(el => el.removeAttribute('aria-invalid'));
-            successEl.hidden = false;
-            setTimeout(closeModal, 1500);
-          } else {
-            errorEl.hidden = false; errorEl.textContent = '⚠️ There was a problem sending your message. Please try again.';
+      async function request(url,options){
+        const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),30000);
+        try{const response=await fetch(url,{...options,signal:ctrl.signal,credentials:'omit',cache:'no-store'});const data=await response.json();if(!response.ok || !data.ok)throw new Error(data.error || 'Your message could not be submitted. Please retry.');return data;}finally{clearTimeout(timer);}
+      }
+      function prepare(){
+        if(preparing)return preparing;
+        preparing=(async()=>{
+          const data=await request(endpoint+'?action=siteContactChallenge');
+          const challenge=data.challenge,encoder=new TextEncoder();
+          if(!crypto.subtle)throw new Error('Please use an updated browser to submit this form.');
+          for(let solution=0;solution<1000000;solution++){
+            const hash=new Uint8Array(await crypto.subtle.digest('SHA-256',encoder.encode(challenge.nonce+':'+solution)));
+            if(hash[0]===0 && hash[1]<16){security={challenge,solution};return security;}
+            if(solution%100===0)await new Promise(resolve=>setTimeout(resolve,0));
           }
-        }catch{
-          errorEl.hidden = false; errorEl.textContent = '⚠️ Network error. Please try again.';
-        }finally{
-          sendBtn.disabled = false; sendBtn.textContent = 'Send';
-        }
+          throw new Error('The security check could not finish. Please retry.');
+        })().finally(()=>preparing=null);return preparing;
+      }
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();if(sending)return;
+        successEl.hidden=true;errorEl.hidden=true;statusEl.textContent='';
+        if(!validateAll()){errorEl.hidden=false;errorEl.textContent='Please fix the highlighted fields.';return;}
+        sending=true;sendBtn.disabled=true;sendBtn.textContent='Sending…';form.setAttribute('aria-busy','true');statusEl.textContent='Sending your message. Please keep this page open…';
+        try{
+          if(!security || security.challenge.expiresAt<Date.now()+10000)await prepare();
+          const wait=security.challenge.issuedAt+3100-Date.now();if(wait>0)await new Promise(resolve=>setTimeout(resolve,wait));
+          const data=await request(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action:'siteContact',name:fName.value.trim(),email:fEmail.value.trim(),phone:fPhone.value.trim(),message:fMsg.value.trim(),_gotcha:form.elements._gotcha.value,...security})});
+          if(data.accepted!==true)throw new Error('Your message could not be confirmed. Please retry.');
+          form.reset();security=null;successEl.hidden=false;
+          successEl.textContent=data.sent?'Thanks! Your message has been sent.':'Thanks! Your message has been received.';
+        }catch(error){security=null;errorEl.hidden=false;errorEl.textContent=error.name==='AbortError'?'The response timed out. Retrying the same message will not duplicate it.':error.message;}
+        finally{sending=false;statusEl.textContent='';sendBtn.disabled=false;sendBtn.textContent='Send';form.removeAttribute('aria-busy');}
       });
     })();
   </script>
@@ -1101,3 +1103,4 @@
   <script src="scripts/staff-home.js"></script>
 </body>
 </html>
+
