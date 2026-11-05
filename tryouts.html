@@ -53,8 +53,8 @@
   @media (min-width:640px){ .two-col{grid-template-columns:1fr 1fr} }
   .form-field{display:block}
   label{display:block;margin:0 0 6px;font-weight:700;color:var(--hitz-gold);font-size:.95rem}
-  input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#1c1c1e;color:var(--hitz-white);font-size:1rem;outline:none;transition:border-color .2s,box-shadow .2s}
-  input:focus,textarea:focus{border-color:var(--hitz-gold);box-shadow:0 0 0 2px rgba(179,139,53,.15)}
+  input,textarea,select{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#1c1c1e;color:var(--hitz-white);font-size:1rem;outline:none;transition:border-color .2s,box-shadow .2s}
+  input:focus,textarea:focus,select:focus{border-color:var(--hitz-gold);box-shadow:0 0 0 2px rgba(179,139,53,.15)}
   input::placeholder,textarea::placeholder{color:#9c9ca5}
   .field-error{display:block;color:#ff9c9c;font-size:.9rem;margin-top:6px;min-height:1.1em}
   input[aria-invalid="true"],textarea[aria-invalid="true"]{border-color:#ff6b6b!important;box-shadow:0 0 0 2px rgba(255,107,107,.15)}
@@ -75,19 +75,18 @@
     <div class="form-wrapper" role="region" aria-labelledby="formTitle">
       <h2 id="formTitle">Player Information</h2>
 
-      <!-- IMPORTANT:
-          Replace GOOGLE_FORM_ACTION and each entry.* mapping in the JS below. -->
-      <form id="tryoutForm" novalidate>
+      <form id="tryoutForm">
+        <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden"><label for="website">Leave blank</label><input id="website" name="_gotcha" type="text" tabindex="-1" autocomplete="off"></div>
         <div class="form-grid">
           <div class="form-field">
             <label for="playerName">Player's Name</label>
-            <input type="text" id="playerName" placeholder="Jane Doe" autocomplete="name" required />
+            <input type="text" maxlength="120" id="playerName" placeholder="Jane Doe" autocomplete="name" required />
             <span class="field-error" id="errName"></span>
           </div>
 
           <div class="form-field">
             <label for="playerAddress">Player's Address</label>
-            <textarea id="playerAddress" rows="2" placeholder="Street, City, State" autocomplete="street-address" required></textarea>
+            <textarea maxlength="300" id="playerAddress" rows="2" placeholder="Street, City, State" autocomplete="street-address" required></textarea>
             <span class="field-error" id="errAddress"></span>
           </div>
         </div>
@@ -103,7 +102,7 @@
 
           <div class="form-field">
             <label for="guardianEmail">Parent or Guardian's Email</label>
-            <input type="email" id="guardianEmail" placeholder="name@example.com" inputmode="email" autocomplete="email" required />
+            <input type="email" maxlength="250" id="guardianEmail" placeholder="name@example.com" inputmode="email" autocomplete="email" required />
             <span class="field-error" id="errEmail"></span>
           </div>
         </div>
@@ -117,7 +116,7 @@
 
           <div class="form-field">
             <label for="ageGradYear">Player's Grad Year</label>
-            <input type="text" id="ageGradYear" placeholder="Class of 2029" required />
+            <select id="ageGradYear" required aria-describedby="errAgeGrad"><option value="">Select graduation year</option></select>
             <span class="field-error" id="errAgeGrad"></span>
           </div>
         </div>
@@ -125,7 +124,7 @@
         <div class="form-grid">
           <div class="form-field">
             <label for="highSchool">High School (optional)</label>
-            <input type="text" id="highSchool" placeholder="School Name" autocomplete="organization" />
+            <input type="text" maxlength="160" id="highSchool" placeholder="School Name" autocomplete="organization" />
             <span class="field-error" id="errHS"></span>
           </div>
         </div>
@@ -133,16 +132,16 @@
         <div class="form-grid">
           <div class="form-field">
             <label>Positions You Play</label>
-            <input type="text" id="pos1" name="Position 1" placeholder="Position 1 (e.g., P, SS, C)" />
+            <select id="pos1" aria-label="Position 1" required><option value="">Select primary position</option><option value="P">Pitcher</option><option value="C">Catcher</option><option value="1B">First base</option><option value="2B">Second base</option><option value="3B">Third base</option><option value="SS">Shortstop</option><option value="LF">Left field</option><option value="CF">Center field</option><option value="RF">Right field</option><option value="OF">Outfield</option><option value="IF">Infield</option><option value="Utility">Utility</option></select>
             <span class="field-error" id="errPos1"></span>
           </div>
           <div class="form-field">
             <label class="sr-only" style="position: absolute; left: -9999px">Additional Positions</label>
-            <input type="text" id="pos2" name="Position 2" placeholder="Position 2 (optional)" />
+            <select id="pos2" aria-label="Position 2" ><option value="">None / optional</option><option value="P">Pitcher</option><option value="C">Catcher</option><option value="1B">First base</option><option value="2B">Second base</option><option value="3B">Third base</option><option value="SS">Shortstop</option><option value="LF">Left field</option><option value="CF">Center field</option><option value="RF">Right field</option><option value="OF">Outfield</option><option value="IF">Infield</option><option value="Utility">Utility</option></select>
             <span class="field-error" id="errPos2"></span>
           </div>
           <div class="form-field">
-            <input type="text" id="pos3" name="Position 3" placeholder="Position 3 (optional)" />
+            <select id="pos3" aria-label="Position 3" ><option value="">None / optional</option><option value="P">Pitcher</option><option value="C">Catcher</option><option value="1B">First base</option><option value="2B">Second base</option><option value="3B">Third base</option><option value="SS">Shortstop</option><option value="LF">Left field</option><option value="CF">Center field</option><option value="RF">Right field</option><option value="OF">Outfield</option><option value="IF">Infield</option><option value="Utility">Utility</option></select>
             <span class="field-error" id="errPos3"></span>
           </div>
         </div>
@@ -151,153 +150,16 @@
           <button id="submitBtn" type="submit">Submit Registration</button>
           <button type="button" class="btn-cancel" onclick="document.getElementById('tryoutForm').reset()">Reset Form</button>
         </div>
-        <p class="success-message" id="successMsg">Thank you! Your tryout registration has been submitted. We'll be in touch!</p>
+        <p id="formStatus" role="status" aria-live="polite">Protected by a free background security check.</p>
+        <noscript>JavaScript is required to securely submit this form. Contact info@njhitz.org for help.</noscript>
+        <p class="success-message" id="successMsg" role="status" hidden>Thank you! Your tryout registration has been submitted. We'll be in touch!</p>
       </form>
     </div>
 
     <div id="footer"></div>
   </div>
 
-<script>
-(function(){
-  // --- 1) SET THESE TO YOUR GOOGLE FORM DETAILS ---
-  // Open your live Google Form, copy its "action" URL (ends with /formResponse)
-  const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdFQbPCuqXE3CL1Bqqg3CvsjZh8_FfPWgzC1pQlrxwvE5nztw/formResponse";
-
-  // Map your local fields -> Google Form entry IDs (find them in the form HTML)
-  const MAP = {
-    name:       "entry.1398959969", // <-- fixed (had been 139895996)
-    address:    "entry.1424698732",
-    phone:      "entry.1957154046",
-    email:      "entry.1992213922",
-    agegrad:    "entry.2106801821",
-    highschool: "entry.1125414312",
-    pos1:       "entry.1376913827",
-    pos2:       "entry.754009436",
-    pos3:       "entry.287020567",
-    birthdateBase: "entry.1243531652" // post _year/_month/_day
-  };
-  // ------------------------------------------------
-
-  const form = document.getElementById('tryoutForm');
-  const success = document.getElementById('successMsg');
-  const btn = document.getElementById('submitBtn');
-
-  // Fields
-  const fName = document.getElementById('playerName');
-  const fAddress = document.getElementById('playerAddress');
-  const fPhone = document.getElementById('guardianPhone');
-  const fEmail = document.getElementById('guardianEmail');
-  const fBirth = document.getElementById('birthdate');
-  const fAgeGrad = document.getElementById('ageGradYear');
-  const fHS = document.getElementById('highSchool');
-  const fPos1 = document.getElementById('pos1');
-  const fPos2 = document.getElementById('pos2');
-  const fPos3 = document.getElementById('pos3');
-
-  // Errors
-  const eName = document.getElementById('errName');
-  const eAddress = document.getElementById('errAddress');
-  const ePhone = document.getElementById('errPhone');
-  const eEmail = document.getElementById('errEmail');
-  const eBirth = document.getElementById('errBirthdate');
-  const eAgeGrad = document.getElementById('errAgeGrad');
-
-  const phoneRegex = /^(\+?\d{1,2}\s?)?(\(?\d{3}\)?[\s\.-]?)?\d{3}[\s\.-]?\d{4}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  function setError(input, errEl, msg){ input.setAttribute('aria-invalid','true'); errEl.textContent = msg; }
-  function clearError(input, errEl){ input.removeAttribute('aria-invalid'); errEl.textContent = ''; }
-
-  function validateField(input){
-    const id = input.id;
-    const val = (input.value || '').trim();
-
-    if(id === 'playerName'){ if(!val){ setError(input,eName,'Player name is required.'); return false;} clearError(input,eName); return true; }
-    if(id === 'playerAddress'){ if(!val){ setError(input,eAddress,'Address is required.'); return false;} clearError(input,eAddress); return true; }
-    if(id === 'guardianPhone'){
-      if(!val){ setError(input,ePhone,'Phone is required.'); return false; }
-      if(!phoneRegex.test(val)){ setError(input,ePhone,'Enter a valid phone number.'); return false; }
-      clearError(input,ePhone); return true;
-    }
-    if(id === 'guardianEmail'){
-      if(!val){ setError(input,eEmail,'Email is required.'); return false; }
-      if(!emailRegex.test(val)){ setError(input,eEmail,'Enter a valid email address.'); return false; }
-      clearError(input,eEmail); return true;
-    }
-    if(id === 'birthdate'){ if(!val){ setError(input,eBirth,'Birthdate is required.'); return false;} clearError(input,eBirth); return true; }
-    if(id === 'ageGradYear'){ if(!val){ setError(input,eAgeGrad,'Grad Year is required.'); return false;} clearError(input,eAgeGrad); return true; }
-    return true;
-  }
-
-  function validateAll(){
-    const results = [
-      validateField(fName),
-      validateField(fAddress),
-      validateField(fPhone),
-      validateField(fEmail),
-      validateField(fBirth),
-      validateField(fAgeGrad)
-    ];
-    const firstInvalid = [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].find(el => el.getAttribute('aria-invalid') === 'true');
-    if(firstInvalid) firstInvalid.focus();
-    return results.every(Boolean);
-  }
-
-  [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].forEach(el=>{
-    el.addEventListener('input', ()=>validateField(el));
-    el.addEventListener('blur', ()=>validateField(el));
-  });
-
-  form.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    success.style.display = 'none';
-    if(!validateAll()) return;
-
-    // Build payload for Google Forms
-    const payload = new FormData();
-    payload.append(MAP.name,      fName.value.trim());
-    payload.append(MAP.address,   fAddress.value.trim());
-    payload.append(MAP.phone,     fPhone.value.trim());
-    payload.append(MAP.email,     fEmail.value.trim());
-    payload.append(MAP.agegrad,   fAgeGrad.value.trim());
-
-    if(MAP.highschool) payload.append(MAP.highschool, (fHS.value || '').trim());
-    if(MAP.pos1) payload.append(MAP.pos1, (fPos1.value || '').trim());
-    if(MAP.pos2) payload.append(MAP.pos2, (fPos2.value || '').trim());
-    if(MAP.pos3) payload.append(MAP.pos3, (fPos3.value || '').trim());
-
-    // --- Birthdate: split YYYY-MM-DD into Google Forms' 3 fields ---
-    const iso = (fBirth.value || '').trim();       // e.g., "2025-10-23"
-    const [yyyy, mm, dd] = iso ? iso.split('-') : [null, null, null];
-    if (yyyy && mm && dd) {
-      // Google Forms expects the same base id with _year, _month, _day suffixes
-      payload.append(`${MAP.birthdateBase}_year`,  String(parseInt(yyyy, 10)));
-      payload.append(`${MAP.birthdateBase}_month`, String(parseInt(mm,   10))); // 1-12
-      payload.append(`${MAP.birthdateBase}_day`,   String(parseInt(dd,   10))); // 1-31
-    } else {
-      // (Optional) You can block submission here if birthdate is required
-      // but your validation already enforces it before submit.
-    }
-
-    // Optional Google Forms extras (not always required, safe to include)
-    payload.append('fvv','1'); payload.append('pageHistory','0');
-
-    btn.disabled = true; btn.textContent = 'Submitting…';
-    try{
-      // Note: Google Forms doesn't send CORS responses → use no-cors
-      await fetch(GOOGLE_FORM_ACTION, { method:'POST', mode:'no-cors', body: payload });
-      form.reset();
-      [fName,fAddress,fPhone,fEmail,fBirth,fAgeGrad].forEach(el=>el.removeAttribute('aria-invalid'));
-      success.style.display = 'block';
-    }catch(err){
-      alert('There was an error submitting the form. Please try again.');
-    }finally{
-      btn.disabled = false; btn.textContent = 'Submit Registration';
-    }
-  });
-})();
-</script>
+<script src="scripts/tryout-registration.js?v=20261105-protected1" defer></script>
 
 <script src="scripts/template-loader.js"></script>
 </body>
