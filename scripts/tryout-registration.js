@@ -25,7 +25,7 @@
     preparing=(async()=>{const data=await request(endpoint+'?action=tryoutChallenge');const solution=await solve(data.challenge);security={challenge:data.challenge,solution};return security;})().finally(()=>{preparing=null;});return preparing;
   }
   form.addEventListener('focusin',()=>{if(!security && !preparing)prepare().catch(()=>{});},{once:true});
-  form.addEventListener('reset',()=>{success.hidden=true;success.style.display='none';if(!busy)status.textContent='Protected by a free background security check.';});
+  form.addEventListener('reset',()=>{success.hidden=true;success.style.display='none';if(!busy)status.textContent='';});
   form.addEventListener('submit',async event=>{
     event.preventDefault();if(busy || !form.reportValidity())return;
     busy=true;button.disabled=true;form.setAttribute('aria-busy','true');success.hidden=true;success.style.display='none';
